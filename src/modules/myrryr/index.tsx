@@ -1,9 +1,23 @@
+import { useState } from "react";
 import { useTheme } from "../../core/state/ThemeContext";
+import SettingsButton from "../../core/layout/SettingsButton";
+import SettingsModal from "../../core/layout/SettingsModal";
 
 export default function MYRRYRHome() {
   const { themeColor, setThemeColor } = useTheme();
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   void themeColor;
   void setThemeColor;
   
-  return <h1>MYRRYR - Music Prod. + Versions + Brand</h1>;
+  const handleSettingsClick = () => {
+    setIsSettingsOpen(true);
+  };
+  
+  return (
+    <>
+      <h1>MYRRYR - Music Prod. + Versions + Brand</h1>
+      <SettingsButton onClick={handleSettingsClick} />
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+    </>
+  );
 }
