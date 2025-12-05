@@ -1,3 +1,9 @@
+import { useTheme } from "../../core/state/ThemeContext";
+
 export default function SanctuaryHome() {
-    return <h1>Sanctuary - Spiritual Mode</h1>;
+  const { themeColor, setThemeColor } = useTheme();
+  void themeColor;
+  void setThemeColor;
+  
+  return <h1>Sanctuary - Spiritual Mode</h1>;
 }

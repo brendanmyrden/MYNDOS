@@ -1,3 +1,9 @@
+import { useTheme } from "../../core/state/ThemeContext";
+
 export default function MYRRYRHome() {
-    return <h1>MYRRYR - Music Prod. + Versions + Brand</h1>;
+  const { themeColor, setThemeColor } = useTheme();
+  void themeColor;
+  void setThemeColor;
+  
+  return <h1>MYRRYR - Music Prod. + Versions + Brand</h1>;
 }

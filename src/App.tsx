@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "./core/state/ThemeContext";
 import Sidebar from "./core/navigation/Sidebar.tsx";
 
 import SanctuaryHome from "./modules/sanctuary/index";
@@ -9,19 +10,21 @@ import SYYRHome from "./modules/syyr/index";
 
 export default function App() {
   return (
-    <div style={styles.container}>
-      <Sidebar />
-      <div style={styles.content}>
-        <Routes>
-          <Route path="/sanctuary" element={<SanctuaryHome />} />
-          <Route path="/taskpill" element={<TaskPillHome />} />
-          <Route path="/raphi" element={<RAPHiDashboard />} />
-          <Route path="/myrryr" element={<MyrryrHome />} />
-          <Route path="/syyr" element={<SYYRHome />} />
-          <Route path="*" element={<SanctuaryHome />} />
-        </Routes>
+    <ThemeProvider>
+      <div style={styles.container}>
+        <Sidebar />
+        <div style={styles.content}>
+          <Routes>
+            <Route path="/sanctuary" element={<SanctuaryHome />} />
+            <Route path="/taskpill" element={<TaskPillHome />} />
+            <Route path="/raphi" element={<RAPHiDashboard />} />
+            <Route path="/myrryr" element={<MyrryrHome />} />
+            <Route path="/syyr" element={<SYYRHome />} />
+            <Route path="*" element={<SanctuaryHome />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
 
