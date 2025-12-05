@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 
 const links = [
+  { name: "MYND OS", path: "/myndos" },
   { name: "Sanctuary", path: "/sanctuary" },
-  { name: "TaskPill", path: "/taskpill" },
-  { name: "RAPH(i)", path: "/raphi" },
-  { name: "Myrryr", path: "/myrryr" },
+  { name: "Task Pill", path: "/taskpill" },
+  { name: "R-A-P-H [ i ]", path: "/raphi" },
+  { name: "MYRRYR", path: "/myrryr" },
   { name: "SYYR", path: "/syyr" },
 ];
 
