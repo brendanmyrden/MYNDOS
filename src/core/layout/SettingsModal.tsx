@@ -1,83 +1,123 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useTheme } from "../state/ThemeContext";
+import { ModuleThemeContext } from "../state/ModuleThemeContext";
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  useModuleTheme?: boolean; // If true, use module theme instead of global
 }
 
 const DEFAULT_THEME_COLOR = "#05070A";
 const DEFAULT_FONT = "system-ui, -apple-system, sans-serif";
+const DEFAULT_GRADIENT = `linear-gradient(135deg, ${DEFAULT_THEME_COLOR} 0%, #05070A 100%)`;
 
-export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const { themeColor, setThemeColor } = useTheme();
-  const [tempThemeColor, setTempThemeColor] = useState(themeColor);
-  const [tempFont, setTempFont] = useState(DEFAULT_FONT);
-  const [originalThemeColor, setOriginalThemeColor] = useState(themeColor);
-  const [originalFont, setOriginalFont] = useState(DEFAULT_FONT);
+export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModule = false }: SettingsModalProps) {
+  const globalTheme = useTheme();
+  
+  // Safely get module theme context (returns undefined if not in provider)
+  const moduleThemeContext = useContext(ModuleThemeContext);
+  const isModuleMode = useModule && moduleThemeContext !== undefined;
+  const moduleTheme = isModuleMode ? moduleThemeContext : null;
+  const theme = isModuleMode ? moduleTheme : globalTheme;
 
-  // Load saved font from localStorage
-  useEffect(() => {
-    try {
-      const savedFont = localStorage.getItem("themeFont");
-      if (savedFont) {
-        setTempFont(savedFont);
-        setOriginalFont(savedFont);
-      }
-    } catch {
-      // Ignore
-    }
-  }, []);
+  const [tempThemeColor, setTempThemeColor] = useState(
+    isModuleMode ? moduleTheme!.moduleThemeColor : globalTheme.themeColor
+  );
+  const [tempFont, setTempFont] = useState(
+    isModuleMode ? moduleTheme!.moduleFont : DEFAULT_FONT
+  );
+  const [tempGradient, setTempGradient] = useState(
+    isModuleMode ? moduleTheme!.moduleBackgroundGradient : DEFAULT_GRADIENT
+  );
+  const [originalThemeColor, setOriginalThemeColor] = useState(
+    isModuleMode ? moduleTheme!.moduleThemeColor : globalTheme.themeColor
+  );
+  const [originalFont, setOriginalFont] = useState(
+    isModuleMode ? moduleTheme!.moduleFont : DEFAULT_FONT
+  );
+  const [originalGradient, setOriginalGradient] = useState(
+    isModuleMode ? moduleTheme!.moduleBackgroundGradient : DEFAULT_GRADIENT
+  );
 
   // Reset temp values when modal opens
   useEffect(() => {
     if (isOpen) {
-      setTempThemeColor(themeColor);
-      setOriginalThemeColor(themeColor);
-      try {
-        const savedFont = localStorage.getItem("themeFont") || DEFAULT_FONT;
-        setTempFont(savedFont);
-        setOriginalFont(savedFont);
-      } catch {
-        setTempFont(DEFAULT_FONT);
-        setOriginalFont(DEFAULT_FONT);
-      }
+      const currentThemeColor = isModuleMode ? moduleTheme!.moduleThemeColor : globalTheme.themeColor;
+      const currentFont = isModuleMode ? moduleTheme!.moduleFont : DEFAULT_FONT;
+      const currentGradient = isModuleMode ? moduleTheme!.moduleBackgroundGradient : DEFAULT_GRADIENT;
+      
+      setTempThemeColor(currentThemeColor);
+      setOriginalThemeColor(currentThemeColor);
+      setTempFont(currentFont);
+      setOriginalFont(currentFont);
+      setTempGradient(currentGradient);
+      setOriginalGradient(currentGradient);
     }
-  }, [isOpen, themeColor]);
+  }, [isOpen, isModuleMode, moduleTheme, globalTheme.themeColor]);
 
   const handlePreview = () => {
-    setThemeColor(tempThemeColor);
-    document.documentElement.style.fontFamily = tempFont;
+    if (isModuleMode && moduleTheme) {
+      moduleTheme.setModuleThemeColor(tempThemeColor);
+      moduleTheme.setModuleFont(tempFont);
+      moduleTheme.setModuleBackgroundGradient(tempGradient);
+      moduleTheme.setPreviewMode(true);
+    } else {
+      globalTheme.setThemeColor(tempThemeColor);
+      document.documentElement.style.fontFamily = tempFont;
+    }
   };
 
   const handleSave = () => {
-    setThemeColor(tempThemeColor);
-    try {
-      localStorage.setItem("themeFont", tempFont);
-      document.documentElement.style.fontFamily = tempFont;
-    } catch (error) {
-      console.error("Failed to save font to localStorage:", error);
+    if (isModuleMode && moduleTheme) {
+      moduleTheme.setModuleThemeColor(tempThemeColor);
+      moduleTheme.setModuleFont(tempFont);
+      moduleTheme.setModuleBackgroundGradient(tempGradient);
+      moduleTheme.saveChanges();
+    } else {
+      globalTheme.setThemeColor(tempThemeColor);
+      try {
+        localStorage.setItem("themeFont", tempFont);
+        document.documentElement.style.fontFamily = tempFont;
+      } catch (error) {
+        console.error("Failed to save font to localStorage:", error);
+      }
     }
     onClose();
   };
 
   const handleReset = () => {
-    setTempThemeColor(DEFAULT_THEME_COLOR);
-    setTempFont(DEFAULT_FONT);
-    setThemeColor(DEFAULT_THEME_COLOR);
-    try {
-      localStorage.removeItem("themeFont");
-      document.documentElement.style.fontFamily = DEFAULT_FONT;
-    } catch (error) {
-      console.error("Failed to reset font:", error);
+    if (isModuleMode && moduleTheme) {
+      moduleTheme.resetToDefaults();
+    } else {
+      setTempThemeColor(DEFAULT_THEME_COLOR);
+      setTempFont(DEFAULT_FONT);
+      globalTheme.setThemeColor(DEFAULT_THEME_COLOR);
+      try {
+        localStorage.removeItem("themeFont");
+        document.documentElement.style.fontFamily = DEFAULT_FONT;
+      } catch (error) {
+        console.error("Failed to reset font:", error);
+      }
     }
   };
 
   const handleCancel = () => {
     // Restore original values
-    setThemeColor(originalThemeColor);
-    document.documentElement.style.fontFamily = originalFont;
+    if (isModuleMode && moduleTheme) {
+      moduleTheme.cancelPreview();
+    } else {
+      globalTheme.setThemeColor(originalThemeColor);
+      document.documentElement.style.fontFamily = originalFont;
+    }
     onClose();
+  };
+
+  const handleThemeColorChange = (color: string) => {
+    setTempThemeColor(color);
+    if (isModuleMode) {
+      setTempGradient(`linear-gradient(135deg, ${color} 0%, #05070A 100%)`);
+    }
   };
 
   if (!isOpen) return null;
@@ -177,7 +217,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <input
                 type="color"
                 value={tempThemeColor}
-                onChange={(e) => setTempThemeColor(e.target.value)}
+                onChange={(e) => handleThemeColorChange(e.target.value)}
                 style={{
                   width: "60px",
                   height: "40px",
@@ -190,7 +230,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <input
                 type="text"
                 value={tempThemeColor}
-                onChange={(e) => setTempThemeColor(e.target.value)}
+                onChange={(e) => handleThemeColorChange(e.target.value)}
                 style={{
                   flex: 1,
                   padding: "8px 12px",
@@ -241,6 +281,38 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <option value="'Lato', sans-serif">Lato</option>
             </select>
           </div>
+
+          {/* Background Gradient (Module Theme Only) */}
+          {isModuleMode && (
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  color: "#EDEDED",
+                  marginBottom: "12px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                }}
+              >
+                Background Gradient
+              </label>
+              <input
+                type="text"
+                value={tempGradient}
+                onChange={(e) => setTempGradient(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  backgroundColor: "rgba(255, 255, 255, 0.05)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  borderRadius: "6px",
+                  color: "#EDEDED",
+                  fontSize: "14px",
+                }}
+                placeholder="linear-gradient(135deg, #05070A 0%, #05070A 100%)"
+              />
+            </div>
+          )}
 
           {/* Buttons */}
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "auto", paddingTop: "24px" }}>

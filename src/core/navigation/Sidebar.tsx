@@ -7,6 +7,7 @@ const links = [
   { name: "R-A-P-H [ i ]", path: "/raphi" },
   { name: "MYRRYR", path: "/myrryr" },
   { name: "SYYR", path: "/syyr" },
+  { name: "Settings", path: "/settings" },
 ];
 
 export default function Sidebar() {
