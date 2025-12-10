@@ -1,4 +1,20 @@
-export const prompttracSchema = {
-  prompts: [] as { id: string; text: string; usedAt?: Date }[],
-  history: [] as { promptId: string; response: string; timestamp: Date }[],
+// Entities for PROMPTRAC
+export interface Prompt {
+  id: string;
+  text: string;
+  usedAt?: Date;
+}
+
+export interface PromptHistory {
+  promptId: string;
+  response: string;
+  timestamp: Date;
+}
+
+export const prompttracSchema: {
+  prompts: Prompt[];
+  history: PromptHistory[];
+} = {
+  prompts: [],
+  history: [],
 };

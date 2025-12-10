@@ -1,10 +1,14 @@
-export const taskpillSchema = {
-  tasks: [] as {
-    id: string;
-    title: string;
-    description?: string;
-    completed: boolean;
-    dueDate?: Date;
-  }[],
-  projects: [] as { id: string; name: string; taskIds: string[] }[],
+// Entities for TASK PILLS
+export interface TaskPill {
+  id: string;
+  label: string;
+  color: string; // e.g. "#FFAA00" or "blue"
+  createdAt: Date;
+  linkedTaskIds?: string[]; // optional relationship to tasks in MYND OS
+}
+
+export const taskPillsSchema: {
+  pills: TaskPill[];
+} = {
+  pills: [],
 };
