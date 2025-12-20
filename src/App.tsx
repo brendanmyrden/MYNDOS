@@ -1,5 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import { useTheme } from "./core/state/ThemeContext";
+import { Dashboard } from "./dashboards/Dashboard";
+import { mockDashboard } from "./dashboards/dashboard.mock";
+
 
 import Sidebar from "./core/navigation/Sidebar";
 
@@ -11,13 +13,15 @@ import MYRRYRHome from "./modules/myrryr";
 import SYYRHome from "./modules/syyr";
 import SettingsPage from "./modules/settings/index.tsx";
 
+
 export default function App() {
-  const { themeColor } = useTheme();
+
+
 
   const containerStyle: React.CSSProperties = {
     display: "flex",
     height: "100vh",
-    background: themeColor,
+    background: "#0B0F1A",
     color: "#EDEDED",
   };
 
@@ -30,20 +34,18 @@ export default function App() {
   return (
     <div style={containerStyle}>
       <Sidebar />
-
+      
       <div style={contentStyle}>
+        {/* Temporary dashboard render */}
+        <Dashboard data={mockDashboard} />
+
         <Routes>
           <Route path="/" element={<RAPHInputPanel />} />
           <Route path="/sanctuary" element={<SanctuaryHome />} />
-
           <Route path="/taskpill" element={<TaskPillHome />} />
-
           <Route path="/raphi" element={<RAPHiDashboard />} />
-
           <Route path="/myrryr" element={<MYRRYRHome />} />
-
           <Route path="/syyr" element={<SYYRHome />} />
-
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </div>
