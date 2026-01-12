@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { addNote, getNotes } from "./localStore";
+import type { RaphNote } from "./types";
 
 export default function RAPHInputPanel() {
   // Sleep
@@ -9,6 +11,14 @@ export default function RAPHInputPanel() {
   const [foods, setFoods] = useState<string[]>([""]);
   const [drinks, setDrinks] = useState<string[]>([""]);
   const [supplements, setSupplements] = useState<string[]>([""]);
+
+  // Notes
+  const [noteDraft, setNoteDraft] = useState("");
+  const [notes, setNotes] = useState<RaphNote[]>([]);
+
+  useEffect(() => {
+    setNotes(getNotes().slice().reverse());
+  }, []);
 
   // Add new input to a category
   const addField = (setter: any, list: string[]) => {
@@ -36,6 +46,21 @@ export default function RAPHInputPanel() {
 
     console.log("RAPH[i] entry:", entry);
     // TODO: Save to DB (local or Supabase)
+  };
+
+  const handleSaveNote = () => {
+    const content = noteDraft.trim();
+    if (!content) return;
+
+    const newNote: RaphNote = {
+      id: crypto.randomUUID(),
+      content,
+      createdAt: new Date().toISOString(),
+    };
+
+    addNote(newNote);
+    setNotes(prev => [newNote, ...prev]);
+    setNoteDraft("");
   };
 
   return (
@@ -141,6 +166,43 @@ export default function RAPHInputPanel() {
       >
         Save Entry
       </button>
+
+      {/* NOTES SECTION */}
+      <div className="mt-10 border-t border-neutral-800 pt-8">
+        <h3 className="text-neutral-300 font-semibold text-lg mb-2">Notes</h3>
+
+        <textarea
+          className="w-full min-h-[120px] p-3 bg-neutral-800 rounded-lg text-white outline-none"
+          placeholder="Write a quick note about today..."
+          value={noteDraft}
+          onChange={(e) => setNoteDraft(e.target.value)}
+        />
+
+        <button
+          onClick={handleSaveNote}
+          className="mt-3 px-4 py-2 bg-neutral-700 hover:bg-neutral-600 rounded-lg text-white text-sm font-semibold transition"
+        >
+          Save Note
+        </button>
+
+        <div className="mt-6 space-y-3">
+          {notes.length === 0 ? (
+            <p className="text-sm text-neutral-500">No notes saved yet.</p>
+          ) : (
+            notes.map((note) => (
+              <div
+                key={note.id}
+                className="rounded-lg border border-neutral-800 bg-neutral-900/70 p-3 text-sm text-neutral-200"
+              >
+                <p className="whitespace-pre-wrap">{note.content}</p>
+                <p className="mt-2 text-xs text-neutral-500">
+                  {new Date(note.createdAt).toLocaleString()}
+                </p>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }

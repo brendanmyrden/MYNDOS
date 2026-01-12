@@ -1,9 +1,10 @@
-import type { Ingredient, Supplement, IntakeLogEntry } from "./types";
+import type { Ingredient, Supplement, IntakeLogEntry, RaphNote } from "./types";
 
 // --- Keys ---
 const INGREDIENTS_KEY = "raphi_ingredients";
 const SUPPLEMENTS_KEY = "raphi_supplements";
 const INTAKE_LOG_KEY = "raphi_intake_log";
+const NOTES_KEY = "raphi_notes";
 
 // --- Helpers ---
 function loadArray<T>(key: string): T[] {
@@ -58,3 +59,13 @@ export function getIntakeForDate(date: string): IntakeLogEntry[] {
   return getIntakeLog().filter(e => e.date === date);
 }
 
+// --- Notes ---
+export function getNotes(): RaphNote[] {
+  return loadArray<RaphNote>(NOTES_KEY);
+}
+
+export function addNote(note: RaphNote) {
+  const list = getNotes();
+  list.push(note);
+  saveArray(NOTES_KEY, list);
+}

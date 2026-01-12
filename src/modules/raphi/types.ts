@@ -31,3 +31,8 @@ export interface IntakeLogEntry {
   photoUrl?: string; // for future camera integration
 }
 
+export interface RaphNote {
+  id: string;
+  content: string;
+  createdAt: string;
+}
