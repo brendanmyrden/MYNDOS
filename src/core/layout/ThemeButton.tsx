@@ -1,11 +1,10 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 
 interface ThemeButtonProps {
   onColorChange: (color: string) => void;
 }
 
 export default function ThemeButton({ onColorChange }: ThemeButtonProps) {
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const colorInputRef = useRef<HTMLInputElement>(null);
 
   const handleButtonClick = () => {
@@ -15,7 +14,6 @@ export default function ThemeButton({ onColorChange }: ThemeButtonProps) {
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const color = e.target.value;
     onColorChange(color);
-    setIsPickerOpen(false);
   };
 
   return (

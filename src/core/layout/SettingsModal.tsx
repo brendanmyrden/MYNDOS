@@ -19,7 +19,6 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
   const moduleThemeContext = useContext(ModuleThemeContext);
   const isModuleMode = useModule && moduleThemeContext !== undefined;
   const moduleTheme = isModuleMode ? moduleThemeContext : null;
-  const theme = isModuleMode ? moduleTheme : globalTheme;
 
   const [tempThemeColor, setTempThemeColor] = useState(
     isModuleMode ? moduleTheme!.moduleThemeColor : globalTheme.themeColor
@@ -36,10 +35,6 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
   const [originalFont, setOriginalFont] = useState(
     isModuleMode ? moduleTheme!.moduleFont : DEFAULT_FONT
   );
-  const [originalGradient, setOriginalGradient] = useState(
-    isModuleMode ? moduleTheme!.moduleBackgroundGradient : DEFAULT_GRADIENT
-  );
-
   // Reset temp values when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -52,7 +47,6 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
       setTempFont(currentFont);
       setOriginalFont(currentFont);
       setTempGradient(currentGradient);
-      setOriginalGradient(currentGradient);
     }
   }, [isOpen, isModuleMode, moduleTheme, globalTheme.themeColor]);
 

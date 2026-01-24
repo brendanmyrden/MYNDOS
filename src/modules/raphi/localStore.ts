@@ -1,11 +1,13 @@
 import type { Ingredient, Supplement, IntakeLogEntry } from "./types";
 
 // --- Keys ---
+
 const INGREDIENTS_KEY = "raphi_ingredients";
 const SUPPLEMENTS_KEY = "raphi_supplements";
 const INTAKE_LOG_KEY = "raphi_intake_log";
 
 // --- Helpers ---
+
 function loadArray<T>(key: string): T[] {
   try {
     const raw = localStorage.getItem(key);
@@ -20,6 +22,7 @@ function saveArray<T>(key: string, data: T[]) {
 }
 
 // --- Ingredients ---
+
 export function getIngredients(): Ingredient[] {
   return loadArray<Ingredient>(INGREDIENTS_KEY);
 }
@@ -32,6 +35,7 @@ export function saveIngredient(item: Ingredient) {
 }
 
 // --- Supplements ---
+
 export function getSupplements(): Supplement[] {
   return loadArray<Supplement>(SUPPLEMENTS_KEY);
 }
@@ -43,7 +47,9 @@ export function saveSupplement(item: Supplement) {
   saveArray(SUPPLEMENTS_KEY, updated);
 }
 
+
 // --- Intake Logs ---
+
 export function getIntakeLog(): IntakeLogEntry[] {
   return loadArray<IntakeLogEntry>(INTAKE_LOG_KEY);
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../../styles/cyberpunk.css";
 
 export default function RAPHInputPanel() {
   // Sleep
@@ -39,108 +40,117 @@ export default function RAPHInputPanel() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 rounded-2xl bg-neutral-900 border border-neutral-700 shadow-lg backdrop-blur-sm">
-      <h2 className="text-3xl font-bold text-white tracking-wide mb-6">
-        RAPH[i] • Health Input Panel
-      </h2>
+    <div className="raphi-shell">
+      <div className="raphi-content">
+        <div className="raphi-card">
+          <div className="raphi-header">
+            <div className="raphi-cube">
+              <span>🏃‍♂️</span>
+            </div>
+            <div>
+              <h2 className="raphi-title">RAPH[i]</h2>
+              <p className="raphi-subtitle">Health Input Panel</p>
+            </div>
+          </div>
 
-      {/* SLEEP SECTION */}
-      <div className="mb-8">
-        <h3 className="text-neutral-300 font-semibold text-lg mb-2">Sleep</h3>
+          <section className="raphi-section">
+            <h3 className="raphi-section-title">Sleep</h3>
+            <div className="raphi-grid">
+              <div className="raphi-stack">
+                <label className="raphi-label">Bed Time</label>
+                <input
+                  type="time"
+                  className="raphi-input"
+                  value={bedTime}
+                  onChange={(e) => setBedTime(e.target.value)}
+                />
+              </div>
+              <div className="raphi-stack">
+                <label className="raphi-label">Wake Time</label>
+                <input
+                  type="time"
+                  className="raphi-input"
+                  value={wakeTime}
+                  onChange={(e) => setWakeTime(e.target.value)}
+                />
+              </div>
+            </div>
+          </section>
 
-        <label className="text-neutral-500 text-sm">Bed Time</label>
-        <input
-          type="time"
-          className="w-full p-2 bg-neutral-800 rounded-lg text-white outline-none mt-1 mb-4"
-          value={bedTime}
-          onChange={(e) => setBedTime(e.target.value)}
-        />
+          <section className="raphi-section">
+            <h3 className="raphi-section-title">Nutrient Intake • Food</h3>
+            <div className="raphi-stack">
+              {foods.map((item, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  placeholder="Food item..."
+                  className="raphi-input"
+                  value={item}
+                  onChange={(e) => updateField(setFoods, foods, index, e.target.value)}
+                />
+              ))}
+            </div>
+            <button
+              onClick={() => addField(setFoods, foods)}
+              className="raphi-btn-link"
+            >
+              + Add Food Item
+            </button>
+          </section>
 
-        <label className="text-neutral-500 text-sm">Wake Time</label>
-        <input
-          type="time"
-          className="w-full p-2 bg-neutral-800 rounded-lg text-white outline-none mt-1"
-          value={wakeTime}
-          onChange={(e) => setWakeTime(e.target.value)}
-        />
+          <section className="raphi-section">
+            <h3 className="raphi-section-title">Nutrient Intake • Drinks</h3>
+            <div className="raphi-stack">
+              {drinks.map((item, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  placeholder="Drink item..."
+                  className="raphi-input"
+                  value={item}
+                  onChange={(e) => updateField(setDrinks, drinks, index, e.target.value)}
+                />
+              ))}
+            </div>
+            <button
+              onClick={() => addField(setDrinks, drinks)}
+              className="raphi-btn-link"
+            >
+              + Add Drink Item
+            </button>
+          </section>
+
+          <section className="raphi-section">
+            <h3 className="raphi-section-title">Supplements</h3>
+            <div className="raphi-stack">
+              {supplements.map((item, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  placeholder="Supplement name..."
+                  className="raphi-input"
+                  value={item}
+                  onChange={(e) => updateField(setSupplements, supplements, index, e.target.value)}
+                />
+              ))}
+            </div>
+            <button
+              onClick={() => addField(setSupplements, supplements)}
+              className="raphi-btn-link"
+            >
+              + Add Supplement
+            </button>
+          </section>
+
+          <button
+            onClick={handleSubmit}
+            className="raphi-btn raphi-btn-primary raphi-btn-full"
+          >
+            Save Entry
+          </button>
+        </div>
       </div>
-
-      {/* FOOD SECTION */}
-      <div className="mb-8">
-        <h3 className="text-neutral-300 font-semibold text-lg mb-2">Nutrient Intake • Food</h3>
-
-        {foods.map((item, index) => (
-          <input
-            key={index}
-            type="text"
-            placeholder="Food item..."
-            className="w-full p-2 bg-neutral-800 rounded-lg text-white outline-none mt-2"
-            value={item}
-            onChange={(e) => updateField(setFoods, foods, index, e.target.value)}
-          />
-        ))}
-
-        <button
-          onClick={() => addField(setFoods, foods)}
-          className="mt-3 text-sm text-purple-400 hover:text-purple-300 transition"
-        >
-          + Add Food Item
-        </button>
-      </div>
-
-      {/* DRINK SECTION */}
-      <div className="mb-8">
-        <h3 className="text-neutral-300 font-semibold text-lg mb-2">Nutrient Intake • Drinks</h3>
-
-        {drinks.map((item, index) => (
-          <input
-            key={index}
-            type="text"
-            placeholder="Drink item..."
-            className="w-full p-2 bg-neutral-800 rounded-lg text-white outline-none mt-2"
-            value={item}
-            onChange={(e) => updateField(setDrinks, drinks, index, e.target.value)}
-          />
-        ))}
-
-        <button
-          onClick={() => addField(setDrinks, drinks)}
-          className="mt-3 text-sm text-purple-400 hover:text-purple-300 transition"
-        >
-          + Add Drink Item
-        </button>
-      </div>
-
-      {/* SUPPLEMENTS SECTION */}
-      <div className="mb-8">
-        <h3 className="text-neutral-300 font-semibold text-lg mb-2">Supplements</h3>
-
-        {supplements.map((item, index) => (
-          <input
-            key={index}
-            type="text"
-            placeholder="Supplement name..."
-            className="w-full p-2 bg-neutral-800 rounded-lg text-white outline-none mt-2"
-            value={item}
-            onChange={(e) => updateField(setSupplements, supplements, index, e.target.value)}
-          />
-        ))}
-
-        <button
-          onClick={() => addField(setSupplements, supplements)}
-          className="mt-3 text-sm text-purple-400 hover:text-purple-300 transition"
-        >
-          + Add Supplement
-        </button>
-      </div>
-
-      {/* SUBMIT */}
-      <button
-        onClick={handleSubmit}
-        className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-xl text-white font-bold tracking-wide transition"
-      >
-        Save Entry
-      </button>
     </div>
   );
 }

@@ -1,11 +1,42 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { IntakeLogEntry, Ingredient, Supplement } from "./types";
-import { getIntakeForDate, getIngredients, getSupplements } from "./localStore";
+import {
+  getIntakeForDate,
+  getIngredients,
+  getSupplements,
+  addIntakeEntry,
+  saveIngredient,
+  saveSupplement,
+} from "./localStore";
+
+const DEFAULT_CATEGORIES = ["Food", "Drink", "Supplements"];
+const CATEGORIES_KEY = "raphi_categories";
 
 export default function IntakeDashboard() {
   const [entries, setEntries] = useState<IntakeLogEntry[]>([]);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [supplements, setSupplements] = useState<Supplement[]>([]);
+  const [categories, setCategories] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem(CATEGORIES_KEY);
+      return stored ? JSON.parse(stored) : DEFAULT_CATEGORIES;
+    } catch {
+      return DEFAULT_CATEGORIES;
+    }
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [itemSearchQuery, setItemSearchQuery] = useState("");
+  const [showItemResults, setShowItemResults] = useState(false);
+  const itemSearchRef = useRef<HTMLDivElement>(null);
+  const [formData, setFormData] = useState({
+    category: "Food",
+    itemId: "",
+    amount: "",
+    unit: "",
+    notes: "",
+  });
 
   // Get today's date in YYYY-MM-DD format
   const getTodayDate = (): string => {
@@ -15,88 +46,341 @@ export default function IntakeDashboard() {
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  
-/* eslint-disable react-hooks/set-state-in-effect */
+
+  /* eslint-disable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     const today = getTodayDate();
-  
+
     const nextEntries = getIntakeForDate(today);
     const nextIngredients = getIngredients();
     const nextSupplements = getSupplements();
-  
+
     setEntries(nextEntries);
     setIngredients(nextIngredients);
     setSupplements(nextSupplements);
   }, []);
+
+  // Close item search dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (itemSearchRef.current && !itemSearchRef.current.contains(event.target as Node)) {
+        setShowItemResults(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Save categories to localStorage when they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+    } catch (error) {
+      console.error("Failed to save categories:", error);
+    }
+  }, [categories]);
 
   // Helper to get item name by ID and type
   const getItemName = (itemId: string, itemType: "ingredient" | "supplement"): string => {
     if (itemType === "ingredient") {
       const ingredient = ingredients.find((i) => i.id === itemId);
       return ingredient?.name || "Unknown Ingredient";
-    } else {
-      const supplement = supplements.find((s) => s.id === itemId);
-      return supplement?.name || "Unknown Supplement";
+    }
+    const supplement = supplements.find((s) => s.id === itemId);
+    return supplement?.name || "Unknown Supplement";
+  };
+
+  const handleAddEntry = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const handleCloseForm = () => {
+    setIsModalOpen(false);
+    setIsAddingCategory(false);
+    setNewCategoryName("");
+    setItemSearchQuery("");
+    setShowItemResults(false);
+    setFormData({
+      category: "Food",
+      itemId: "",
+      amount: "",
+      unit: "",
+      notes: "",
+    });
+  };
+
+  const handleAddCategory = () => {
+    if (newCategoryName.trim() && !categories.includes(newCategoryName.trim())) {
+      setCategories([...categories, newCategoryName.trim()]);
+      setFormData({ ...formData, category: newCategoryName.trim() });
+      setNewCategoryName("");
+      setIsAddingCategory(false);
     }
   };
 
+  const handleCategoryChange = (value: string) => {
+    if (value === "+") {
+      setIsAddingCategory(true);
+    } else {
+      setIsAddingCategory(false);
+      setFormData({ ...formData, category: value, itemId: "" });
+    }
+  };
+
+  const handleItemSearch = (query: string) => {
+    setItemSearchQuery(query);
+    setShowItemResults(query.length > 0);
+    if (query.length === 0) {
+      setFormData({ ...formData, itemId: "" });
+    }
+  };
+
+  const handleSelectItem = (item: Ingredient | Supplement) => {
+    setFormData({ ...formData, itemId: item.id });
+    setItemSearchQuery(item.name);
+    setShowItemResults(false);
+  };
+
+  const handleCreateNewItem = () => {
+    if (!itemSearchQuery.trim()) return;
+
+    const itemType = formData.category === "Supplements" ? "supplement" : "ingredient";
+    const newId = Date.now().toString();
+
+    if (itemType === "supplement") {
+      const newSupplement: Supplement = {
+        id: newId,
+        name: itemSearchQuery.trim(),
+        dose: 0,
+        unit: "mg",
+      };
+      saveSupplement(newSupplement);
+      setSupplements([...supplements, newSupplement]);
+    } else {
+      const newIngredient: Ingredient = {
+        id: newId,
+        name: itemSearchQuery.trim(),
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        servingSize: 0,
+        unit: "g",
+      };
+      saveIngredient(newIngredient);
+      setIngredients([...ingredients, newIngredient]);
+    }
+
+    setFormData({ ...formData, itemId: newId });
+    setItemSearchQuery(itemSearchQuery.trim());
+    setShowItemResults(false);
+  };
+
+  const handleSubmit = () => {
+    if (!formData.itemId || !formData.amount) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    const itemType = formData.category === "Supplements" ? "supplement" : "ingredient";
+    const unit = formData.unit || (itemType === "supplement" ? "mg" : "g");
+
+    const newEntry: IntakeLogEntry = {
+      id: Date.now().toString(),
+      date: getTodayDate(),
+      itemType: itemType,
+      itemId: formData.itemId,
+      amount: parseFloat(formData.amount) || 0,
+      unit: unit,
+      notes: formData.notes || undefined,
+    };
+
+    addIntakeEntry(newEntry);
+    setEntries([...entries, newEntry]);
+    handleCloseForm();
+  };
+
+  const getAvailableItems = () => {
+    if (formData.category === "Supplements") {
+      return supplements;
+    }
+    return ingredients;
+  };
+
+  const availableItems = getAvailableItems();
+  const filteredItems = availableItems.filter((item) =>
+    item.name.toLowerCase().includes(itemSearchQuery.toLowerCase())
+  );
+
+  const hasExactMatch = availableItems.some(
+    (item) => item.name.toLowerCase() === itemSearchQuery.toLowerCase()
+  );
+  const showCreateOption = itemSearchQuery.trim().length > 0 && !hasExactMatch && !formData.itemId;
+
   return (
-    <div style={{ padding: "20px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-        <h2 style={{ color: "#EDEDED", margin: 0 }}>Today's Intake</h2>
+    <div className="raphi-dashboard">
+      <div className="raphi-row raphi-row-between">
+        <h2 className="raphi-section-title">Today's Intake</h2>
         <button
-          style={{
-            padding: "8px 16px",
-            backgroundColor: "#4A4A4A",
-            color: "#EDEDED",
-            border: "1px solid #666",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
+          onClick={handleAddEntry}
+          className={`raphi-btn ${isModalOpen ? "raphi-btn-ghost" : "raphi-btn-primary"}`}
         >
-          Add Intake Entry
+          {isModalOpen ? "Cancel" : "Nutrient Intake Entry"}
         </button>
       </div>
 
-      {entries.length === 0 ? (
-        <p style={{ color: "#EDEDED", opacity: 0.7 }}>No entries for today</p>
-      ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          {entries.map((entry) => (
-            <div
-              key={entry.id}
-              style={{
-                padding: "12px",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "4px",
-                backgroundColor: "rgba(255, 255, 255, 0.02)",
-              }}
-            >
-              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                  <span
-                    style={{
-                      color: "#EDEDED",
-                      fontSize: "12px",
-                      textTransform: "uppercase",
-                      opacity: 0.7,
+      {isModalOpen && (
+        <div className="raphi-form">
+          <h3 className="raphi-section-title">Nutrient Intake Entry</h3>
+
+          <div className="raphi-form-grid">
+            <div className="raphi-stack">
+              <label className="raphi-label">Category</label>
+              {!isAddingCategory ? (
+                <select
+                  value={formData.category}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  tabIndex={1}
+                  className="raphi-select"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                  <option value="+">+ Add Category</option>
+                </select>
+              ) : (
+                <div className="raphi-stack">
+                  <input
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleAddCategory();
+                      } else if (e.key === "Escape") {
+                        setIsAddingCategory(false);
+                        setNewCategoryName("");
+                      }
                     }}
-                  >
-                    {entry.itemType}
-                  </span>
-                  <span style={{ color: "#EDEDED", fontWeight: "500" }}>
+                    placeholder="Enter category name..."
+                    autoFocus
+                    className="raphi-input"
+                  />
+                  <div className="raphi-inline">
+                    <button onClick={handleAddCategory} className="raphi-btn raphi-btn-primary raphi-btn-sm">
+                      Add
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsAddingCategory(false);
+                        setNewCategoryName("");
+                      }}
+                      className="raphi-btn raphi-btn-ghost raphi-btn-sm"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div ref={itemSearchRef} className="raphi-stack raphi-item-search">
+              <label className="raphi-label">Item</label>
+              <input
+                type="text"
+                value={itemSearchQuery}
+                onChange={(e) => handleItemSearch(e.target.value)}
+                onFocus={() => setShowItemResults(itemSearchQuery.length > 0)}
+                placeholder="Search or type to create..."
+                tabIndex={2}
+                className="raphi-input"
+              />
+              {showItemResults && (
+                <div className="raphi-dropdown">
+                  {filteredItems.length > 0 ? (
+                    filteredItems.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => handleSelectItem(item)}
+                        className="raphi-dropdown-item"
+                      >
+                        {item.name}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="raphi-dropdown-item raphi-muted">No items found</div>
+                  )}
+                  {showCreateOption && (
+                    <div
+                      onClick={handleCreateNewItem}
+                      className="raphi-dropdown-item raphi-dropdown-create"
+                    >
+                      + Create "{itemSearchQuery.trim()}"
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="raphi-stack">
+              <label className="raphi-label">Amount</label>
+              <input
+                type="number"
+                value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                placeholder="0"
+                tabIndex={3}
+                className="raphi-input"
+              />
+            </div>
+
+            <div className="raphi-stack">
+              <label className="raphi-label">Notes</label>
+              <input
+                type="text"
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                placeholder="Optional notes..."
+                tabIndex={4}
+                className="raphi-input"
+              />
+            </div>
+          </div>
+
+          <div className="raphi-actions">
+            <button onClick={handleCloseForm} className="raphi-btn raphi-btn-ghost">
+              Cancel
+            </button>
+            <button onClick={handleSubmit} className="raphi-btn raphi-btn-primary">
+              Add Entry
+            </button>
+          </div>
+        </div>
+      )}
+
+      {entries.length === 0 ? (
+        <p className="raphi-muted">No entries for today</p>
+      ) : (
+        <div className="raphi-stack">
+          {entries.map((entry) => (
+            <div key={entry.id} className="raphi-entry">
+              <div className="raphi-stack">
+                <div className="raphi-row">
+                  <span className="raphi-entry-type">{entry.itemType}</span>
+                  <span className="raphi-entry-name">
                     {getItemName(entry.itemId, entry.itemType)}
                   </span>
                 </div>
-                <div style={{ color: "#EDEDED", opacity: 0.9 }}>
+                <div>
                   {entry.amount} {entry.unit}
                 </div>
-                {entry.notes && (
-                  <div style={{ color: "#EDEDED", opacity: 0.7, fontSize: "14px", marginTop: "4px" }}>
-                    {entry.notes}
-                  </div>
-                )}
+                {entry.notes && <div className="raphi-note">{entry.notes}</div>}
               </div>
             </div>
           ))}
@@ -105,4 +389,3 @@ export default function IntakeDashboard() {
     </div>
   );
 }
-

@@ -1,10 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { Dashboard } from "./dashboards/Dashboard";
-import { mockDashboard } from "./dashboards/dashboard.mock";
-
-
 import Sidebar from "./core/navigation/Sidebar";
-
 import SanctuaryHome from "./modules/sanctuary";
 import TaskPillHome from "./modules/taskpill";
 import RAPHiDashboard from "./modules/raphi";
@@ -12,12 +7,9 @@ import RAPHInputPanel from "./modules/raphi/RAPHInputPanel";
 import MYRRYRHome from "./modules/myrryr";
 import SYYRHome from "./modules/syyr";
 import SettingsPage from "./modules/settings/index.tsx";
-
+import MYNDOS from "./modules/myndos";
 
 export default function App() {
-
-
-
   const containerStyle: React.CSSProperties = {
     display: "flex",
     height: "100vh",
@@ -34,13 +26,10 @@ export default function App() {
   return (
     <div style={containerStyle}>
       <Sidebar />
-      
       <div style={contentStyle}>
-        {/* Temporary dashboard render */}
-        <Dashboard data={mockDashboard} />
-
         <Routes>
           <Route path="/" element={<RAPHInputPanel />} />
+          <Route path="/myndos" element={<MYNDOS />} />
           <Route path="/sanctuary" element={<SanctuaryHome />} />
           <Route path="/taskpill" element={<TaskPillHome />} />
           <Route path="/raphi" element={<RAPHiDashboard />} />
