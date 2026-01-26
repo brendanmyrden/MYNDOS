@@ -7,7 +7,7 @@ import {
   addIntakeEntry,
   saveIngredient,
   saveSupplement,
-} from "./localStore";
+} from "./store";
 
 const DEFAULT_CATEGORIES = ["Food", "Drink", "Supplements"];
 const CATEGORIES_KEY = "raphi_categories";
@@ -50,15 +50,25 @@ export default function IntakeDashboard() {
   /* eslint-disable react-hooks/set-state-in-effect */
 
   useEffect(() => {
-    const today = getTodayDate();
+    let active = true;
 
-    const nextEntries = getIntakeForDate(today);
-    const nextIngredients = getIngredients();
-    const nextSupplements = getSupplements();
+    (async () => {
+      const today = getTodayDate();
+      const [nextEntries, nextIngredients, nextSupplements] = await Promise.all([
+        getIntakeForDate(today),
+        getIngredients(),
+        getSupplements(),
+      ]);
 
-    setEntries(nextEntries);
-    setIngredients(nextIngredients);
-    setSupplements(nextSupplements);
+      if (!active) return;
+      setEntries(nextEntries);
+      setIngredients(nextIngredients);
+      setSupplements(nextSupplements);
+    })();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   // Close item search dropdown when clicking outside
@@ -145,7 +155,7 @@ export default function IntakeDashboard() {
     setShowItemResults(false);
   };
 
-  const handleCreateNewItem = () => {
+  const handleCreateNewItem = async () => {
     if (!itemSearchQuery.trim()) return;
 
     const itemType = formData.category === "Supplements" ? "supplement" : "ingredient";
@@ -158,8 +168,8 @@ export default function IntakeDashboard() {
         dose: 0,
         unit: "mg",
       };
-      saveSupplement(newSupplement);
-      setSupplements([...supplements, newSupplement]);
+      await saveSupplement(newSupplement);
+      setSupplements((prev) => [...prev, newSupplement]);
     } else {
       const newIngredient: Ingredient = {
         id: newId,
@@ -171,8 +181,8 @@ export default function IntakeDashboard() {
         servingSize: 0,
         unit: "g",
       };
-      saveIngredient(newIngredient);
-      setIngredients([...ingredients, newIngredient]);
+      await saveIngredient(newIngredient);
+      setIngredients((prev) => [...prev, newIngredient]);
     }
 
     setFormData({ ...formData, itemId: newId });
@@ -180,7 +190,7 @@ export default function IntakeDashboard() {
     setShowItemResults(false);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.itemId || !formData.amount) {
       alert("Please fill in all required fields");
       return;
@@ -199,8 +209,8 @@ export default function IntakeDashboard() {
       notes: formData.notes || undefined,
     };
 
-    addIntakeEntry(newEntry);
-    setEntries([...entries, newEntry]);
+    await addIntakeEntry(newEntry);
+    setEntries((prev) => [...prev, newEntry]);
     handleCloseForm();
   };
 
