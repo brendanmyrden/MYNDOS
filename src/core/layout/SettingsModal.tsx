@@ -11,6 +11,31 @@ interface SettingsModalProps {
 const DEFAULT_THEME_COLOR = "#05070A";
 const DEFAULT_FONT = "system-ui, -apple-system, sans-serif";
 const DEFAULT_GRADIENT = `linear-gradient(135deg, ${DEFAULT_THEME_COLOR} 0%, #05070A 100%)`;
+const DEFAULT_TEXT = "#eaf2ff";
+const DEFAULT_MUTED = "rgba(234, 242, 255, 0.7)";
+const DEFAULT_ACCENT = "#7df9ff";
+const DEFAULT_ACCENT_2 = "#ff4fd8";
+const DEFAULT_BORDER = "rgba(125, 249, 255, 0.2)";
+const DEFAULT_GLASS = "rgba(14, 18, 32, 0.68)";
+const DEFAULT_BUTTON_BG = "linear-gradient(135deg, #7df9ff 0%, #7a5cff 60%, #ff4fd8 100%)";
+const DEFAULT_BUTTON_TEXT = "#070b15";
+const DEFAULT_INPUT_BG = "rgba(6, 10, 20, 0.75)";
+const DEFAULT_INPUT_BORDER = "rgba(125, 249, 255, 0.25)";
+
+function toHexColor(input: string) {
+  if (input.startsWith("#")) {
+    if (input.length === 4) {
+      return `#${input[1]}${input[1]}${input[2]}${input[2]}${input[3]}${input[3]}`;
+    }
+    return input;
+  }
+  const match = input.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+  if (!match) return "#ffffff";
+  const r = Math.min(255, Math.max(0, Number(match[1])));
+  const g = Math.min(255, Math.max(0, Number(match[2])));
+  const b = Math.min(255, Math.max(0, Number(match[3])));
+  return `#${[r, g, b].map((val) => val.toString(16).padStart(2, "0")).join("")}`;
+}
 
 export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModule = false }: SettingsModalProps) {
   const globalTheme = useTheme();
@@ -28,6 +53,36 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
   );
   const [tempGradient, setTempGradient] = useState(
     isModuleMode ? moduleTheme!.moduleBackgroundGradient : DEFAULT_GRADIENT
+  );
+  const [tempText, setTempText] = useState(
+    isModuleMode ? moduleTheme!.moduleText : DEFAULT_TEXT
+  );
+  const [tempMuted, setTempMuted] = useState(
+    isModuleMode ? moduleTheme!.moduleMuted : DEFAULT_MUTED
+  );
+  const [tempAccent, setTempAccent] = useState(
+    isModuleMode ? moduleTheme!.moduleAccent : DEFAULT_ACCENT
+  );
+  const [tempAccent2, setTempAccent2] = useState(
+    isModuleMode ? moduleTheme!.moduleAccent2 : DEFAULT_ACCENT_2
+  );
+  const [tempBorder, setTempBorder] = useState(
+    isModuleMode ? moduleTheme!.moduleBorder : DEFAULT_BORDER
+  );
+  const [tempGlass, setTempGlass] = useState(
+    isModuleMode ? moduleTheme!.moduleGlass : DEFAULT_GLASS
+  );
+  const [tempButtonBg, setTempButtonBg] = useState(
+    isModuleMode ? moduleTheme!.moduleButtonBg : DEFAULT_BUTTON_BG
+  );
+  const [tempButtonText, setTempButtonText] = useState(
+    isModuleMode ? moduleTheme!.moduleButtonText : DEFAULT_BUTTON_TEXT
+  );
+  const [tempInputBg, setTempInputBg] = useState(
+    isModuleMode ? moduleTheme!.moduleInputBg : DEFAULT_INPUT_BG
+  );
+  const [tempInputBorder, setTempInputBorder] = useState(
+    isModuleMode ? moduleTheme!.moduleInputBorder : DEFAULT_INPUT_BORDER
   );
   const [originalThemeColor, setOriginalThemeColor] = useState(
     isModuleMode ? moduleTheme!.moduleThemeColor : globalTheme.themeColor
@@ -47,6 +102,18 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
       setTempFont(currentFont);
       setOriginalFont(currentFont);
       setTempGradient(currentGradient);
+      if (isModuleMode) {
+        setTempText(moduleTheme!.moduleText);
+        setTempMuted(moduleTheme!.moduleMuted);
+        setTempAccent(moduleTheme!.moduleAccent);
+        setTempAccent2(moduleTheme!.moduleAccent2);
+        setTempBorder(moduleTheme!.moduleBorder);
+        setTempGlass(moduleTheme!.moduleGlass);
+        setTempButtonBg(moduleTheme!.moduleButtonBg);
+        setTempButtonText(moduleTheme!.moduleButtonText);
+        setTempInputBg(moduleTheme!.moduleInputBg);
+        setTempInputBorder(moduleTheme!.moduleInputBorder);
+      }
     }
   }, [isOpen, isModuleMode, moduleTheme, globalTheme.themeColor]);
 
@@ -55,6 +122,18 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
       moduleTheme.setModuleThemeColor(tempThemeColor);
       moduleTheme.setModuleFont(tempFont);
       moduleTheme.setModuleBackgroundGradient(tempGradient);
+      moduleTheme.setModuleColors({
+        moduleText: tempText,
+        moduleMuted: tempMuted,
+        moduleAccent: tempAccent,
+        moduleAccent2: tempAccent2,
+        moduleBorder: tempBorder,
+        moduleGlass: tempGlass,
+        moduleButtonBg: tempButtonBg,
+        moduleButtonText: tempButtonText,
+        moduleInputBg: tempInputBg,
+        moduleInputBorder: tempInputBorder,
+      });
       moduleTheme.setPreviewMode(true);
     } else {
       globalTheme.setThemeColor(tempThemeColor);
@@ -67,6 +146,18 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
       moduleTheme.setModuleThemeColor(tempThemeColor);
       moduleTheme.setModuleFont(tempFont);
       moduleTheme.setModuleBackgroundGradient(tempGradient);
+      moduleTheme.setModuleColors({
+        moduleText: tempText,
+        moduleMuted: tempMuted,
+        moduleAccent: tempAccent,
+        moduleAccent2: tempAccent2,
+        moduleBorder: tempBorder,
+        moduleGlass: tempGlass,
+        moduleButtonBg: tempButtonBg,
+        moduleButtonText: tempButtonText,
+        moduleInputBg: tempInputBg,
+        moduleInputBorder: tempInputBorder,
+      });
       moduleTheme.saveChanges();
     } else {
       globalTheme.setThemeColor(tempThemeColor);
@@ -83,6 +174,19 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
   const handleReset = () => {
     if (isModuleMode && moduleTheme) {
       moduleTheme.resetToDefaults();
+      setTempThemeColor(DEFAULT_THEME_COLOR);
+      setTempFont(DEFAULT_FONT);
+      setTempGradient(DEFAULT_GRADIENT);
+      setTempText(DEFAULT_TEXT);
+      setTempMuted(DEFAULT_MUTED);
+      setTempAccent(DEFAULT_ACCENT);
+      setTempAccent2(DEFAULT_ACCENT_2);
+      setTempBorder(DEFAULT_BORDER);
+      setTempGlass(DEFAULT_GLASS);
+      setTempButtonBg(DEFAULT_BUTTON_BG);
+      setTempButtonText(DEFAULT_BUTTON_TEXT);
+      setTempInputBg(DEFAULT_INPUT_BG);
+      setTempInputBorder(DEFAULT_INPUT_BORDER);
     } else {
       setTempThemeColor(DEFAULT_THEME_COLOR);
       setTempFont(DEFAULT_FONT);
@@ -113,6 +217,21 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
       setTempGradient(`linear-gradient(135deg, ${color} 0%, #05070A 100%)`);
     }
   };
+
+  const colorFields = isModuleMode
+    ? [
+        { label: "Text", value: tempText, setValue: setTempText, placeholder: DEFAULT_TEXT },
+        { label: "Muted Text", value: tempMuted, setValue: setTempMuted, placeholder: DEFAULT_MUTED },
+        { label: "Accent", value: tempAccent, setValue: setTempAccent, placeholder: DEFAULT_ACCENT },
+        { label: "Accent 2", value: tempAccent2, setValue: setTempAccent2, placeholder: DEFAULT_ACCENT_2 },
+        { label: "Border", value: tempBorder, setValue: setTempBorder, placeholder: DEFAULT_BORDER },
+        { label: "Glass", value: tempGlass, setValue: setTempGlass, placeholder: DEFAULT_GLASS },
+        { label: "Button Background", value: tempButtonBg, setValue: setTempButtonBg, placeholder: DEFAULT_BUTTON_BG },
+        { label: "Button Text", value: tempButtonText, setValue: setTempButtonText, placeholder: DEFAULT_BUTTON_TEXT },
+        { label: "Input Background", value: tempInputBg, setValue: setTempInputBg, placeholder: DEFAULT_INPUT_BG },
+        { label: "Input Border", value: tempInputBorder, setValue: setTempInputBorder, placeholder: DEFAULT_INPUT_BORDER },
+      ]
+    : [];
 
   if (!isOpen) return null;
 
@@ -308,6 +427,65 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
             </div>
           )}
 
+          {/* Color Overrides (Module Theme Only) */}
+          {isModuleMode && (
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  color: "#EDEDED",
+                  marginBottom: "12px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                }}
+              >
+                Color Overrides
+              </label>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {colorFields.map((field) => (
+                  <div
+                    key={field.label}
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "120px 70px 1fr",
+                      gap: "10px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span style={{ color: "#EDEDED", fontSize: "12px" }}>{field.label}</span>
+                    <input
+                      type="color"
+                      value={toHexColor(field.value)}
+                      onChange={(e) => field.setValue(e.target.value)}
+                      style={{
+                        width: "60px",
+                        height: "36px",
+                        border: "1px solid rgba(255, 255, 255, 0.2)",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        backgroundColor: toHexColor(field.value),
+                      }}
+                    />
+                    <input
+                      type="text"
+                      value={field.value}
+                      onChange={(e) => field.setValue(e.target.value)}
+                      style={{
+                        padding: "8px 10px",
+                        backgroundColor: "rgba(255, 255, 255, 0.05)",
+                        border: "1px solid rgba(255, 255, 255, 0.2)",
+                        borderRadius: "6px",
+                        color: "#EDEDED",
+                        fontSize: "13px",
+                      }}
+                      placeholder={field.placeholder}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Buttons */}
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "auto", paddingTop: "24px" }}>
             <button
@@ -408,4 +586,3 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
     </>
   );
 }
-

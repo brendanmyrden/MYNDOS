@@ -2,7 +2,20 @@ import { ModuleThemeProvider, useModuleTheme } from "../../core/state/ModuleThem
 import "../../styles/cyberpunk.css";
 
 function SettingsContent() {
-  const { moduleBackgroundGradient, moduleFont } = useModuleTheme();
+  const {
+    moduleBackgroundGradient,
+    moduleFont,
+    moduleText,
+    moduleMuted,
+    moduleAccent,
+    moduleAccent2,
+    moduleBorder,
+    moduleGlass,
+    moduleButtonBg,
+    moduleButtonText,
+    moduleInputBg,
+    moduleInputBorder,
+  } = useModuleTheme();
 
   const containerStyle: React.CSSProperties = {
     display: "flex",
@@ -14,6 +27,16 @@ function SettingsContent() {
     margin: 0,
     ["--module-bg" as string]: moduleBackgroundGradient,
     ["--module-font" as string]: moduleFont,
+    ["--raphi-text" as string]: moduleText,
+    ["--raphi-muted" as string]: moduleMuted,
+    ["--raphi-accent" as string]: moduleAccent,
+    ["--raphi-accent-2" as string]: moduleAccent2,
+    ["--raphi-border" as string]: moduleBorder,
+    ["--raphi-glass" as string]: moduleGlass,
+    ["--raphi-button-bg" as string]: moduleButtonBg,
+    ["--raphi-button-text" as string]: moduleButtonText,
+    ["--raphi-input-bg" as string]: moduleInputBg,
+    ["--raphi-input-border" as string]: moduleInputBorder,
   };
 
   return (

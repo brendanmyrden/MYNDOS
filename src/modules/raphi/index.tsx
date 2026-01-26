@@ -6,7 +6,20 @@ import SettingsModal from "../../core/layout/SettingsModal";
 import "../../styles/cyberpunk.css";
 
 function RAPHiDashboardContent() {
-  const { moduleBackgroundGradient, moduleFont } = useModuleTheme();
+  const {
+    moduleBackgroundGradient,
+    moduleFont,
+    moduleText,
+    moduleMuted,
+    moduleAccent,
+    moduleAccent2,
+    moduleBorder,
+    moduleGlass,
+    moduleButtonBg,
+    moduleButtonText,
+    moduleInputBg,
+    moduleInputBorder,
+  } = useModuleTheme();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleSettingsClick = () => {
@@ -23,6 +36,16 @@ function RAPHiDashboardContent() {
     margin: 0,
     ["--raphi-bg" as string]: moduleBackgroundGradient,
     ["--raphi-font" as string]: moduleFont,
+    ["--raphi-text" as string]: moduleText,
+    ["--raphi-muted" as string]: moduleMuted,
+    ["--raphi-accent" as string]: moduleAccent,
+    ["--raphi-accent-2" as string]: moduleAccent2,
+    ["--raphi-border" as string]: moduleBorder,
+    ["--raphi-glass" as string]: moduleGlass,
+    ["--raphi-button-bg" as string]: moduleButtonBg,
+    ["--raphi-button-text" as string]: moduleButtonText,
+    ["--raphi-input-bg" as string]: moduleInputBg,
+    ["--raphi-input-border" as string]: moduleInputBorder,
   };
 
   return (

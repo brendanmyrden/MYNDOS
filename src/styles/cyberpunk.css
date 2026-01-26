@@ -10,6 +10,10 @@
   --raphi-accent-2: #ff4fd8;
   --raphi-text: #eaf2ff;
   --raphi-muted: rgba(234, 242, 255, 0.7);
+  --raphi-button-bg: linear-gradient(135deg, #7df9ff 0%, #7a5cff 60%, #ff4fd8 100%);
+  --raphi-button-text: #070b15;
+  --raphi-input-bg: rgba(6, 10, 20, 0.75);
+  --raphi-input-border: rgba(125, 249, 255, 0.25);
 
   position: relative;
   min-height: 100%;
@@ -20,6 +24,11 @@
   font-family: var(--module-font, var(--raphi-font));
   overflow: hidden;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+}
+
+.raphi-shell *,
+.module-shell * {
+  box-sizing: border-box;
 }
 
 .raphi-shell::before,
@@ -51,6 +60,9 @@
 .module-content {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .raphi-card,
@@ -63,6 +75,9 @@
     0 12px 30px rgba(0, 0, 0, 0.45),
     inset 0 0 0 1px rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(18px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .raphi-header,
@@ -111,12 +126,15 @@
 
 .raphi-section,
 .module-section {
-  margin-bottom: 26px;
+  margin-bottom: 0;
   padding: 20px;
   border-radius: 16px;
-  background: rgba(8, 12, 22, 0.55);
-  border: 1px solid rgba(125, 249, 255, 0.12);
+  background: var(--raphi-glass);
+  border: 1px solid var(--raphi-border);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .raphi-section-title,
@@ -157,8 +175,8 @@
   width: 100%;
   padding: 10px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(125, 249, 255, 0.25);
-  background: rgba(6, 10, 20, 0.75);
+  border: 1px solid var(--raphi-input-border);
+  background: var(--raphi-input-bg);
   color: var(--raphi-text);
   font-size: 14px;
   box-shadow:
@@ -194,9 +212,9 @@
 
 .raphi-btn-primary,
 .module-btn-primary {
-  color: #070b15;
+  color: var(--raphi-button-text);
   border: none;
-  background: linear-gradient(135deg, #7df9ff 0%, #7a5cff 60%, #ff4fd8 100%);
+  background: var(--raphi-button-bg);
   box-shadow: 0 12px 28px rgba(125, 249, 255, 0.35);
 }
 
@@ -208,8 +226,8 @@
 .raphi-btn-ghost,
 .module-btn-ghost {
   color: var(--raphi-text);
-  border: 1px solid rgba(125, 249, 255, 0.3);
-  background: rgba(8, 12, 22, 0.6);
+  border: 1px solid var(--raphi-border);
+  background: var(--raphi-glass);
 }
 
 .raphi-btn-link,
@@ -241,6 +259,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .raphi-row-between,
@@ -252,9 +271,12 @@
 .module-form {
   padding: 20px;
   border-radius: 16px;
-  background: rgba(10, 14, 26, 0.7);
-  border: 1px solid rgba(125, 249, 255, 0.2);
+  background: var(--raphi-glass);
+  border: 1px solid var(--raphi-border);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .raphi-form-grid,
@@ -273,6 +295,7 @@
 .module-inline {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .raphi-actions,
@@ -280,11 +303,12 @@
   margin-top: 20px;
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .raphi-actions .raphi-btn,
 .module-actions .module-btn {
-  flex: 1;
+  flex: 1 1 140px;
 }
 
 .raphi-dropdown,
@@ -326,12 +350,14 @@
 
 .raphi-entry,
 .module-entry {
-  padding: 28px 16px 14px;
+  padding: 16px;
   border-radius: 14px;
-  background: rgba(8, 12, 22, 0.6);
-  border: 1px solid rgba(125, 249, 255, 0.12);
+  background: var(--raphi-glass);
+  border: 1px solid var(--raphi-border);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .raphi-entry-type,
@@ -361,9 +387,6 @@
 }
 
 .raphi-entry-delete {
-  position: absolute;
-  top: 8px;
-  left: 8px;
   width: 22px;
   height: 22px;
   border-radius: 999px;
@@ -379,9 +402,6 @@
 }
 
 .raphi-entry-edit {
-  position: absolute;
-  top: 8px;
-  right: 8px;
   border: none;
   background: #ffd84d;
   color: #1a1500;
@@ -391,6 +411,13 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   cursor: pointer;
+}
+
+.raphi-entry-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .raphi-bottom-bar {

@@ -757,19 +757,21 @@ export default function IntakeDashboard() {
                 const converted = formatConvertedAmount(entry.amount, entry.unit);
                 return (
                   <div key={entry.id} className="raphi-entry">
-                    <button
-                      className="raphi-entry-delete"
-                      onClick={() => handleDeleteEntry(entry.id)}
-                      aria-label="Delete entry"
-                    >
-                      ×
-                    </button>
-                    <button
-                      className="raphi-entry-edit"
-                      onClick={() => handleEditEntry(entry)}
-                    >
-                      edit
-                    </button>
+                    <div className="raphi-entry-controls">
+                      <button
+                        className="raphi-entry-delete"
+                        onClick={() => handleDeleteEntry(entry.id)}
+                        aria-label="Delete entry"
+                      >
+                        ×
+                      </button>
+                      <button
+                        className="raphi-entry-edit"
+                        onClick={() => handleEditEntry(entry)}
+                      >
+                        edit
+                      </button>
+                    </div>
                     <div className="raphi-stack">
                       <div className="raphi-row">
                         <span className="raphi-entry-type">{entry.itemType}</span>
@@ -822,16 +824,18 @@ export default function IntakeDashboard() {
             <div className="raphi-stack">
               {categories.map((cat) => (
                 <div key={cat} className="raphi-entry">
-                  <button
-                    className="raphi-entry-delete"
-                    onClick={() => {
-                      deleteCategory(cat);
-                      setCategories((prev) => prev.filter((item) => item !== cat));
-                    }}
-                    aria-label="Delete category"
-                  >
-                    ×
-                  </button>
+                  <div className="raphi-entry-controls">
+                    <button
+                      className="raphi-entry-delete"
+                      onClick={() => {
+                        deleteCategory(cat);
+                        setCategories((prev) => prev.filter((item) => item !== cat));
+                      }}
+                      aria-label="Delete category"
+                    >
+                      ×
+                    </button>
+                  </div>
                   <div className="raphi-entry-name">{cat}</div>
                 </div>
               ))}
