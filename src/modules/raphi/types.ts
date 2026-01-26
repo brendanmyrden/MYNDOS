@@ -25,9 +25,9 @@ export interface IntakeLogEntry {
   date: string; // YYYY-MM-DD
   itemType: "ingredient" | "supplement";
   itemId: string;
+  category: string;
   amount: number;
   unit: string;
   notes?: string;
   photoUrl?: string; // for future camera integration
 }
-

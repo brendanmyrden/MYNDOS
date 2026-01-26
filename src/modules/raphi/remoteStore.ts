@@ -28,6 +28,7 @@ type IntakeRow = {
   date: string;
   item_type: "ingredient" | "supplement";
   item_id: string;
+  category: string | null;
   amount: number;
   unit: string;
   notes: string | null;
@@ -37,6 +38,7 @@ type IntakeRow = {
 const INGREDIENTS_TABLE = "raphi_ingredients";
 const SUPPLEMENTS_TABLE = "raphi_supplements";
 const INTAKE_TABLE = "raphi_intake_log";
+const CATEGORIES_TABLE = "raphi_categories";
 
 function mapIngredientRow(row: IngredientRow): Ingredient {
   return {
@@ -96,6 +98,7 @@ function mapIntakeRow(row: IntakeRow): IntakeLogEntry {
     date: row.date,
     itemType: row.item_type,
     itemId: row.item_id,
+    category: row.category ?? "Food",
     amount: Number(row.amount ?? 0),
     unit: row.unit,
     notes: row.notes ?? undefined,
@@ -109,6 +112,7 @@ function mapIntakeToRow(entry: IntakeLogEntry): IntakeRow {
     date: entry.date,
     item_type: entry.itemType,
     item_id: entry.itemId,
+    category: entry.category || "Food",
     amount: entry.amount,
     unit: entry.unit,
     notes: entry.notes ?? null,
@@ -168,6 +172,20 @@ export async function addIntakeEntry(entry: IntakeLogEntry): Promise<void> {
   if (error) throw error;
 }
 
+export async function updateIntakeEntry(entry: IntakeLogEntry): Promise<void> {
+  const supabase = requireSupabase();
+  const { error } = await supabase
+    .from(INTAKE_TABLE)
+    .upsert(mapIntakeToRow(entry), { onConflict: "id" });
+  if (error) throw error;
+}
+
+export async function deleteIntakeEntry(entryId: string): Promise<void> {
+  const supabase = requireSupabase();
+  const { error } = await supabase.from(INTAKE_TABLE).delete().eq("id", entryId);
+  if (error) throw error;
+}
+
 export async function getIntakeForDate(date: string): Promise<IntakeLogEntry[]> {
   const supabase = requireSupabase();
   const { data, error } = await supabase
@@ -177,4 +195,33 @@ export async function getIntakeForDate(date: string): Promise<IntakeLogEntry[]> 
     .order("id", { ascending: true });
   if (error) throw error;
   return (data ?? []).map(mapIntakeRow);
+}
+
+export async function getCategories(): Promise<string[]> {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from(CATEGORIES_TABLE)
+    .select("name")
+    .order("name", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map((row) => row.name);
+}
+
+export async function saveCategory(name: string): Promise<void> {
+  const supabase = requireSupabase();
+  const normalized = name.trim();
+  if (!normalized) return;
+  const { error } = await supabase
+    .from(CATEGORIES_TABLE)
+    .upsert({ id: normalized.toLowerCase().replace(/\s+/g, "-"), name: normalized }, { onConflict: "id" });
+  if (error) throw error;
+}
+
+export async function deleteCategory(name: string): Promise<void> {
+  const supabase = requireSupabase();
+  const normalized = name.trim();
+  if (!normalized) return;
+  const id = normalized.toLowerCase().replace(/\s+/g, "-");
+  const { error } = await supabase.from(CATEGORIES_TABLE).delete().eq("id", id);
+  if (error) throw error;
 }

@@ -28,6 +28,7 @@ create table if not exists public.raphi_intake_log (
   date date not null,
   item_type text not null check (item_type in ('ingredient', 'supplement')),
   item_id text not null,
+  category text not null default 'Food',
   amount numeric not null default 0,
   unit text not null,
   notes text,
@@ -36,3 +37,9 @@ create table if not exists public.raphi_intake_log (
 );
 
 create index if not exists raphi_intake_log_date_idx on public.raphi_intake_log (date);
+
+create table if not exists public.raphi_categories (
+  id text primary key,
+  name text not null unique,
+  created_at timestamptz not null default now()
+);

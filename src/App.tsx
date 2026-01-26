@@ -3,7 +3,6 @@ import Sidebar from "./core/navigation/Sidebar";
 import SanctuaryHome from "./modules/sanctuary";
 import TaskPillHome from "./modules/taskpill";
 import RAPHiDashboard from "./modules/raphi";
-import RAPHInputPanel from "./modules/raphi/RAPHInputPanel";
 import MYRRYRHome from "./modules/myrryr";
 import SYYRHome from "./modules/syyr";
 import SettingsPage from "./modules/settings/index.tsx";
@@ -28,7 +27,7 @@ export default function App() {
       <Sidebar />
       <div style={contentStyle}>
         <Routes>
-          <Route path="/" element={<RAPHInputPanel />} />
+          <Route path="/" element={<RAPHiDashboard />} />
           <Route path="/myndos" element={<MYNDOS />} />
           <Route path="/sanctuary" element={<SanctuaryHome />} />
           <Route path="/taskpill" element={<TaskPillHome />} />

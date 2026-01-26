@@ -5,6 +5,7 @@ import type { Ingredient, Supplement, IntakeLogEntry } from "./types";
 const INGREDIENTS_KEY = "raphi_ingredients";
 const SUPPLEMENTS_KEY = "raphi_supplements";
 const INTAKE_LOG_KEY = "raphi_intake_log";
+const CATEGORIES_KEY = "raphi_categories";
 
 // --- Helpers ---
 
@@ -51,7 +52,10 @@ export function saveSupplement(item: Supplement) {
 // --- Intake Logs ---
 
 export function getIntakeLog(): IntakeLogEntry[] {
-  return loadArray<IntakeLogEntry>(INTAKE_LOG_KEY);
+  return loadArray<IntakeLogEntry>(INTAKE_LOG_KEY).map((entry) => ({
+    ...entry,
+    category: entry.category ?? "Food",
+  }));
 }
 
 export function addIntakeEntry(entry: IntakeLogEntry) {
@@ -60,7 +64,38 @@ export function addIntakeEntry(entry: IntakeLogEntry) {
   saveArray(INTAKE_LOG_KEY, list);
 }
 
+export function updateIntakeEntry(entry: IntakeLogEntry) {
+  const list = getIntakeLog();
+  const updated = list.map((item) => (item.id === entry.id ? entry : item));
+  saveArray(INTAKE_LOG_KEY, updated);
+}
+
+export function deleteIntakeEntry(entryId: string) {
+  const list = getIntakeLog();
+  const updated = list.filter((item) => item.id !== entryId);
+  saveArray(INTAKE_LOG_KEY, updated);
+}
+
 export function getIntakeForDate(date: string): IntakeLogEntry[] {
   return getIntakeLog().filter(e => e.date === date);
 }
 
+// --- Categories ---
+
+export function getCategories(): string[] {
+  return loadArray<string>(CATEGORIES_KEY);
+}
+
+export function saveCategory(name: string) {
+  const list = getCategories();
+  const normalized = name.trim();
+  if (!normalized || list.includes(normalized)) return;
+  list.push(normalized);
+  saveArray(CATEGORIES_KEY, list);
+}
+
+export function deleteCategory(name: string) {
+  const list = getCategories();
+  const updated = list.filter((item) => item !== name);
+  saveArray(CATEGORIES_KEY, updated);
+}

@@ -326,11 +326,12 @@
 
 .raphi-entry,
 .module-entry {
-  padding: 14px 16px;
+  padding: 28px 16px 14px;
   border-radius: 14px;
   background: rgba(8, 12, 22, 0.6);
   border: 1px solid rgba(125, 249, 255, 0.12);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  position: relative;
 }
 
 .raphi-entry-type,
@@ -357,6 +358,45 @@
   margin-top: 6px;
   font-size: 13px;
   color: var(--raphi-muted);
+}
+
+.raphi-entry-delete {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: none;
+  background: #ff4b4b;
+  color: #100c12;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.raphi-entry-edit {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: #ffd84d;
+  color: #1a1500;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.raphi-bottom-bar {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 @media (max-width: 720px) {
