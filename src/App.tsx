@@ -1,5 +1,8 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Sidebar from "./core/navigation/Sidebar";
+import HomeScreenGrid from "./core/navigation/HomeScreenGrid";
+import { getHomescreenCubed } from "./core/navigation/homescreen";
 import SanctuaryHome from "./modules/sanctuary";
 import TaskPillHome from "./modules/taskpill";
 import RAPHiDashboard from "./modules/raphi";
@@ -10,6 +13,18 @@ import MYNDOS from "./modules/myndos";
 import StreamsHome from "./modules/streams";
 
 export default function App() {
+  const [homescreenCubed, setHomescreenCubed] = useState(() => getHomescreenCubed());
+
+  useEffect(() => {
+    const handleChange = () => setHomescreenCubed(getHomescreenCubed());
+    window.addEventListener("homescreen-cubed-change", handleChange);
+    window.addEventListener("storage", handleChange);
+    return () => {
+      window.removeEventListener("homescreen-cubed-change", handleChange);
+      window.removeEventListener("storage", handleChange);
+    };
+  }, []);
+
   const containerStyle: React.CSSProperties = {
     display: "flex",
     height: "100%",
@@ -24,19 +39,24 @@ export default function App() {
 
   return (
     <div style={containerStyle}>
-      <Sidebar />
+      {!homescreenCubed && <Sidebar />}
       <div style={contentStyle}>
-        <Routes>
-          <Route path="/" element={<RAPHiDashboard />} />
-          <Route path="/myndos" element={<MYNDOS />} />
-          <Route path="/sanctuary" element={<SanctuaryHome />} />
-          <Route path="/taskpill" element={<TaskPillHome />} />
-          <Route path="/raphi" element={<RAPHiDashboard />} />
-          <Route path="/myrryr" element={<MYRRYRHome />} />
-          <Route path="/syyr" element={<SYYRHome />} />
-          <Route path="/streams" element={<StreamsHome />} />
-          <Route path="/settings" element={<SettingsPage />} />
-        </Routes>
+        {homescreenCubed ? (
+          <HomeScreenGrid />
+        ) : (
+          <Routes>
+            <Route path="/" element={<RAPHiDashboard />} />
+            <Route path="/myndos" element={<MYNDOS />} />
+            <Route path="/sanctuary" element={<SanctuaryHome />} />
+            <Route path="/taskpill" element={<TaskPillHome />} />
+            <Route path="/raphi" element={<RAPHiDashboard />} />
+            <Route path="/myrryr" element={<MYRRYRHome />} />
+            <Route path="/syyr" element={<SYYRHome />} />
+            <Route path="/streams" element={<StreamsHome />} />
+            <Route path="/streams-of-strategy" element={<Navigate to="/streams" replace />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Routes>
+        )}
       </div>
     </div>
   );

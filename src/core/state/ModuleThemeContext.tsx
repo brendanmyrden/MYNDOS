@@ -68,7 +68,7 @@ const DEFAULT_MODULE_BUTTON_BG = "linear-gradient(135deg, #7df9ff 0%, #7a5cff 60
 const DEFAULT_MODULE_BUTTON_TEXT = "#070b15";
 const DEFAULT_MODULE_INPUT_BG = "rgba(6, 10, 20, 0.75)";
 const DEFAULT_MODULE_INPUT_BORDER = "rgba(125, 249, 255, 0.25)";
-const DEFAULT_SIDEBAR_BUTTON_STYLE = "gradient";
+const DEFAULT_SIDEBAR_BUTTON_STYLE: ModuleThemeState["sidebarButtonStyle"] = "gradient";
 const DEFAULT_SIDEBAR_BUTTON_PRIMARY = "#7df9ff";
 const DEFAULT_SIDEBAR_BUTTON_SECONDARY = "#ff4fd8";
 const DEFAULT_SIDEBAR_BUTTON_OUTLINE = "#7df9ff";
@@ -139,22 +139,21 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
   const [state, setState] = useState<ModuleThemeState>(loadModuleTheme);
   const [savedState, setSavedState] = useState<ModuleThemeState>(loadModuleTheme);
 
-  // Save to localStorage whenever saved state changes (not preview)
+  // Save to localStorage whenever theme changes (preview writes too, savedState only updates when not previewing)
   useEffect(() => {
-    if (!state.previewMode) {
-      try {
-        localStorage.setItem(
-          MODULE_THEME_KEY,
-          JSON.stringify({
-            moduleThemeColor: state.moduleThemeColor,
-            moduleFont: state.moduleFont,
-            moduleBackgroundGradient: state.moduleBackgroundGradient,
-            moduleText: state.moduleText,
-            moduleMuted: state.moduleMuted,
-            moduleAccent: state.moduleAccent,
-            moduleAccent2: state.moduleAccent2,
-            moduleBorder: state.moduleBorder,
-            moduleGlass: state.moduleGlass,
+    try {
+      localStorage.setItem(
+        MODULE_THEME_KEY,
+        JSON.stringify({
+          moduleThemeColor: state.moduleThemeColor,
+          moduleFont: state.moduleFont,
+          moduleBackgroundGradient: state.moduleBackgroundGradient,
+          moduleText: state.moduleText,
+          moduleMuted: state.moduleMuted,
+          moduleAccent: state.moduleAccent,
+          moduleAccent2: state.moduleAccent2,
+          moduleBorder: state.moduleBorder,
+          moduleGlass: state.moduleGlass,
           moduleButtonBg: state.moduleButtonBg,
           moduleButtonText: state.moduleButtonText,
           moduleInputBg: state.moduleInputBg,
@@ -166,11 +165,12 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
         })
       );
       window.dispatchEvent(new CustomEvent("module-theme-change", { detail: { moduleName } }));
-      setSavedState(state);
+      if (!state.previewMode) {
+        setSavedState(state);
+      }
     } catch (error) {
       console.error(`Failed to save module theme for ${moduleName}:`, error);
     }
-  }
   }, [state, moduleName, MODULE_THEME_KEY]);
 
   const setModuleThemeColor = (color: string) => {

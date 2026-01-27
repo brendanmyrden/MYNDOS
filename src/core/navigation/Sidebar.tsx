@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties, DragEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
+import { moduleLinks } from "./moduleLinks";
+import { getHomescreenCubed, setHomescreenCubed } from "./homescreen";
 
 type SidebarLink = {
   name: string;
@@ -20,16 +22,11 @@ const ORDER_STORAGE_KEY = "myndos.sidebar.order.v1";
 const SKIN_STORAGE_KEY = "myndos.sidebar.skin.v1";
 const SYNC_STORAGE_KEY = "myndos.sidebar.syncModule.v1";
 
-const defaultLinks: SidebarLink[] = [
-  { name: "MYND OS", path: "/myndos", moduleName: "myndos" },
-  { name: "Sanctuary", path: "/sanctuary", moduleName: "sanctuary" },
-  { name: "Task Pill", path: "/taskpill", moduleName: "taskpill" },
-  { name: "R-A-P-H [ i ]", path: "/raphi", moduleName: "raphi" },
-  { name: "MYRRYR", path: "/myrryr", moduleName: "myrryr" },
-  { name: "SYYR", path: "/syyr", moduleName: "syyr" },
-  { name: "$.0.$. - $treams 0f $trategy", path: "/streams", moduleName: "streams" },
-  { name: "Settings", path: "/settings", moduleName: "settings" },
-];
+const defaultLinks: SidebarLink[] = moduleLinks.map(({ name, path, moduleName }) => ({
+  name,
+  path,
+  moduleName,
+}));
 
 const defaultSkin: SidebarSkin = {
   mode: "gradient",
@@ -177,6 +174,7 @@ export default function Sidebar() {
   const [dragOverPath, setDragOverPath] = useState<string | null>(null);
   const [skin, setSkin] = useState<SidebarSkin>(() => loadSkin());
   const [syncToModule, setSyncToModule] = useState<boolean>(() => loadSyncSetting());
+  const [homescreenCubed, setHomescreenCubedState] = useState<boolean>(() => getHomescreenCubed());
   const [isSkinOpen, setIsSkinOpen] = useState(true);
   const [, setThemeVersion] = useState(0);
 
@@ -191,6 +189,16 @@ export default function Sidebar() {
   useEffect(() => {
     localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(syncToModule));
   }, [syncToModule]);
+
+  useEffect(() => {
+    const handleHomescreenChange = () => setHomescreenCubedState(getHomescreenCubed());
+    window.addEventListener("homescreen-cubed-change", handleHomescreenChange);
+    window.addEventListener("storage", handleHomescreenChange);
+    return () => {
+      window.removeEventListener("homescreen-cubed-change", handleHomescreenChange);
+      window.removeEventListener("storage", handleHomescreenChange);
+    };
+  }, []);
 
   useEffect(() => {
     const handleThemeChange = () => setThemeVersion((prev) => prev + 1);
@@ -267,6 +275,10 @@ export default function Sidebar() {
     navigate(path);
   };
 
+  if (homescreenCubed) {
+    return null;
+  }
+
   return (
     <aside className="sidebar-shell" style={sidebarStyle}>
       <div className="sidebar-header">
@@ -335,6 +347,20 @@ export default function Sidebar() {
                 onClick={() => setSyncToModule((prev) => !prev)}
               >
                 {syncToModule ? "On" : "Off"}
+              </button>
+            </div>
+            <div className="sidebar-sync">
+              <span className="sidebar-sync__label">Homescreen cubed</span>
+              <button
+                type="button"
+                className={`sidebar-sync__btn${homescreenCubed ? " is-selected" : ""}`}
+                onClick={() => {
+                  const next = !homescreenCubed;
+                  setHomescreenCubedState(next);
+                  setHomescreenCubed(next);
+                }}
+              >
+                {homescreenCubed ? "On" : "Off"}
               </button>
             </div>
             <div className="sidebar-color-row">
