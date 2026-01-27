@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { ModuleThemeProvider, useModuleTheme } from "../../core/state/ModuleThemeContext";
+import SettingsButton from "../../core/layout/SettingsButton";
+import SettingsModal from "../../core/layout/SettingsModal";
 import "../../styles/cyberpunk.css";
 
 function SettingsContent() {
@@ -16,6 +19,11 @@ function SettingsContent() {
     moduleInputBg,
     moduleInputBorder,
   } = useModuleTheme();
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const handleSettingsClick = () => {
+    setIsSettingsOpen(true);
+  };
 
   const containerStyle: React.CSSProperties = {
     display: "flex",
@@ -42,6 +50,12 @@ function SettingsContent() {
   return (
     <div style={containerStyle} className="module-shell">
       <div className="module-content">
+        <SettingsButton onClick={handleSettingsClick} />
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          useModuleTheme={true}
+        />
         <div className="module-card">
           <div className="module-header">
             <div className="module-cube">

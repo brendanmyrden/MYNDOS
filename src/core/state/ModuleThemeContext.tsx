@@ -15,6 +15,10 @@ interface ModuleThemeState {
   moduleButtonText: string;
   moduleInputBg: string;
   moduleInputBorder: string;
+  sidebarButtonStyle: "solid" | "gradient";
+  sidebarButtonPrimary: string;
+  sidebarButtonSecondary: string;
+  sidebarButtonOutline: string;
   previewMode: boolean;
 }
 
@@ -32,11 +36,17 @@ type ModuleColorOverrides = Pick<
   | "moduleInputBorder"
 >;
 
+type SidebarButtonTheme = Pick<
+  ModuleThemeState,
+  "sidebarButtonStyle" | "sidebarButtonPrimary" | "sidebarButtonSecondary" | "sidebarButtonOutline"
+>;
+
 interface ModuleThemeContextType extends ModuleThemeState {
   setModuleThemeColor: (color: string) => void;
   setModuleFont: (font: string) => void;
   setModuleBackgroundGradient: (gradient: string) => void;
   setModuleColors: (colors: Partial<ModuleColorOverrides>) => void;
+  setSidebarButtonTheme: (theme: Partial<SidebarButtonTheme>) => void;
   setPreviewMode: (preview: boolean) => void;
   resetToDefaults: () => void;
   saveChanges: () => void;
@@ -58,6 +68,10 @@ const DEFAULT_MODULE_BUTTON_BG = "linear-gradient(135deg, #7df9ff 0%, #7a5cff 60
 const DEFAULT_MODULE_BUTTON_TEXT = "#070b15";
 const DEFAULT_MODULE_INPUT_BG = "rgba(6, 10, 20, 0.75)";
 const DEFAULT_MODULE_INPUT_BORDER = "rgba(125, 249, 255, 0.25)";
+const DEFAULT_SIDEBAR_BUTTON_STYLE = "gradient";
+const DEFAULT_SIDEBAR_BUTTON_PRIMARY = "#7df9ff";
+const DEFAULT_SIDEBAR_BUTTON_SECONDARY = "#ff4fd8";
+const DEFAULT_SIDEBAR_BUTTON_OUTLINE = "#7df9ff";
 
 interface ModuleThemeProviderProps {
   children: ReactNode;
@@ -87,6 +101,13 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
           moduleButtonText: parsed.moduleButtonText || DEFAULT_MODULE_BUTTON_TEXT,
           moduleInputBg: parsed.moduleInputBg || DEFAULT_MODULE_INPUT_BG,
           moduleInputBorder: parsed.moduleInputBorder || DEFAULT_MODULE_INPUT_BORDER,
+          sidebarButtonStyle:
+            parsed.sidebarButtonStyle === "solid" || parsed.sidebarButtonStyle === "gradient"
+              ? parsed.sidebarButtonStyle
+              : DEFAULT_SIDEBAR_BUTTON_STYLE,
+          sidebarButtonPrimary: parsed.sidebarButtonPrimary || DEFAULT_SIDEBAR_BUTTON_PRIMARY,
+          sidebarButtonSecondary: parsed.sidebarButtonSecondary || DEFAULT_SIDEBAR_BUTTON_SECONDARY,
+          sidebarButtonOutline: parsed.sidebarButtonOutline || DEFAULT_SIDEBAR_BUTTON_OUTLINE,
           previewMode: false,
         };
       }
@@ -107,6 +128,10 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
       moduleButtonText: DEFAULT_MODULE_BUTTON_TEXT,
       moduleInputBg: DEFAULT_MODULE_INPUT_BG,
       moduleInputBorder: DEFAULT_MODULE_INPUT_BORDER,
+      sidebarButtonStyle: DEFAULT_SIDEBAR_BUTTON_STYLE,
+      sidebarButtonPrimary: DEFAULT_SIDEBAR_BUTTON_PRIMARY,
+      sidebarButtonSecondary: DEFAULT_SIDEBAR_BUTTON_SECONDARY,
+      sidebarButtonOutline: DEFAULT_SIDEBAR_BUTTON_OUTLINE,
       previewMode: false,
     };
   };
@@ -130,17 +155,22 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
             moduleAccent2: state.moduleAccent2,
             moduleBorder: state.moduleBorder,
             moduleGlass: state.moduleGlass,
-            moduleButtonBg: state.moduleButtonBg,
-            moduleButtonText: state.moduleButtonText,
-            moduleInputBg: state.moduleInputBg,
-            moduleInputBorder: state.moduleInputBorder,
-          })
-        );
-        setSavedState(state);
-      } catch (error) {
-        console.error(`Failed to save module theme for ${moduleName}:`, error);
-      }
+          moduleButtonBg: state.moduleButtonBg,
+          moduleButtonText: state.moduleButtonText,
+          moduleInputBg: state.moduleInputBg,
+          moduleInputBorder: state.moduleInputBorder,
+          sidebarButtonStyle: state.sidebarButtonStyle,
+          sidebarButtonPrimary: state.sidebarButtonPrimary,
+          sidebarButtonSecondary: state.sidebarButtonSecondary,
+          sidebarButtonOutline: state.sidebarButtonOutline,
+        })
+      );
+      window.dispatchEvent(new CustomEvent("module-theme-change", { detail: { moduleName } }));
+      setSavedState(state);
+    } catch (error) {
+      console.error(`Failed to save module theme for ${moduleName}:`, error);
     }
+  }
   }, [state, moduleName, MODULE_THEME_KEY]);
 
   const setModuleThemeColor = (color: string) => {
@@ -163,6 +193,10 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
     setState((prev) => ({ ...prev, ...colors }));
   };
 
+  const setSidebarButtonTheme = (theme: Partial<SidebarButtonTheme>) => {
+    setState((prev) => ({ ...prev, ...theme }));
+  };
+
   const setPreviewMode = (preview: boolean) => {
     setState((prev) => ({ ...prev, previewMode: preview }));
   };
@@ -182,6 +216,10 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
       moduleButtonText: DEFAULT_MODULE_BUTTON_TEXT,
       moduleInputBg: DEFAULT_MODULE_INPUT_BG,
       moduleInputBorder: DEFAULT_MODULE_INPUT_BORDER,
+      sidebarButtonStyle: DEFAULT_SIDEBAR_BUTTON_STYLE,
+      sidebarButtonPrimary: DEFAULT_SIDEBAR_BUTTON_PRIMARY,
+      sidebarButtonSecondary: DEFAULT_SIDEBAR_BUTTON_SECONDARY,
+      sidebarButtonOutline: DEFAULT_SIDEBAR_BUTTON_OUTLINE,
       previewMode: false,
     };
     setState(defaults);
@@ -205,6 +243,7 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
         setModuleFont,
         setModuleBackgroundGradient,
         setModuleColors,
+        setSidebarButtonTheme,
         setPreviewMode,
         resetToDefaults,
         saveChanges,

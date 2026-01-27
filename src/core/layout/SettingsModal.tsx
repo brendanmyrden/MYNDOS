@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import type { PointerEvent } from "react";
 import { useTheme } from "../state/ThemeContext";
 import { ModuleThemeContext } from "../state/ModuleThemeContext";
 
@@ -21,6 +22,12 @@ const DEFAULT_BUTTON_BG = "linear-gradient(135deg, #7df9ff 0%, #7a5cff 60%, #ff4
 const DEFAULT_BUTTON_TEXT = "#070b15";
 const DEFAULT_INPUT_BG = "rgba(6, 10, 20, 0.75)";
 const DEFAULT_INPUT_BORDER = "rgba(125, 249, 255, 0.25)";
+const DEFAULT_SIDEBAR_BUTTON_STYLE = "gradient";
+const DEFAULT_SIDEBAR_BUTTON_PRIMARY = "#7df9ff";
+const DEFAULT_SIDEBAR_BUTTON_SECONDARY = "#ff4fd8";
+const DEFAULT_SIDEBAR_BUTTON_OUTLINE = "#7df9ff";
+
+type SidebarButtonStyle = "solid" | "gradient";
 
 function toHexColor(input: string) {
   if (input.startsWith("#")) {
@@ -84,12 +91,28 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
   const [tempInputBorder, setTempInputBorder] = useState(
     isModuleMode ? moduleTheme!.moduleInputBorder : DEFAULT_INPUT_BORDER
   );
+  const [tempSidebarButtonStyle, setTempSidebarButtonStyle] = useState<SidebarButtonStyle>(
+    isModuleMode ? moduleTheme!.sidebarButtonStyle : DEFAULT_SIDEBAR_BUTTON_STYLE
+  );
+  const [tempSidebarButtonPrimary, setTempSidebarButtonPrimary] = useState(
+    isModuleMode ? moduleTheme!.sidebarButtonPrimary : DEFAULT_SIDEBAR_BUTTON_PRIMARY
+  );
+  const [tempSidebarButtonSecondary, setTempSidebarButtonSecondary] = useState(
+    isModuleMode ? moduleTheme!.sidebarButtonSecondary : DEFAULT_SIDEBAR_BUTTON_SECONDARY
+  );
+  const [tempSidebarButtonOutline, setTempSidebarButtonOutline] = useState(
+    isModuleMode ? moduleTheme!.sidebarButtonOutline : DEFAULT_SIDEBAR_BUTTON_OUTLINE
+  );
   const [originalThemeColor, setOriginalThemeColor] = useState(
     isModuleMode ? moduleTheme!.moduleThemeColor : globalTheme.themeColor
   );
   const [originalFont, setOriginalFont] = useState(
     isModuleMode ? moduleTheme!.moduleFont : DEFAULT_FONT
   );
+  const [showAdvancedColors, setShowAdvancedColors] = useState(false);
+  const [dockPosition, setDockPosition] = useState<"right" | "bottom">("right");
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   // Reset temp values when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -102,6 +125,9 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
       setTempFont(currentFont);
       setOriginalFont(currentFont);
       setTempGradient(currentGradient);
+      setShowAdvancedColors(false);
+      setDragStart(null);
+      setDragOffset({ x: 0, y: 0 });
       if (isModuleMode) {
         setTempText(moduleTheme!.moduleText);
         setTempMuted(moduleTheme!.moduleMuted);
@@ -113,6 +139,10 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
         setTempButtonText(moduleTheme!.moduleButtonText);
         setTempInputBg(moduleTheme!.moduleInputBg);
         setTempInputBorder(moduleTheme!.moduleInputBorder);
+        setTempSidebarButtonStyle(moduleTheme!.sidebarButtonStyle);
+        setTempSidebarButtonPrimary(moduleTheme!.sidebarButtonPrimary);
+        setTempSidebarButtonSecondary(moduleTheme!.sidebarButtonSecondary);
+        setTempSidebarButtonOutline(moduleTheme!.sidebarButtonOutline);
       }
     }
   }, [isOpen, isModuleMode, moduleTheme, globalTheme.themeColor]);
@@ -133,6 +163,12 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
         moduleButtonText: tempButtonText,
         moduleInputBg: tempInputBg,
         moduleInputBorder: tempInputBorder,
+      });
+      moduleTheme.setSidebarButtonTheme({
+        sidebarButtonStyle: tempSidebarButtonStyle,
+        sidebarButtonPrimary: tempSidebarButtonPrimary,
+        sidebarButtonSecondary: tempSidebarButtonSecondary,
+        sidebarButtonOutline: tempSidebarButtonOutline,
       });
       moduleTheme.setPreviewMode(true);
     } else {
@@ -157,6 +193,12 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
         moduleButtonText: tempButtonText,
         moduleInputBg: tempInputBg,
         moduleInputBorder: tempInputBorder,
+      });
+      moduleTheme.setSidebarButtonTheme({
+        sidebarButtonStyle: tempSidebarButtonStyle,
+        sidebarButtonPrimary: tempSidebarButtonPrimary,
+        sidebarButtonSecondary: tempSidebarButtonSecondary,
+        sidebarButtonOutline: tempSidebarButtonOutline,
       });
       moduleTheme.saveChanges();
     } else {
@@ -187,6 +229,10 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
       setTempButtonText(DEFAULT_BUTTON_TEXT);
       setTempInputBg(DEFAULT_INPUT_BG);
       setTempInputBorder(DEFAULT_INPUT_BORDER);
+      setTempSidebarButtonStyle(DEFAULT_SIDEBAR_BUTTON_STYLE);
+      setTempSidebarButtonPrimary(DEFAULT_SIDEBAR_BUTTON_PRIMARY);
+      setTempSidebarButtonSecondary(DEFAULT_SIDEBAR_BUTTON_SECONDARY);
+      setTempSidebarButtonOutline(DEFAULT_SIDEBAR_BUTTON_OUTLINE);
     } else {
       setTempThemeColor(DEFAULT_THEME_COLOR);
       setTempFont(DEFAULT_FONT);
@@ -218,6 +264,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
     }
   };
 
+
   const colorFields = isModuleMode
     ? [
         { label: "Text", value: tempText, setValue: setTempText, placeholder: DEFAULT_TEXT },
@@ -234,6 +281,67 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
     : [];
 
   if (!isOpen) return null;
+
+  const isDragging = dragStart !== null;
+  const panelStyle: React.CSSProperties = {
+    position: "fixed",
+    zIndex: 9999,
+    display: "flex",
+    flexDirection: "column",
+    backgroundColor: "#1a1a1a",
+    boxSizing: "border-box",
+    overflowY: "auto",
+    overflowX: "hidden",
+    transition: isDragging ? "none" : "transform 0.2s ease, width 0.2s ease, height 0.2s ease",
+    transform: isDragging ? `translate(${dragOffset.x}px, ${dragOffset.y}px)` : "none",
+  };
+
+  if (dockPosition === "right") {
+    panelStyle.top = 0;
+    panelStyle.right = 0;
+    panelStyle.bottom = 0;
+    panelStyle.width = "400px";
+    panelStyle.maxWidth = "90vw";
+    panelStyle.borderLeft = "1px solid rgba(255, 255, 255, 0.1)";
+    panelStyle.boxShadow = "-4px 0 24px rgba(0, 0, 0, 0.3)";
+    panelStyle.animation = "slideInRight 0.3s ease-out";
+  } else {
+    panelStyle.left = 0;
+    panelStyle.right = 0;
+    panelStyle.bottom = 0;
+    panelStyle.height = "45vh";
+    panelStyle.minHeight = "320px";
+    panelStyle.maxHeight = "70vh";
+    panelStyle.borderTop = "1px solid rgba(255, 255, 255, 0.1)";
+    panelStyle.boxShadow = "0 -6px 24px rgba(0, 0, 0, 0.35)";
+    panelStyle.animation = "slideInUp 0.3s ease-out";
+  }
+
+  const handleDragStart = (event: PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragStart({ x: event.clientX, y: event.clientY });
+    setDragOffset({ x: 0, y: 0 });
+  };
+
+  const handleDragMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (!dragStart) return;
+    setDragOffset({
+      x: event.clientX - dragStart.x,
+      y: event.clientY - dragStart.y,
+    });
+  };
+
+  const handleDragEnd = (event: PointerEvent<HTMLDivElement>) => {
+    if (!dragStart) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    const shouldDockBottom = event.clientY > window.innerHeight * 0.55;
+    setDockPosition(shouldDockBottom ? "bottom" : "right");
+    setDragStart(null);
+    setDragOffset({ x: 0, y: 0 });
+  };
 
   return (
     <>
@@ -253,24 +361,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
       />
       
       {/* Modal */}
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: "400px",
-          maxWidth: "90vw",
-          backgroundColor: "#1a1a1a",
-          borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
-          zIndex: 9999,
-          display: "flex",
-          flexDirection: "column",
-          boxShadow: "-4px 0 24px rgba(0, 0, 0, 0.3)",
-          animation: "slideInRight 0.3s ease-out",
-          overflowY: "auto",
-        }}
-      >
+      <div style={panelStyle}>
         {/* Header */}
         <div
           style={{
@@ -279,7 +370,13 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            cursor: isDragging ? "grabbing" : "grab",
+            userSelect: "none",
           }}
+          onPointerDown={handleDragStart}
+          onPointerMove={handleDragMove}
+          onPointerUp={handleDragEnd}
+          onPointerCancel={handleDragEnd}
         >
           <h2 style={{ color: "#EDEDED", margin: 0, fontSize: "20px" }}>Settings</h2>
           <button
@@ -305,6 +402,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = "transparent";
             }}
+            onPointerDown={(event) => event.stopPropagation()}
             aria-label="Close settings"
           >
             ×
@@ -312,87 +410,100 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
         </div>
 
         {/* Content */}
-        <div style={{ padding: "24px", flex: 1, display: "flex", flexDirection: "column", gap: "24px" }}>
-          {/* Theme Color Selector */}
+        <div
+          style={{
+            padding: "24px",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px",
+            minWidth: 0,
+            boxSizing: "border-box",
+          }}
+        >
+          {/* Base Theme */}
           <div>
-            <label
+            <div
               style={{
-                display: "block",
                 color: "#EDEDED",
                 marginBottom: "12px",
                 fontSize: "14px",
-                fontWeight: "500",
+                fontWeight: "600",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
               }}
             >
-              Theme Color
-            </label>
-            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-              <input
-                type="color"
-                value={tempThemeColor}
-                onChange={(e) => handleThemeColorChange(e.target.value)}
-                style={{
-                  width: "60px",
-                  height: "40px",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  backgroundColor: tempThemeColor,
-                }}
-              />
-              <input
-                type="text"
-                value={tempThemeColor}
-                onChange={(e) => handleThemeColorChange(e.target.value)}
-                style={{
-                  flex: 1,
-                  padding: "8px 12px",
-                  backgroundColor: "rgba(255, 255, 255, 0.05)",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  borderRadius: "6px",
-                  color: "#EDEDED",
-                  fontSize: "14px",
-                }}
-                placeholder="#05070A"
-              />
+              Base Theme
             </div>
-          </div>
+            <div style={{ display: "grid", gap: "12px" }}>
+              <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                <input
+                  type="color"
+                  value={tempThemeColor}
+                  onChange={(e) => handleThemeColorChange(e.target.value)}
+                  style={{
+                    width: "60px",
+                    height: "40px",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    backgroundColor: tempThemeColor,
+                  }}
+                />
+                <input
+                  type="text"
+                  value={tempThemeColor}
+                  onChange={(e) => handleThemeColorChange(e.target.value)}
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    padding: "8px 12px",
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "6px",
+                    color: "#EDEDED",
+                    fontSize: "14px",
+                  }}
+                  placeholder="#05070A"
+                />
+              </div>
 
-          {/* Font Selector */}
-          <div>
-            <label
-              style={{
-                display: "block",
-                color: "#EDEDED",
-                marginBottom: "12px",
-                fontSize: "14px",
-                fontWeight: "500",
-              }}
-            >
-              Font Family
-            </label>
-            <select
-              value={tempFont}
-              onChange={(e) => setTempFont(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.2)",
-                borderRadius: "6px",
-                color: "#EDEDED",
-                fontSize: "14px",
-                cursor: "pointer",
-              }}
-            >
-              <option value="system-ui, -apple-system, sans-serif">System Default</option>
-              <option value="Inter, system-ui, sans-serif">Inter</option>
-              <option value="'Roboto', sans-serif">Roboto</option>
-              <option value="'Open Sans', sans-serif">Open Sans</option>
-              <option value="'Montserrat', sans-serif">Montserrat</option>
-              <option value="'Poppins', sans-serif">Poppins</option>
-              <option value="'Lato', sans-serif">Lato</option>
-            </select>
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    color: "#EDEDED",
+                    marginBottom: "10px",
+                    fontSize: "13px",
+                    fontWeight: "500",
+                  }}
+                >
+                  Font Family
+                </label>
+                <select
+                  value={tempFont}
+                  onChange={(e) => setTempFont(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "6px",
+                    color: "#EDEDED",
+                    fontSize: "14px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <option value="system-ui, -apple-system, sans-serif">System Default</option>
+                  <option value="Inter, system-ui, sans-serif">Inter</option>
+                  <option value="'Roboto', sans-serif">Roboto</option>
+                  <option value="'Open Sans', sans-serif">Open Sans</option>
+                  <option value="'Montserrat', sans-serif">Montserrat</option>
+                  <option value="'Poppins', sans-serif">Poppins</option>
+                  <option value="'Lato', sans-serif">Lato</option>
+                </select>
+              </div>
+            </div>
           </div>
 
           {/* Background Gradient (Module Theme Only) */}
@@ -402,8 +513,8 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                 style={{
                   display: "block",
                   color: "#EDEDED",
-                  marginBottom: "12px",
-                  fontSize: "14px",
+                  marginBottom: "10px",
+                  fontSize: "13px",
                   fontWeight: "500",
                 }}
               >
@@ -415,6 +526,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                 onChange={(e) => setTempGradient(e.target.value)}
                 style={{
                   width: "100%",
+                  minWidth: 0,
                   padding: "8px 12px",
                   backgroundColor: "rgba(255, 255, 255, 0.05)",
                   border: "1px solid rgba(255, 255, 255, 0.2)",
@@ -427,7 +539,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
             </div>
           )}
 
-          {/* Color Overrides (Module Theme Only) */}
+          {/* Sidebar Button Theme (Module Theme Only) */}
           {isModuleMode && (
             <div>
               <label
@@ -439,38 +551,174 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                   fontWeight: "500",
                 }}
               >
-                Color Overrides
+                Sidebar Button Theme
               </label>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {colorFields.map((field) => (
-                  <div
-                    key={field.label}
+              <div style={{ display: "grid", gap: "12px" }}>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  {(["solid", "gradient"] as SidebarButtonStyle[]).map((style) => (
+                    <button
+                      key={style}
+                      type="button"
+                      onClick={() => setTempSidebarButtonStyle(style)}
+                      style={{
+                        flex: 1,
+                        padding: "8px 10px",
+                        borderRadius: "6px",
+                        border:
+                          tempSidebarButtonStyle === style
+                            ? "1px solid rgba(125, 249, 255, 0.8)"
+                            : "1px solid rgba(255, 255, 255, 0.2)",
+                        background:
+                          tempSidebarButtonStyle === style
+                            ? "linear-gradient(135deg, rgba(125, 249, 255, 0.9), rgba(255, 79, 216, 0.8))"
+                            : "rgba(255, 255, 255, 0.05)",
+                        color: tempSidebarButtonStyle === style ? "#070b15" : "#EDEDED",
+                        cursor: "pointer",
+                        fontSize: "12px",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em",
+                      }}
+                    >
+                      {style}
+                    </button>
+                  ))}
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "12px",
+                  }}
+                >
+                  <label
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "120px 70px 1fr",
-                      gap: "10px",
-                      alignItems: "center",
+                      gap: "8px",
+                      color: "#EDEDED",
+                      fontSize: "12px",
                     }}
                   >
-                    <span style={{ color: "#EDEDED", fontSize: "12px" }}>{field.label}</span>
+                    Primary
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                      <input
+                        type="color"
+                        value={toHexColor(tempSidebarButtonPrimary)}
+                        onChange={(e) => setTempSidebarButtonPrimary(e.target.value)}
+                        style={{
+                          width: "60px",
+                          height: "36px",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                          backgroundColor: toHexColor(tempSidebarButtonPrimary),
+                        }}
+                      />
+                      <input
+                        type="text"
+                        value={tempSidebarButtonPrimary}
+                        onChange={(e) => setTempSidebarButtonPrimary(e.target.value)}
+                        style={{
+                          flex: 1,
+                          minWidth: 0,
+                          padding: "8px 10px",
+                          backgroundColor: "rgba(255, 255, 255, 0.05)",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                          borderRadius: "6px",
+                          color: "#EDEDED",
+                          fontSize: "13px",
+                        }}
+                      />
+                    </div>
+                  </label>
+
+                  {tempSidebarButtonStyle === "gradient" ? (
+                    <label
+                      style={{
+                        display: "grid",
+                        gap: "8px",
+                        color: "#EDEDED",
+                        fontSize: "12px",
+                      }}
+                    >
+                      Secondary
+                      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                        <input
+                          type="color"
+                          value={toHexColor(tempSidebarButtonSecondary)}
+                          onChange={(e) => setTempSidebarButtonSecondary(e.target.value)}
+                          style={{
+                            width: "60px",
+                            height: "36px",
+                            border: "1px solid rgba(255, 255, 255, 0.2)",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            backgroundColor: toHexColor(tempSidebarButtonSecondary),
+                          }}
+                        />
+                        <input
+                          type="text"
+                          value={tempSidebarButtonSecondary}
+                          onChange={(e) => setTempSidebarButtonSecondary(e.target.value)}
+                          style={{
+                            flex: 1,
+                            minWidth: 0,
+                            padding: "8px 10px",
+                            backgroundColor: "rgba(255, 255, 255, 0.05)",
+                            border: "1px solid rgba(255, 255, 255, 0.2)",
+                            borderRadius: "6px",
+                            color: "#EDEDED",
+                            fontSize: "13px",
+                          }}
+                        />
+                      </div>
+                    </label>
+                  ) : (
+                    <div
+                      style={{
+                        display: "grid",
+                        placeItems: "center",
+                        color: "rgba(234, 242, 255, 0.6)",
+                        fontSize: "11px",
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Solid mode uses only the primary color.
+                    </div>
+                  )}
+                </div>
+
+                <label
+                  style={{
+                    display: "grid",
+                    gap: "8px",
+                    color: "#EDEDED",
+                    fontSize: "12px",
+                  }}
+                >
+                  Outline / Glow
+                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                     <input
                       type="color"
-                      value={toHexColor(field.value)}
-                      onChange={(e) => field.setValue(e.target.value)}
+                      value={toHexColor(tempSidebarButtonOutline)}
+                      onChange={(e) => setTempSidebarButtonOutline(e.target.value)}
                       style={{
                         width: "60px",
                         height: "36px",
                         border: "1px solid rgba(255, 255, 255, 0.2)",
                         borderRadius: "6px",
                         cursor: "pointer",
-                        backgroundColor: toHexColor(field.value),
+                        backgroundColor: toHexColor(tempSidebarButtonOutline),
                       }}
                     />
                     <input
                       type="text"
-                      value={field.value}
-                      onChange={(e) => field.setValue(e.target.value)}
+                      value={tempSidebarButtonOutline}
+                      onChange={(e) => setTempSidebarButtonOutline(e.target.value)}
                       style={{
+                        flex: 1,
+                        minWidth: 0,
                         padding: "8px 10px",
                         backgroundColor: "rgba(255, 255, 255, 0.05)",
                         border: "1px solid rgba(255, 255, 255, 0.2)",
@@ -478,11 +726,90 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                         color: "#EDEDED",
                         fontSize: "13px",
                       }}
-                      placeholder={field.placeholder}
                     />
                   </div>
-                ))}
+                </label>
               </div>
+            </div>
+          )}
+
+          {/* Color Overrides (Module Theme Only) */}
+          {isModuleMode && (
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: "12px",
+                }}
+              >
+                <span style={{ color: "#EDEDED", fontSize: "14px", fontWeight: "500" }}>
+                  Advanced Color Overrides
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedColors((prev) => !prev)}
+                  style={{
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    borderRadius: "999px",
+                    padding: "6px 12px",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    color: "#EDEDED",
+                    fontSize: "11px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.12em",
+                    cursor: "pointer",
+                  }}
+                >
+                  {showAdvancedColors ? "Hide" : "Show"}
+                </button>
+              </div>
+              {showAdvancedColors && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {colorFields.map((field) => (
+                    <div
+                      key={field.label}
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "minmax(100px, 120px) 60px minmax(0, 1fr)",
+                        gap: "10px",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span style={{ color: "#EDEDED", fontSize: "12px" }}>{field.label}</span>
+                      <input
+                        type="color"
+                        value={toHexColor(field.value)}
+                        onChange={(e) => field.setValue(e.target.value)}
+                        style={{
+                          width: "60px",
+                          height: "36px",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                          backgroundColor: toHexColor(field.value),
+                        }}
+                      />
+                      <input
+                        type="text"
+                        value={field.value}
+                        onChange={(e) => field.setValue(e.target.value)}
+                        style={{
+                          padding: "8px 10px",
+                          minWidth: 0,
+                          backgroundColor: "rgba(255, 255, 255, 0.05)",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                          borderRadius: "6px",
+                          color: "#EDEDED",
+                          fontSize: "13px",
+                        }}
+                        placeholder={field.placeholder}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -571,6 +898,15 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
           }
           to {
             transform: translateX(0);
+          }
+        }
+
+        @keyframes slideInUp {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
           }
         }
         

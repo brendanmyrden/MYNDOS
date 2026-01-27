@@ -1,4 +1,4 @@
-// Entities for MYND OS
+`// Entities for MYND OS
 
 // Represents a core concept in the MYND OS knowledge base
 export interface Concept {

@@ -7,9 +7,9 @@ export default function SettingsButton({ onClick }: SettingsButtonProps) {
     <button
       onClick={onClick}
       style={{
-        position: "fixed",
-        bottom: "16px",
-        right: "16px",
+        position: "absolute",
+        bottom: "20px",
+        right: "20px",
         width: "40px",
         height: "40px",
         borderRadius: "8px",
@@ -22,7 +22,7 @@ export default function SettingsButton({ onClick }: SettingsButtonProps) {
         fontSize: "20px",
         transition: "all 0.2s ease",
         boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-        zIndex: 1000,
+        zIndex: 10,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = "0 0 12px rgba(255, 255, 255, 0.3)";
@@ -40,4 +40,3 @@ export default function SettingsButton({ onClick }: SettingsButtonProps) {
     </button>
   );
 }
-

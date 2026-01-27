@@ -12,14 +12,13 @@ import StreamsHome from "./modules/streams";
 export default function App() {
   const containerStyle: React.CSSProperties = {
     display: "flex",
-    height: "100vh",
+    height: "100%",
     background: "#0B0F1A",
     color: "#EDEDED",
   };
 
   const contentStyle: React.CSSProperties = {
     flex: 1,
-    padding: "24px",
     overflowY: "auto",
   };
 

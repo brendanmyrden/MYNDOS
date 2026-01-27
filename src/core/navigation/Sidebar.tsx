@@ -6,32 +6,50 @@ import "./Sidebar.css";
 type SidebarLink = {
   name: string;
   path: string;
+  moduleName?: string;
 };
 
 type SidebarSkin = {
   mode: "solid" | "gradient";
   primary: string;
   secondary: string;
+  titleColor: string;
 };
 
 const ORDER_STORAGE_KEY = "myndos.sidebar.order.v1";
 const SKIN_STORAGE_KEY = "myndos.sidebar.skin.v1";
+const SYNC_STORAGE_KEY = "myndos.sidebar.syncModule.v1";
 
 const defaultLinks: SidebarLink[] = [
-  { name: "MYND OS", path: "/myndos" },
-  { name: "Sanctuary", path: "/sanctuary" },
-  { name: "Task Pill", path: "/taskpill" },
-  { name: "R-A-P-H [ i ]", path: "/raphi" },
-  { name: "MYRRYR", path: "/myrryr" },
-  { name: "SYYR", path: "/syyr" },
-  { name: "$.0.$. - $treams 0f $trategy", path: "/streams" },
-  { name: "Settings", path: "/settings" },
+  { name: "MYND OS", path: "/myndos", moduleName: "myndos" },
+  { name: "Sanctuary", path: "/sanctuary", moduleName: "sanctuary" },
+  { name: "Task Pill", path: "/taskpill", moduleName: "taskpill" },
+  { name: "R-A-P-H [ i ]", path: "/raphi", moduleName: "raphi" },
+  { name: "MYRRYR", path: "/myrryr", moduleName: "myrryr" },
+  { name: "SYYR", path: "/syyr", moduleName: "syyr" },
+  { name: "$.0.$. - $treams 0f $trategy", path: "/streams", moduleName: "streams" },
+  { name: "Settings", path: "/settings", moduleName: "settings" },
 ];
 
 const defaultSkin: SidebarSkin = {
   mode: "gradient",
   primary: "#0b1424",
   secondary: "#291436",
+  titleColor: "#7df9ff",
+};
+
+type SidebarButtonTheme = {
+  style: "solid" | "gradient";
+  primary: string;
+  secondary: string;
+  outline: string;
+};
+
+const DEFAULT_BUTTON_THEME: SidebarButtonTheme = {
+  style: "gradient",
+  primary: "#7df9ff",
+  secondary: "#ff4fd8",
+  outline: "#7df9ff",
 };
 
 const hexToRgba = (hex: string, alpha: number) => {
@@ -83,10 +101,62 @@ const loadSkin = (): SidebarSkin => {
       mode: parsed.mode === "solid" ? "solid" : "gradient",
       primary: parsed.primary || defaultSkin.primary,
       secondary: parsed.secondary || defaultSkin.secondary,
+      titleColor: parsed.titleColor || defaultSkin.titleColor,
     };
   } catch {
     return defaultSkin;
   }
+};
+
+const loadSyncSetting = (): boolean => {
+  try {
+    const stored = localStorage.getItem(SYNC_STORAGE_KEY);
+    return stored ? JSON.parse(stored) === true : false;
+  } catch {
+    return false;
+  }
+};
+
+const loadModuleSidebarPalette = (moduleName?: string) => {
+  if (!moduleName) return null;
+  try {
+    const stored = localStorage.getItem(`moduleTheme_${moduleName}`);
+    if (!stored) return null;
+    const parsed = JSON.parse(stored);
+    return {
+      backgroundGradient: parsed.moduleBackgroundGradient as string | undefined,
+      accent: parsed.moduleAccent as string | undefined,
+      accent2: parsed.moduleAccent2 as string | undefined,
+      themeColor: parsed.moduleThemeColor as string | undefined,
+    };
+  } catch {
+    return null;
+  }
+};
+
+const loadModuleButtonTheme = (moduleName?: string): SidebarButtonTheme => {
+  if (!moduleName) return DEFAULT_BUTTON_THEME;
+  try {
+    const stored = localStorage.getItem(`moduleTheme_${moduleName}`);
+    if (!stored) return DEFAULT_BUTTON_THEME;
+    const parsed = JSON.parse(stored);
+    return {
+      style:
+        parsed.sidebarButtonStyle === "solid" || parsed.sidebarButtonStyle === "gradient"
+          ? parsed.sidebarButtonStyle
+          : DEFAULT_BUTTON_THEME.style,
+      primary: parsed.sidebarButtonPrimary || DEFAULT_BUTTON_THEME.primary,
+      secondary: parsed.sidebarButtonSecondary || DEFAULT_BUTTON_THEME.secondary,
+      outline: parsed.sidebarButtonOutline || DEFAULT_BUTTON_THEME.outline,
+    };
+  } catch {
+    return DEFAULT_BUTTON_THEME;
+  }
+};
+
+const getButtonBackground = (theme: SidebarButtonTheme) => {
+  if (theme.style === "solid") return theme.primary;
+  return `linear-gradient(120deg, ${theme.primary} 0%, ${theme.secondary} 100%)`;
 };
 
 const moveLink = (links: SidebarLink[], fromPath: string, toPath: string) => {
@@ -106,6 +176,9 @@ export default function Sidebar() {
   const [draggingPath, setDraggingPath] = useState<string | null>(null);
   const [dragOverPath, setDragOverPath] = useState<string | null>(null);
   const [skin, setSkin] = useState<SidebarSkin>(() => loadSkin());
+  const [syncToModule, setSyncToModule] = useState<boolean>(() => loadSyncSetting());
+  const [isSkinOpen, setIsSkinOpen] = useState(true);
+  const [, setThemeVersion] = useState(0);
 
   useEffect(() => {
     localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(links.map((link) => link.path)));
@@ -115,20 +188,47 @@ export default function Sidebar() {
     localStorage.setItem(SKIN_STORAGE_KEY, JSON.stringify(skin));
   }, [skin]);
 
+  useEffect(() => {
+    localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(syncToModule));
+  }, [syncToModule]);
+
+  useEffect(() => {
+    const handleThemeChange = () => setThemeVersion((prev) => prev + 1);
+    window.addEventListener("module-theme-change", handleThemeChange);
+    window.addEventListener("storage", handleThemeChange);
+    return () => {
+      window.removeEventListener("module-theme-change", handleThemeChange);
+      window.removeEventListener("storage", handleThemeChange);
+    };
+  }, []);
+
+  const activeModuleName = useMemo(() => {
+    return links.find((link) => link.path === location.pathname)?.moduleName;
+  }, [links, location.pathname]);
+
   const sidebarStyle = useMemo(() => {
+    const modulePalette = syncToModule ? loadModuleSidebarPalette(activeModuleName) : null;
+    const moduleBackground = modulePalette?.backgroundGradient;
+    const moduleAccent = modulePalette?.accent;
+    const moduleAccent2 = modulePalette?.accent2;
     const background =
-      skin.mode === "solid"
-        ? skin.primary
-        : `linear-gradient(160deg, ${skin.primary} 0%, ${skin.secondary} 100%)`;
+      syncToModule && moduleBackground
+        ? moduleBackground
+        : skin.mode === "solid"
+          ? skin.primary
+          : `linear-gradient(160deg, ${skin.primary} 0%, ${skin.secondary} 100%)`;
+    const accent = syncToModule && moduleAccent ? moduleAccent : skin.primary;
+    const accent2 = syncToModule && moduleAccent2 ? moduleAccent2 : skin.secondary;
     return {
       ["--sidebar-bg" as string]: background,
-      ["--sidebar-accent" as string]: skin.primary,
-      ["--sidebar-accent-soft" as string]: hexToRgba(skin.primary, 0.22),
-      ["--sidebar-accent-glow" as string]: hexToRgba(skin.primary, 0.45),
-      ["--sidebar-accent-2" as string]: skin.secondary,
-      ["--sidebar-accent-2-soft" as string]: hexToRgba(skin.secondary, 0.2),
+      ["--sidebar-accent" as string]: accent,
+      ["--sidebar-accent-soft" as string]: hexToRgba(accent, 0.22),
+      ["--sidebar-accent-glow" as string]: hexToRgba(accent, 0.45),
+      ["--sidebar-accent-2" as string]: accent2,
+      ["--sidebar-accent-2-soft" as string]: hexToRgba(accent2, 0.2),
+      ["--sidebar-title-color" as string]: skin.titleColor,
     } as CSSProperties;
-  }, [skin]);
+  }, [skin, syncToModule, activeModuleName]);
 
   const handleDragStart = (path: string) => (event: DragEvent<HTMLButtonElement>) => {
     setDraggingPath(path);
@@ -182,6 +282,15 @@ export default function Sidebar() {
           const isActive = location.pathname === link.path;
           const isDragging = draggingPath === link.path;
           const isOver = dragOverPath === link.path && !isDragging;
+          const buttonTheme = loadModuleButtonTheme(link.moduleName);
+          const linkStyle = {
+            ["--sidebar-link-accent" as string]: buttonTheme.primary,
+            ["--sidebar-link-accent-soft" as string]: hexToRgba(buttonTheme.primary, 0.22),
+            ["--sidebar-link-accent-2" as string]: buttonTheme.secondary,
+            ["--sidebar-link-bg" as string]: getButtonBackground(buttonTheme),
+            ["--sidebar-link-outline" as string]: buttonTheme.outline,
+            ["--sidebar-link-outline-soft" as string]: hexToRgba(buttonTheme.outline, 0.4),
+          } as CSSProperties;
           return (
             <button
               key={link.path}
@@ -189,6 +298,7 @@ export default function Sidebar() {
               className={`sidebar-link${isActive ? " is-active" : ""}${
                 isDragging ? " is-dragging" : ""
               }${isOver ? " is-over" : ""}`}
+              style={linkStyle}
               draggable
               onClick={handleNavigate(link.path)}
               onDragStart={handleDragStart(link.path)}
@@ -203,45 +313,80 @@ export default function Sidebar() {
         })}
       </div>
 
-      <div className="sidebar-controls">
-        <div className="sidebar-controls__title">Sidebar skin</div>
-        <div className="sidebar-toggle">
-          <button
-            type="button"
-            className={`sidebar-toggle__btn${skin.mode === "solid" ? " is-selected" : ""}`}
-            onClick={() => setSkin((prev) => ({ ...prev, mode: "solid" }))}
-          >
-            Solid
-          </button>
-          <button
-            type="button"
-            className={`sidebar-toggle__btn${skin.mode === "gradient" ? " is-selected" : ""}`}
-            onClick={() => setSkin((prev) => ({ ...prev, mode: "gradient" }))}
-          >
-            Gradient
-          </button>
-        </div>
-        <div className="sidebar-color-row">
-          <label className="sidebar-color">
-            <span>Primary</span>
-            <input
-              type="color"
-              value={skin.primary}
-              onChange={(event) => setSkin((prev) => ({ ...prev, primary: event.target.value }))}
-            />
-          </label>
-          {skin.mode === "gradient" ? (
-            <label className="sidebar-color">
-              <span>Secondary</span>
-              <input
-                type="color"
-                value={skin.secondary}
-                onChange={(event) =>
-                  setSkin((prev) => ({ ...prev, secondary: event.target.value }))
-                }
-              />
-            </label>
-          ) : null}
+      <div
+        className={`sidebar-controls${isSkinOpen ? " is-open" : " is-collapsed"}`}
+        onMouseEnter={() => setIsSkinOpen(true)}
+        onMouseLeave={() => setIsSkinOpen(false)}
+      >
+        <button
+          type="button"
+          className="sidebar-controls__title"
+          onClick={() => setIsSkinOpen((prev) => !prev)}
+          aria-expanded={isSkinOpen}
+        >
+          Sidebar skin
+        </button>
+        <div className="sidebar-controls__body">
+            <div className="sidebar-sync">
+              <span className="sidebar-sync__label">Match current module</span>
+              <button
+                type="button"
+                className={`sidebar-sync__btn${syncToModule ? " is-selected" : ""}`}
+                onClick={() => setSyncToModule((prev) => !prev)}
+              >
+                {syncToModule ? "On" : "Off"}
+              </button>
+            </div>
+            <div className="sidebar-color-row">
+              <label className="sidebar-color">
+                <span>Title</span>
+                <input
+                  type="color"
+                  value={skin.titleColor}
+                  onChange={(event) =>
+                    setSkin((prev) => ({ ...prev, titleColor: event.target.value }))
+                  }
+                />
+              </label>
+            </div>
+            <div className="sidebar-toggle">
+              <button
+                type="button"
+                className={`sidebar-toggle__btn${skin.mode === "solid" ? " is-selected" : ""}`}
+                onClick={() => setSkin((prev) => ({ ...prev, mode: "solid" }))}
+              >
+                Solid
+              </button>
+              <button
+                type="button"
+                className={`sidebar-toggle__btn${skin.mode === "gradient" ? " is-selected" : ""}`}
+                onClick={() => setSkin((prev) => ({ ...prev, mode: "gradient" }))}
+              >
+                Gradient
+              </button>
+            </div>
+            <div className="sidebar-color-row">
+              <label className="sidebar-color">
+                <span>Primary</span>
+                <input
+                  type="color"
+                  value={skin.primary}
+                  onChange={(event) => setSkin((prev) => ({ ...prev, primary: event.target.value }))}
+                />
+              </label>
+              {skin.mode === "gradient" ? (
+                <label className="sidebar-color">
+                  <span>Secondary</span>
+                  <input
+                    type="color"
+                    value={skin.secondary}
+                    onChange={(event) =>
+                      setSkin((prev) => ({ ...prev, secondary: event.target.value }))
+                    }
+                  />
+                </label>
+              ) : null}
+            </div>
         </div>
       </div>
     </aside>
