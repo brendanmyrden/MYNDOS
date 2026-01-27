@@ -1,0 +1,266 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600&display=swap");
+
+.sidebar-shell {
+  width: 250px;
+  min-height: 100vh;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--sidebar-bg, #05070a);
+  border-right: 1px solid rgba(125, 249, 255, 0.14);
+  color: #eaf2ff;
+  font-family: "Rajdhani", "Orbitron", system-ui, sans-serif;
+  position: relative;
+  overflow: hidden;
+  overflow-y: auto;
+  isolation: isolate;
+}
+
+.sidebar-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 20%, var(--sidebar-accent-soft), transparent 40%),
+    radial-gradient(circle at 85% 10%, var(--sidebar-accent-2-soft), transparent 40%),
+    linear-gradient(transparent 0, transparent 96%, rgba(125, 249, 255, 0.08) 100%),
+    linear-gradient(90deg, transparent 0, transparent 96%, rgba(125, 249, 255, 0.08) 100%);
+  background-size: auto, auto, 28px 28px, 28px 28px;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sidebar-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(5, 8, 16, 0.15), rgba(6, 10, 20, 0.75));
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar-title {
+  font-size: 16px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--sidebar-accent);
+}
+
+.sidebar-subtitle {
+  margin-top: 4px;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(234, 242, 255, 0.7);
+}
+
+.sidebar-orb {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  background: radial-gradient(circle at 30% 30%, #ffffff 0%, var(--sidebar-accent) 45%, transparent 72%);
+  box-shadow: 0 0 20px var(--sidebar-accent-glow);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar-link {
+  border: 1px solid rgba(125, 249, 255, 0.16);
+  background: rgba(6, 10, 20, 0.7);
+  color: #eaf2ff;
+  padding: 12px 14px;
+  border-radius: 14px;
+  cursor: grab;
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.sidebar-link__label {
+  flex: 1;
+  line-height: 1.2;
+}
+
+.sidebar-link__handle {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1px solid rgba(125, 249, 255, 0.2);
+  position: relative;
+  display: inline-block;
+}
+
+.sidebar-link__handle::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 4px;
+  background:
+    linear-gradient(
+      180deg,
+      var(--sidebar-accent) 0%,
+      var(--sidebar-accent) 20%,
+      transparent 20%,
+      transparent 40%,
+      var(--sidebar-accent) 40%,
+      var(--sidebar-accent) 60%,
+      transparent 60%,
+      transparent 80%,
+      var(--sidebar-accent) 80%,
+      var(--sidebar-accent) 100%
+    );
+  opacity: 0.8;
+}
+
+.sidebar-link:hover {
+  border-color: rgba(125, 249, 255, 0.4);
+  box-shadow:
+    0 0 18px var(--sidebar-accent-soft),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  transform: translateX(4px);
+}
+
+.sidebar-link.is-active {
+  border-color: var(--sidebar-accent);
+  background: linear-gradient(
+      140deg,
+      rgba(9, 13, 24, 0.9) 0%,
+      rgba(24, 16, 40, 0.8) 100%
+    );
+  box-shadow:
+    0 0 22px var(--sidebar-accent-glow),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-link.is-dragging {
+  cursor: grabbing;
+  transform: translateX(10px) scale(1.03);
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.5),
+    0 0 24px var(--sidebar-accent-glow);
+  opacity: 0.92;
+}
+
+.sidebar-link.is-over {
+  border-color: var(--sidebar-accent-2);
+  box-shadow:
+    0 0 18px var(--sidebar-accent-2-soft),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-controls {
+  margin-top: auto;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(6, 10, 20, 0.72);
+  border: 1px solid rgba(125, 249, 255, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar-controls__title {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(234, 242, 255, 0.75);
+}
+
+.sidebar-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.sidebar-toggle__btn {
+  border: 1px solid rgba(125, 249, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(6, 10, 20, 0.6);
+  color: rgba(234, 242, 255, 0.75);
+  padding: 8px 10px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-toggle__btn.is-selected {
+  color: #05070a;
+  border-color: transparent;
+  background: linear-gradient(120deg, var(--sidebar-accent), var(--sidebar-accent-2));
+  box-shadow: 0 0 12px var(--sidebar-accent-soft);
+}
+
+.sidebar-color-row {
+  display: grid;
+  gap: 10px;
+}
+
+.sidebar-color {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(234, 242, 255, 0.75);
+}
+
+.sidebar-color input[type="color"] {
+  width: 42px;
+  height: 28px;
+  border: none;
+  padding: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.sidebar-color input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.sidebar-color input[type="color"]::-webkit-color-swatch {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 900px) {
+  .sidebar-shell {
+    width: 210px;
+    padding: 18px 14px;
+  }
+}

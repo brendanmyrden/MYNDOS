@@ -7,6 +7,7 @@ import MYRRYRHome from "./modules/myrryr";
 import SYYRHome from "./modules/syyr";
 import SettingsPage from "./modules/settings/index.tsx";
 import MYNDOS from "./modules/myndos";
+import StreamsHome from "./modules/streams";
 
 export default function App() {
   const containerStyle: React.CSSProperties = {
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/raphi" element={<RAPHiDashboard />} />
           <Route path="/myrryr" element={<MYRRYRHome />} />
           <Route path="/syyr" element={<SYYRHome />} />
+          <Route path="/streams" element={<StreamsHome />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </div>
