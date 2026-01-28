@@ -8,6 +8,8 @@ import "../../styles/cyberpunk.css";
 function RAPHiDashboardContent() {
   const {
     moduleBackgroundGradient,
+    modulePlusMatchBackground,
+    modulePlusColor,
     moduleFont,
     moduleText,
     moduleMuted,
@@ -26,6 +28,8 @@ function RAPHiDashboardContent() {
     setIsSettingsOpen(true);
   };
 
+  const plusBackground = modulePlusMatchBackground ? moduleBackgroundGradient : modulePlusColor;
+
   const containerStyle: React.CSSProperties = {
     display: "flex",
     flexDirection: "column",
@@ -35,6 +39,7 @@ function RAPHiDashboardContent() {
     padding: 0,
     margin: 0,
     ["--raphi-bg" as string]: moduleBackgroundGradient,
+    ["--module-plus-bg" as string]: plusBackground,
     ["--raphi-font" as string]: moduleFont,
     ["--raphi-text" as string]: moduleText,
     ["--raphi-muted" as string]: moduleMuted,
@@ -59,12 +64,17 @@ function RAPHiDashboardContent() {
       />
         <div className="raphi-card">
           <div className="raphi-header">
-            <div className="raphi-cube">
-              <span>🧬</span>
+            <div className="raphi-header-left">
+              <div className="raphi-cube">
+                <span>🧬</span>
+              </div>
+              <div>
+                <h1 className="raphi-title">RAPH[i]</h1>
+                <p className="raphi-subtitle">Health Intelligence Dashboard</p>
+              </div>
             </div>
-            <div>
-              <h1 className="raphi-title">RAPH[i]</h1>
-              <p className="raphi-subtitle">Health Intelligence Dashboard</p>
+            <div className="raphi-plus-cube" aria-hidden="true">
+              <span>+</span>
             </div>
           </div>
           <IntakeDashboard />

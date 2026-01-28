@@ -7,6 +7,8 @@ import "../../styles/cyberpunk.css";
 function SettingsContent() {
   const {
     moduleBackgroundGradient,
+    modulePlusMatchBackground,
+    modulePlusColor,
     moduleFont,
     moduleText,
     moduleMuted,
@@ -25,6 +27,8 @@ function SettingsContent() {
     setIsSettingsOpen(true);
   };
 
+  const plusBackground = modulePlusMatchBackground ? moduleBackgroundGradient : modulePlusColor;
+  
   const containerStyle: React.CSSProperties = {
     display: "flex",
     flexDirection: "column",
@@ -34,6 +38,7 @@ function SettingsContent() {
     padding: 0,
     margin: 0,
     ["--module-bg" as string]: moduleBackgroundGradient,
+    ["--module-plus-bg" as string]: plusBackground,
     ["--module-font" as string]: moduleFont,
     ["--raphi-text" as string]: moduleText,
     ["--raphi-muted" as string]: moduleMuted,
@@ -58,12 +63,17 @@ function SettingsContent() {
         />
         <div className="module-card">
           <div className="module-header">
-            <div className="module-cube">
-              <span>⚙️</span>
+            <div className="module-header-left">
+              <div className="module-cube">
+                <span>⚙️</span>
+              </div>
+              <div>
+                <h1 className="module-title">Settings</h1>
+                <p className="module-subtitle">Preferences + Themes</p>
+              </div>
             </div>
-            <div>
-              <h1 className="module-title">Settings</h1>
-              <p className="module-subtitle">Preferences + Themes</p>
+            <div className="module-plus-cube" aria-hidden="true">
+              <span>+</span>
             </div>
           </div>
           <div className="module-section">

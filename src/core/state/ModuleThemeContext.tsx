@@ -5,6 +5,8 @@ interface ModuleThemeState {
   moduleThemeColor: string;
   moduleFont: string;
   moduleBackgroundGradient: string;
+  modulePlusMatchBackground: boolean;
+  modulePlusColor: string;
   moduleText: string;
   moduleMuted: string;
   moduleAccent: string;
@@ -45,6 +47,7 @@ interface ModuleThemeContextType extends ModuleThemeState {
   setModuleThemeColor: (color: string) => void;
   setModuleFont: (font: string) => void;
   setModuleBackgroundGradient: (gradient: string) => void;
+  setModulePlusTheme: (theme: { matchBackground?: boolean; color?: string }) => void;
   setModuleColors: (colors: Partial<ModuleColorOverrides>) => void;
   setSidebarButtonTheme: (theme: Partial<SidebarButtonTheme>) => void;
   setPreviewMode: (preview: boolean) => void;
@@ -58,6 +61,8 @@ export const ModuleThemeContext = createContext<ModuleThemeContextType | undefin
 const DEFAULT_MODULE_THEME_COLOR = "#05070A";
 const DEFAULT_MODULE_FONT = "system-ui, -apple-system, sans-serif";
 const DEFAULT_MODULE_BACKGROUND_GRADIENT = `linear-gradient(135deg, ${DEFAULT_MODULE_THEME_COLOR} 0%, #05070A 100%)`;
+const DEFAULT_MODULE_PLUS_MATCH_BACKGROUND = true;
+const DEFAULT_MODULE_PLUS_COLOR = "#7df9ff";
 const DEFAULT_MODULE_TEXT = "#eaf2ff";
 const DEFAULT_MODULE_MUTED = "rgba(234, 242, 255, 0.7)";
 const DEFAULT_MODULE_ACCENT = "#7df9ff";
@@ -91,6 +96,11 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
           moduleThemeColor: parsed.moduleThemeColor || DEFAULT_MODULE_THEME_COLOR,
           moduleFont: parsed.moduleFont || DEFAULT_MODULE_FONT,
           moduleBackgroundGradient: parsed.moduleBackgroundGradient || DEFAULT_MODULE_BACKGROUND_GRADIENT,
+          modulePlusMatchBackground:
+            typeof parsed.modulePlusMatchBackground === "boolean"
+              ? parsed.modulePlusMatchBackground
+              : DEFAULT_MODULE_PLUS_MATCH_BACKGROUND,
+          modulePlusColor: parsed.modulePlusColor || DEFAULT_MODULE_PLUS_COLOR,
           moduleText: parsed.moduleText || DEFAULT_MODULE_TEXT,
           moduleMuted: parsed.moduleMuted || DEFAULT_MODULE_MUTED,
           moduleAccent: parsed.moduleAccent || DEFAULT_MODULE_ACCENT,
@@ -118,6 +128,8 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
       moduleThemeColor: DEFAULT_MODULE_THEME_COLOR,
       moduleFont: DEFAULT_MODULE_FONT,
       moduleBackgroundGradient: DEFAULT_MODULE_BACKGROUND_GRADIENT,
+      modulePlusMatchBackground: DEFAULT_MODULE_PLUS_MATCH_BACKGROUND,
+      modulePlusColor: DEFAULT_MODULE_PLUS_COLOR,
       moduleText: DEFAULT_MODULE_TEXT,
       moduleMuted: DEFAULT_MODULE_MUTED,
       moduleAccent: DEFAULT_MODULE_ACCENT,
@@ -148,6 +160,8 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
           moduleThemeColor: state.moduleThemeColor,
           moduleFont: state.moduleFont,
           moduleBackgroundGradient: state.moduleBackgroundGradient,
+          modulePlusMatchBackground: state.modulePlusMatchBackground,
+          modulePlusColor: state.modulePlusColor,
           moduleText: state.moduleText,
           moduleMuted: state.moduleMuted,
           moduleAccent: state.moduleAccent,
@@ -189,6 +203,15 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
     setState((prev) => ({ ...prev, moduleBackgroundGradient: gradient }));
   };
 
+  const setModulePlusTheme = (theme: { matchBackground?: boolean; color?: string }) => {
+    setState((prev) => ({
+      ...prev,
+      modulePlusMatchBackground:
+        typeof theme.matchBackground === "boolean" ? theme.matchBackground : prev.modulePlusMatchBackground,
+      modulePlusColor: theme.color ?? prev.modulePlusColor,
+    }));
+  };
+
   const setModuleColors = (colors: Partial<ModuleColorOverrides>) => {
     setState((prev) => ({ ...prev, ...colors }));
   };
@@ -206,6 +229,8 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
       moduleThemeColor: DEFAULT_MODULE_THEME_COLOR,
       moduleFont: DEFAULT_MODULE_FONT,
       moduleBackgroundGradient: DEFAULT_MODULE_BACKGROUND_GRADIENT,
+      modulePlusMatchBackground: DEFAULT_MODULE_PLUS_MATCH_BACKGROUND,
+      modulePlusColor: DEFAULT_MODULE_PLUS_COLOR,
       moduleText: DEFAULT_MODULE_TEXT,
       moduleMuted: DEFAULT_MODULE_MUTED,
       moduleAccent: DEFAULT_MODULE_ACCENT,
@@ -242,6 +267,7 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
         setModuleThemeColor,
         setModuleFont,
         setModuleBackgroundGradient,
+        setModulePlusTheme,
         setModuleColors,
         setSidebarButtonTheme,
         setPreviewMode,

@@ -2,13 +2,13 @@ import { useState } from "react";
 import { ModuleThemeProvider, useModuleTheme } from "../../core/state/ModuleThemeContext";
 import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
-import { Dashboard } from "../../dashboards/Dashboard";
-import { mockDashboard } from "../../dashboards/dashboard.mock";
 import "../../styles/cyberpunk.css";
 
 function MYNDOSContent() {
   const {
     moduleBackgroundGradient,
+    modulePlusMatchBackground,
+    modulePlusColor,
     moduleFont,
     moduleText,
     moduleMuted,
@@ -26,6 +26,8 @@ function MYNDOSContent() {
   const handleSettingsClick = () => {
     setIsSettingsOpen(true);
   };
+
+  const plusBackground = modulePlusMatchBackground ? moduleBackgroundGradient : modulePlusColor;
   
   const containerStyle: React.CSSProperties = {
     display: "flex",
@@ -36,6 +38,7 @@ function MYNDOSContent() {
     padding: 0,
     margin: 0,
     ["--module-bg" as string]: moduleBackgroundGradient,
+    ["--module-plus-bg" as string]: plusBackground,
     ["--module-font" as string]: moduleFont,
     ["--raphi-text" as string]: moduleText,
     ["--raphi-muted" as string]: moduleMuted,
@@ -60,17 +63,18 @@ function MYNDOSContent() {
         />
         <div className="module-card">
           <div className="module-header">
-            <div className="module-cube">
-              <span>🧠</span>
+            <div className="module-header-left">
+              <div className="module-cube">
+                <span>🧠</span>
+              </div>
+              <div>
+                <h1 className="module-title">MYND OS</h1>
+                <p className="module-subtitle">Your Data, Your World</p>
+              </div>
             </div>
-            <div>
-              <h1 className="module-title">MYND OS</h1>
-              <p className="module-subtitle">Your Data, Your World</p>
+            <div className="module-plus-cube" aria-hidden="true">
+              <span>+</span>
             </div>
-          </div>
-          <div className="module-section">
-            <h2 className="module-section-title">Overview</h2>
-            <Dashboard data={mockDashboard} />
           </div>
         </div>
       </div>

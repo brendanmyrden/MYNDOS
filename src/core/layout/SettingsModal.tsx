@@ -22,6 +22,8 @@ const DEFAULT_BUTTON_BG = "linear-gradient(135deg, #7df9ff 0%, #7a5cff 60%, #ff4
 const DEFAULT_BUTTON_TEXT = "#070b15";
 const DEFAULT_INPUT_BG = "rgba(6, 10, 20, 0.75)";
 const DEFAULT_INPUT_BORDER = "rgba(125, 249, 255, 0.25)";
+const DEFAULT_MODULE_PLUS_MATCH_BACKGROUND = true;
+const DEFAULT_MODULE_PLUS_COLOR = "#7df9ff";
 const DEFAULT_SIDEBAR_BUTTON_STYLE = "gradient";
 const DEFAULT_SIDEBAR_BUTTON_PRIMARY = "#7df9ff";
 const DEFAULT_SIDEBAR_BUTTON_SECONDARY = "#ff4fd8";
@@ -91,6 +93,12 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
   const [tempInputBorder, setTempInputBorder] = useState(
     isModuleMode ? moduleTheme!.moduleInputBorder : DEFAULT_INPUT_BORDER
   );
+  const [tempModulePlusMatchBackground, setTempModulePlusMatchBackground] = useState(
+    isModuleMode ? moduleTheme!.modulePlusMatchBackground : DEFAULT_MODULE_PLUS_MATCH_BACKGROUND
+  );
+  const [tempModulePlusColor, setTempModulePlusColor] = useState(
+    isModuleMode ? moduleTheme!.modulePlusColor : DEFAULT_MODULE_PLUS_COLOR
+  );
   const [tempSidebarButtonStyle, setTempSidebarButtonStyle] = useState<SidebarButtonStyle>(
     isModuleMode ? moduleTheme!.sidebarButtonStyle : DEFAULT_SIDEBAR_BUTTON_STYLE
   );
@@ -139,6 +147,8 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
         setTempButtonText(moduleTheme!.moduleButtonText);
         setTempInputBg(moduleTheme!.moduleInputBg);
         setTempInputBorder(moduleTheme!.moduleInputBorder);
+        setTempModulePlusMatchBackground(moduleTheme!.modulePlusMatchBackground);
+        setTempModulePlusColor(moduleTheme!.modulePlusColor);
         setTempSidebarButtonStyle(moduleTheme!.sidebarButtonStyle);
         setTempSidebarButtonPrimary(moduleTheme!.sidebarButtonPrimary);
         setTempSidebarButtonSecondary(moduleTheme!.sidebarButtonSecondary);
@@ -163,6 +173,10 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
         moduleButtonText: tempButtonText,
         moduleInputBg: tempInputBg,
         moduleInputBorder: tempInputBorder,
+      });
+      moduleTheme.setModulePlusTheme({
+        matchBackground: tempModulePlusMatchBackground,
+        color: tempModulePlusColor,
       });
       moduleTheme.setSidebarButtonTheme({
         sidebarButtonStyle: tempSidebarButtonStyle,
@@ -193,6 +207,10 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
         moduleButtonText: tempButtonText,
         moduleInputBg: tempInputBg,
         moduleInputBorder: tempInputBorder,
+      });
+      moduleTheme.setModulePlusTheme({
+        matchBackground: tempModulePlusMatchBackground,
+        color: tempModulePlusColor,
       });
       moduleTheme.setSidebarButtonTheme({
         sidebarButtonStyle: tempSidebarButtonStyle,
@@ -229,6 +247,8 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
       setTempButtonText(DEFAULT_BUTTON_TEXT);
       setTempInputBg(DEFAULT_INPUT_BG);
       setTempInputBorder(DEFAULT_INPUT_BORDER);
+      setTempModulePlusMatchBackground(DEFAULT_MODULE_PLUS_MATCH_BACKGROUND);
+      setTempModulePlusColor(DEFAULT_MODULE_PLUS_COLOR);
       setTempSidebarButtonStyle(DEFAULT_SIDEBAR_BUTTON_STYLE);
       setTempSidebarButtonPrimary(DEFAULT_SIDEBAR_BUTTON_PRIMARY);
       setTempSidebarButtonSecondary(DEFAULT_SIDEBAR_BUTTON_SECONDARY);
@@ -536,6 +556,90 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                 }}
                 placeholder="linear-gradient(135deg, #05070A 0%, #05070A 100%)"
               />
+            </div>
+          )}
+
+          {/* Header Plus Cube (Module Theme Only) */}
+          {isModuleMode && (
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  color: "#EDEDED",
+                  marginBottom: "12px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                }}
+              >
+                Header Plus Cube
+              </label>
+              <div style={{ display: "grid", gap: "12px" }}>
+                <button
+                  type="button"
+                  onClick={() => setTempModulePlusMatchBackground((prev) => !prev)}
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    borderRadius: "6px",
+                    border: tempModulePlusMatchBackground
+                      ? "1px solid rgba(125, 249, 255, 0.8)"
+                      : "1px solid rgba(255, 255, 255, 0.2)",
+                    background: tempModulePlusMatchBackground
+                      ? "linear-gradient(135deg, rgba(125, 249, 255, 0.9), rgba(255, 79, 216, 0.85))"
+                      : "rgba(255, 255, 255, 0.05)",
+                    color: tempModulePlusMatchBackground ? "#070b15" : "#EDEDED",
+                    fontSize: "12px",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                  }}
+                >
+                  {tempModulePlusMatchBackground ? "Match Page Gradient" : "Custom Color"}
+                </button>
+
+                {!tempModulePlusMatchBackground && (
+                  <label
+                    style={{
+                      display: "grid",
+                      gap: "8px",
+                      color: "#EDEDED",
+                      fontSize: "12px",
+                    }}
+                  >
+                    Plus Cube Color
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                      <input
+                        type="color"
+                        value={toHexColor(tempModulePlusColor)}
+                        onChange={(e) => setTempModulePlusColor(e.target.value)}
+                        style={{
+                          width: "60px",
+                          height: "36px",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                          backgroundColor: toHexColor(tempModulePlusColor),
+                        }}
+                      />
+                      <input
+                        type="text"
+                        value={tempModulePlusColor}
+                        onChange={(e) => setTempModulePlusColor(e.target.value)}
+                        style={{
+                          flex: 1,
+                          minWidth: 0,
+                          padding: "8px 10px",
+                          backgroundColor: "rgba(255, 255, 255, 0.05)",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                          borderRadius: "6px",
+                          color: "#EDEDED",
+                          fontSize: "13px",
+                        }}
+                      />
+                    </div>
+                  </label>
+                )}
+              </div>
             </div>
           )}
 
