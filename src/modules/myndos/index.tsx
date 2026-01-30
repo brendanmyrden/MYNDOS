@@ -62,19 +62,22 @@ function MYNDOSContent() {
           useModuleTheme={true}
         />
         <div className="module-card">
-          <div className="module-header">
-            <div className="module-header-left">
-              <div className="module-cube">
-                <span>🧠</span>
+          <div className="module-header-stack">
+            <div className="module-header module-header-group">
+              <div className="module-header-left">
+                <div className="module-cube">
+                  <span>🧠</span>
+                </div>
+                <div>
+                  <h1 className="module-title">MYND OS</h1>
+                  <p className="module-subtitle">Your Data, Your World</p>
+                </div>
               </div>
-              <div>
-                <h1 className="module-title">MYND OS</h1>
-                <p className="module-subtitle">Your Data, Your World</p>
+              <div className="module-plus-cube" aria-hidden="true">
+                <span>+</span>
               </div>
             </div>
-            <div className="module-plus-cube" aria-hidden="true">
-              <span>+</span>
-            </div>
+            <div className="module-hover-panel" aria-hidden="true" />
           </div>
         </div>
       </div>

@@ -115,11 +115,19 @@
 .module-header {
   --module-header-height: 72px;
   --module-plus-size: 54px;
+  --module-plus-gap: 25px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+}
+
+.raphi-header-stack,
+.module-header-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   margin-bottom: 28px;
 }
 
@@ -166,32 +174,32 @@
     inset 0 -6px 12px rgba(0, 0, 0, 0.35);
 }
 
-.raphi-plus-cube::after,
-.module-plus-cube::after {
-  content: "";
-  position: absolute;
-  top: calc(var(--module-header-height) + 53px);
-  right: -26px;
+.raphi-hover-panel,
+.module-hover-panel {
+  align-self: flex-end;
+  margin-top: 4px;
   width: 3in;
   height: calc(100vh - 251px);
+  max-height: 0;
   border-radius: 20px;
-  background: var(--module-panel-bg, var(--module-bg, var(--raphi-bg)));
-  border: 1px solid color-mix(in srgb, var(--raphi-border) 70%, transparent);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.45),
-    0 0 26px color-mix(in srgb, var(--raphi-accent) 30%, transparent),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  background: transparent;
+  border: none;
+  box-shadow: none;
   opacity: 0;
-  transform: translateY(-6px) scale(0.98);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform: translateY(-6px);
   pointer-events: none;
-  z-index: 20;
+  overflow: hidden;
+  transition: opacity 0.18s ease-out, transform 0.18s ease-out, max-height 0.18s ease-out;
 }
 
-.raphi-plus-cube:hover::after,
-.module-plus-cube:hover::after {
+.raphi-header-stack:hover .raphi-hover-panel,
+.module-header-stack:hover .module-hover-panel,
+.raphi-header-stack:has(.raphi-plus-cube:hover) .raphi-hover-panel,
+.module-header-stack:has(.module-plus-cube:hover) .module-hover-panel {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
+  pointer-events: auto;
+  max-height: calc(100vh - 251px);
 }
 
 .raphi-plus-cube span,

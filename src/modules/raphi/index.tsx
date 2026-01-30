@@ -63,19 +63,22 @@ function RAPHiDashboardContent() {
         useModuleTheme={true}
       />
         <div className="raphi-card">
-          <div className="raphi-header">
-            <div className="raphi-header-left">
-              <div className="raphi-cube">
-                <span>🧬</span>
+          <div className="raphi-header-stack">
+            <div className="raphi-header raphi-header-group">
+              <div className="raphi-header-left">
+                <div className="raphi-cube">
+                  <span>🧬</span>
+                </div>
+                <div>
+                  <h1 className="raphi-title">RAPH[i]</h1>
+                  <p className="raphi-subtitle">Health Intelligence Dashboard</p>
+                </div>
               </div>
-              <div>
-                <h1 className="raphi-title">RAPH[i]</h1>
-                <p className="raphi-subtitle">Health Intelligence Dashboard</p>
+              <div className="raphi-plus-cube" aria-hidden="true">
+                <span>+</span>
               </div>
             </div>
-            <div className="raphi-plus-cube" aria-hidden="true">
-              <span>+</span>
-            </div>
+            <div className="raphi-hover-panel" aria-hidden="true" />
           </div>
           <IntakeDashboard />
         </div>
