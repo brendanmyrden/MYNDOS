@@ -178,8 +178,8 @@
 .module-hover-panel {
   align-self: flex-end;
   margin-top: 4px;
-  width: 3in;
-  height: calc(100vh - 251px);
+  width: min(3in, 100%);
+  height: auto;
   max-height: 0;
   border-radius: 20px;
   background: transparent;
@@ -199,7 +199,219 @@
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
-  max-height: calc(100vh - 251px);
+  max-height: 360px;
+}
+
+.module-hover-panel__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.module-hover-panel__header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.module-hover-panel__title {
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--raphi-text);
+}
+
+.module-hover-panel__subtitle {
+  font-size: 12px;
+  color: var(--raphi-muted);
+}
+
+.module-widget-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--raphi-glass) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--raphi-border) 75%, transparent);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.module-widget-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.module-widget-card__title {
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.module-widget-card__subtitle {
+  margin-top: 2px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--raphi-muted);
+  text-transform: uppercase;
+}
+
+.module-widget-card__preview {
+  border-radius: 14px;
+}
+
+.module-widget-card__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.module-widget-card__label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--raphi-muted);
+}
+
+.module-widget-card__color {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--raphi-text);
+}
+
+.module-widget-card__color input[type="color"] {
+  width: 28px;
+  height: 22px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--raphi-border) 80%, transparent);
+  background: transparent;
+}
+
+.module-widget-card__color-value {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+}
+
+.module-widget-card__added {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--raphi-accent);
+}
+
+.matrix-timer {
+  --matrix-color: #33ff77;
+  position: relative;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(5, 10, 8, 0.85) 0%, rgba(2, 6, 4, 0.95) 100%);
+  border: 1px solid color-mix(in srgb, var(--matrix-color) 40%, transparent);
+  box-shadow:
+    0 0 22px color-mix(in srgb, var(--matrix-color) 35%, transparent),
+    inset 0 0 16px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.matrix-timer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.08) 0,
+      rgba(255, 255, 255, 0.08) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08), transparent 55%);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.matrix-timer__digits {
+  position: relative;
+  font-size: 28px;
+  letter-spacing: 0.3em;
+  font-family: "Orbitron", "Rajdhani", monospace;
+  font-variant-numeric: tabular-nums;
+  color: var(--matrix-color);
+  text-shadow:
+    0 0 12px color-mix(in srgb, var(--matrix-color) 70%, transparent),
+    0 0 28px color-mix(in srgb, var(--matrix-color) 40%, transparent);
+}
+
+.matrix-timer--large .matrix-timer__digits {
+  font-size: 36px;
+  letter-spacing: 0.32em;
+}
+
+.matrix-timer-widget {
+  margin-bottom: 24px;
+}
+
+.matrix-timer-widget__frame {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--raphi-glass) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--raphi-border) 80%, transparent);
+  box-shadow:
+    0 16px 32px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.matrix-timer-widget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.matrix-timer-widget__title {
+  font-size: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.matrix-timer-widget__subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--raphi-muted);
+}
+
+.matrix-timer-widget__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.matrix-timer-widget__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.matrix-timer-widget__label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--raphi-muted);
 }
 
 .raphi-plus-cube span,

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ModuleThemeProvider, useModuleTheme } from "../../core/state/ModuleThemeContext";
 import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
+import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
+import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import "../../styles/cyberpunk.css";
 
 function SettingsContent() {
@@ -77,8 +79,11 @@ function SettingsContent() {
                 <span>+</span>
               </div>
             </div>
-            <div className="module-hover-panel" aria-hidden="true" />
+            <div className="module-hover-panel">
+              <ModuleHoverPanel moduleName="settings" />
+            </div>
           </div>
+          <MatrixTimerWidget moduleName="settings" />
           <div className="module-section">
             <h2 className="module-section-title">Configuration</h2>
             <p className="module-muted">Settings UI will live here. Theme controls are available from any module via the floating button.</p>

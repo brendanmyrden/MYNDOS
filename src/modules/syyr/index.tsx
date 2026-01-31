@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ModuleThemeProvider, useModuleTheme } from "../../core/state/ModuleThemeContext";
 import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
+import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
+import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import "../../styles/cyberpunk.css";
 
 function SYYRHomeContent() {
@@ -77,8 +79,11 @@ function SYYRHomeContent() {
                 <span>+</span>
               </div>
             </div>
-            <div className="module-hover-panel" aria-hidden="true" />
+            <div className="module-hover-panel">
+              <ModuleHoverPanel moduleName="syyr" />
+            </div>
           </div>
+          <MatrixTimerWidget moduleName="syyr" />
         </div>
       </div>
     </div>

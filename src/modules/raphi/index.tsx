@@ -3,6 +3,8 @@ import IntakeDashboard from "./IntakeDashboard";
 import { ModuleThemeProvider, useModuleTheme } from "../../core/state/ModuleThemeContext";
 import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
+import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
+import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import "../../styles/cyberpunk.css";
 
 function RAPHiDashboardContent() {
@@ -78,8 +80,11 @@ function RAPHiDashboardContent() {
                 <span>+</span>
               </div>
             </div>
-            <div className="raphi-hover-panel" aria-hidden="true" />
+            <div className="raphi-hover-panel">
+              <ModuleHoverPanel moduleName="raphi" />
+            </div>
           </div>
+          <MatrixTimerWidget moduleName="raphi" />
           <IntakeDashboard />
         </div>
       </div>
