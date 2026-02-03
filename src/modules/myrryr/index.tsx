@@ -4,6 +4,7 @@ import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
 import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
+import TableWidget from "../../core/widgets/TableWidget";
 import "../../styles/cyberpunk.css";
 
 function MYRRYRHomeContent() {
@@ -84,6 +85,7 @@ function MYRRYRHomeContent() {
             </div>
           </div>
           <MatrixTimerWidget moduleName="myrryr" />
+          <TableWidget moduleName="myrryr" />
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
 import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
+import TableWidget from "../../core/widgets/TableWidget";
 import "../../styles/cyberpunk.css";
 
 function RAPHiDashboardContent() {
@@ -85,6 +86,7 @@ function RAPHiDashboardContent() {
             </div>
           </div>
           <MatrixTimerWidget moduleName="raphi" />
+          <TableWidget moduleName="raphi" />
           <IntakeDashboard />
         </div>
       </div>

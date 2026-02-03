@@ -28,9 +28,10 @@ const hexToRgba = (hex: string, alpha: number) => {
 
 export default function WidgetLauncher({ moduleName }: WidgetLauncherProps) {
   const { state, updateWidget } = useWidgetState(moduleName);
-  const { widgetLauncherColor } = useModuleTheme();
+  const { moduleAccent } = useModuleTheme();
   const [open, setOpen] = useState(false);
 
+  const widgetLauncherColor = moduleAccent;
   const launcherStyle = useMemo(
     () =>
       ({

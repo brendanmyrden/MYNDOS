@@ -199,7 +199,7 @@
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
-  max-height: 360px;
+  max-height: 520px;
 }
 
 .module-hover-panel__inner {
@@ -310,6 +310,25 @@
   color: var(--raphi-accent);
 }
 
+.module-widget-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.module-widget-card__footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.module-widget-card__note {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--raphi-muted);
+}
+
 .matrix-timer {
   --matrix-color: #33ff77;
   position: relative;
@@ -412,6 +431,141 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--raphi-muted);
+}
+
+.table-widget {
+  margin-bottom: 24px;
+}
+
+.table-widget__frame {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--raphi-glass) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--raphi-border) 80%, transparent);
+  box-shadow:
+    0 16px 32px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.table-widget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.table-widget__title {
+  font-size: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.table-widget__subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--raphi-muted);
+}
+
+.table-widget__tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.table-widget__tab {
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--raphi-border) 80%, transparent);
+  background: color-mix(in srgb, var(--raphi-glass) 60%, transparent);
+  color: var(--raphi-text);
+  padding: 6px 12px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.table-widget__tab.is-active {
+  border-color: color-mix(in srgb, var(--raphi-accent) 80%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--raphi-accent) 40%, transparent);
+}
+
+.table-widget__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+}
+
+.table-widget__grid {
+  display: grid;
+  gap: 8px;
+}
+
+.table-widget__cell {
+  height: 40px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--raphi-border) 70%, transparent);
+  background: rgba(4, 8, 12, 0.6);
+  color: var(--raphi-text);
+  font-size: 13px;
+}
+
+.table-widget__cell:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--raphi-accent) 80%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--raphi-accent) 30%, transparent);
+}
+
+.table-widget__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.table-widget__size-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--raphi-border) 70%, transparent);
+  background: color-mix(in srgb, var(--raphi-glass) 70%, transparent);
+}
+
+.table-widget__size-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--raphi-muted);
+}
+
+.table-widget__size-btn {
+  width: 32px;
+  height: 26px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--raphi-border) 70%, transparent);
+  background: rgba(8, 14, 20, 0.7);
+  color: var(--raphi-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.table-widget__size-input {
+  width: 48px;
+  height: 34px;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--raphi-border) 70%, transparent);
+  background: rgba(2, 6, 10, 0.7);
+  color: var(--raphi-text);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
 }
 
 .raphi-plus-cube span,

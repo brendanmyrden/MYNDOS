@@ -33,7 +33,7 @@ export default function MatrixTimerWidget({ moduleName }: MatrixTimerWidgetProps
         onClick={() => updateWidget("matrixTimer", false)}
         aria-label="Remove matrix timer"
       >
-        −
+        x
       </button>
       <div className="matrix-timer-widget__frame" style={{ ["--matrix-color" as string]: color }}>
         <div className="matrix-timer-widget__header">

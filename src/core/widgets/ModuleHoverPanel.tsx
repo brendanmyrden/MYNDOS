@@ -1,4 +1,5 @@
 import MatrixTimerOption from "./MatrixTimerOption";
+import TableWidgetOption from "./TableWidgetOption";
 
 type ModuleHoverPanelProps = {
   moduleName: string;
@@ -12,6 +13,7 @@ export default function ModuleHoverPanel({ moduleName }: ModuleHoverPanelProps) 
         <div className="module-hover-panel__subtitle">Add widgets before they appear in your module</div>
       </div>
       <MatrixTimerOption moduleName={moduleName} />
+      <TableWidgetOption moduleName={moduleName} />
     </div>
   );
 }

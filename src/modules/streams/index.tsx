@@ -4,6 +4,7 @@ import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
 import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
+import TableWidget from "../../core/widgets/TableWidget";
 import "../../styles/cyberpunk.css";
 
 function StreamsHomeContent() {
@@ -84,6 +85,7 @@ function StreamsHomeContent() {
             </div>
           </div>
           <MatrixTimerWidget moduleName="streams" />
+          <TableWidget moduleName="streams" />
           <div className="module-section">
             <h2 className="module-section-title">Strategy Streams</h2>
             <p className="module-label">

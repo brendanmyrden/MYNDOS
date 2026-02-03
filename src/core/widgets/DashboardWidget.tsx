@@ -20,7 +20,7 @@ export default function DashboardWidget({ moduleName, children }: PropsWithChild
         onClick={() => updateWidget("dashboard", false)}
         aria-label="Remove dashboard"
       >
-        −
+        x
       </button>
       {children}
     </div>
