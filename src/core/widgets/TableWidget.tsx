@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { useWidgetState } from "./useWidgetState";
 import { useTableState } from "./useTableState";
+import { useDeleteHotspot } from "./useDeleteHotspot";
 import type { TableScope } from "./tableStorage";
 import "./widgets.css";
 
@@ -76,6 +77,7 @@ const SizeControl = ({
 
 export default function TableWidget({ moduleName, renderMode = "grid" }: TableWidgetProps) {
   const { state, updateWidget } = useWidgetState(moduleName);
+  const deleteHotspot = useDeleteHotspot<HTMLDivElement>();
   const hasLocal = state.tableLocal;
   const hasGlobal = state.tableGlobal;
   const [activeScope, setActiveScope] = useState<TableScope>(() => (hasLocal ? "local" : "global"));
@@ -105,21 +107,24 @@ export default function TableWidget({ moduleName, renderMode = "grid" }: TableWi
 
   return (
     <div className="table-widget widget-shell">
-      <span className="widget-hotspot" aria-hidden="true" />
-      <button
-        type="button"
-        className="widget-remove"
-        onClick={() => updateWidget(activeScope === "local" ? "tableLocal" : "tableGlobal", false)}
-        aria-label={`Remove ${activeScope} table`}
-      >
-        x
-      </button>
-      <div className="table-widget__frame">
+      <div className="table-widget__frame" {...deleteHotspot}>
         <div className="table-widget__header">
-          <div>
-            <div className="table-widget__title">Table Widget</div>
-            <div className="table-widget__subtitle">
-              {activeScope === "local" ? "Local Table" : "Global Table"}
+          <div className="table-widget__header-left">
+            <button
+              type="button"
+              className="table-widget__remove fluid-delete"
+              onClick={() =>
+                updateWidget(activeScope === "local" ? "tableLocal" : "tableGlobal", false)
+              }
+              aria-label={`Remove ${activeScope} table`}
+            >
+              x
+            </button>
+            <div>
+              <div className="table-widget__title">Table Widget</div>
+              <div className="table-widget__subtitle">
+                {activeScope === "local" ? "Local Table" : "Global Table"}
+              </div>
             </div>
           </div>
           <div className="table-widget__tabs">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { formatMatrixTime, useMatrixTimerColor } from "./matrixTimer";
+import { useDeleteHotspot } from "./useDeleteHotspot";
 import { useWidgetState } from "./useWidgetState";
 import "./widgets.css";
 
@@ -11,6 +12,7 @@ type MatrixTimerWidgetProps = {
 export default function MatrixTimerWidget({ moduleName }: MatrixTimerWidgetProps) {
   const { state, updateWidget } = useWidgetState(moduleName);
   const { color, setColor } = useMatrixTimerColor(moduleName);
+  const deleteHotspot = useDeleteHotspot<HTMLDivElement>();
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(true);
 
@@ -25,22 +27,24 @@ export default function MatrixTimerWidget({ moduleName }: MatrixTimerWidgetProps
   if (!state.matrixTimer) return null;
 
   return (
-    <div className="matrix-timer-widget widget-shell">
+    <div className="matrix-timer-widget widget-shell" {...deleteHotspot}>
       <span className="widget-hotspot" aria-hidden="true" />
-      <button
-        type="button"
-        className="widget-remove"
-        onClick={() => updateWidget("matrixTimer", false)}
-        aria-label="Remove matrix timer"
-      >
-        x
-      </button>
       <div className="matrix-timer-widget__frame" style={{ ["--matrix-color" as string]: color }}>
         <div className="matrix-timer-widget__header">
-          <div>
-            <div className="matrix-timer-widget__title">Matrix Timer</div>
-            <div className="matrix-timer-widget__subtitle">
-              {isRunning ? "Running" : "Paused"}
+          <div className="matrix-timer-widget__header-left">
+            <button
+              type="button"
+              className="widget-remove fluid-delete"
+              onClick={() => updateWidget("matrixTimer", false)}
+              aria-label="Remove matrix timer"
+            >
+              x
+            </button>
+            <div>
+              <div className="matrix-timer-widget__title">Matrix Timer</div>
+              <div className="matrix-timer-widget__subtitle">
+                {isRunning ? "Running" : "Paused"}
+              </div>
             </div>
           </div>
           <div className="matrix-timer-widget__actions">

@@ -14,6 +14,9 @@
   --raphi-button-text: #070b15;
   --raphi-input-bg: rgba(6, 10, 20, 0.75);
   --raphi-input-border: rgba(125, 249, 255, 0.25);
+  --delete-blob-bg: #ff4d6d;
+  --delete-blob-glow: rgba(255, 77, 109, 0.45);
+  --delete-blob-ink: rgba(0, 0, 0, 0.85);
 
   position: relative;
   height: 100%;
@@ -400,6 +403,12 @@
   gap: 12px;
 }
 
+.matrix-timer-widget__header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .matrix-timer-widget__title {
   font-size: 16px;
   letter-spacing: 0.14em;
@@ -455,6 +464,16 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  position: relative;
+}
+
+.table-widget__header-left {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 44px;
+  min-height: 36px;
 }
 
 .table-widget__title {
@@ -491,6 +510,116 @@
 .table-widget__tab.is-active {
   border-color: color-mix(in srgb, var(--raphi-accent) 80%, transparent);
   box-shadow: 0 0 12px color-mix(in srgb, var(--raphi-accent) 40%, transparent);
+}
+
+.fluid-delete {
+  position: relative;
+  width: 15px;
+  height: 16px;
+  min-width: 15px;
+  min-height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--delete-blob-bg) 75%, transparent);
+  background:
+    radial-gradient(circle at 30% 30%, #ffffff 0%, transparent 48%),
+    radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.35) 0%, transparent 55%),
+    var(--delete-blob-bg);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 999px;
+  -webkit-text-stroke: 0.6px var(--delete-blob-ink);
+  text-shadow:
+    0 0 2px color-mix(in srgb, var(--delete-blob-ink) 85%, transparent),
+    0 1px 0 color-mix(in srgb, var(--delete-blob-ink) 75%, transparent);
+  cursor: pointer;
+  box-shadow:
+    0 8px 18px var(--delete-blob-glow),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+  animation:
+    fluid-delete-morph 6s ease-in-out infinite,
+    fluid-delete-edge 10s ease-in-out infinite;
+  will-change: border-radius, transform, top, left;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fluid-delete::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  background: radial-gradient(circle, var(--delete-blob-glow), transparent 60%);
+  filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.fluid-delete:hover,
+.fluid-delete:focus-visible {
+  box-shadow:
+    0 12px 22px var(--delete-blob-glow),
+    inset 0 -6px 10px rgba(0, 0, 0, 0.35);
+  filter: saturate(1.05);
+  animation-duration: 3.5s, 7s;
+  animation-play-state: paused;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.fluid-delete:hover::before,
+.fluid-delete:focus-visible::before {
+  opacity: 0.8;
+}
+
+.table-widget__remove {
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation:
+    fluid-delete-morph 6s ease-in-out infinite,
+    fluid-delete-edge 10s ease-in-out infinite;
+}
+
+@keyframes fluid-delete-morph {
+  0% {
+    border-radius: 999px;
+  }
+  33% {
+    border-radius: 999px;
+  }
+  66% {
+    border-radius: 999px;
+  }
+  100% {
+    border-radius: 999px;
+  }
+}
+
+@keyframes fluid-delete-edge {
+  0% {
+    transform: translate(-12px, -29px);
+  }
+  25% {
+    transform: translate(-15px, -26px);
+  }
+  35% {
+    transform: translate(-15px, -23px);
+  }
+  45% {
+    transform: translate(-13px, -25px);
+  }
+  70% {
+    transform: translate(-2px, -25px);
+  }
+  100% {
+    transform: translate(-12px, -29px);
+  }
 }
 
 .table-widget__body {
@@ -908,18 +1037,7 @@
 }
 
 .raphi-entry-delete {
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  border: none;
-  background: #ff4b4b;
-  color: #100c12;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 0;
 }
 
 .raphi-entry-edit {
@@ -960,4 +1078,13 @@
     flex-direction: column;
     align-items: flex-start;
   }
+}
+.fluid-delete:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+[data-delete-hot="true"] .fluid-delete {
+  opacity: 1;
+  pointer-events: auto;
 }

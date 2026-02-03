@@ -9,38 +9,18 @@
   width: 42px;
   height: 42px;
   z-index: 2;
+  pointer-events: none;
 }
 
 .widget-remove {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  min-height: 24px;
+  position: relative;   /* NOT absolute */
+  top: 0;
+  right: 0;
   padding: 0;
-  border-radius: 999px;
-  border: 1px solid rgba(220, 38, 38, 0.9);
-  background: #ef4444;
-  color: #ffffff;
-  font-size: 12px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   opacity: 0;
   pointer-events: none;
-  box-shadow: 0 0 10px rgba(255, 80, 80, 0.4);
   transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 3;
-}
-
-.widget-hotspot:hover + .widget-remove,
-.widget-shell:hover .widget-remove {
-  opacity: 1;
-  pointer-events: auto;
-  transform: scale(1.05);
 }
 
 .widget-launcher {

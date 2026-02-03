@@ -14,9 +14,11 @@ import {
   saveCategory,
   deleteCategory,
 } from "./store";
+import { useDeleteHotspot } from "../../core/widgets/useDeleteHotspot";
 
 const DEFAULT_CATEGORIES = ["Food", "Drink", "Supplements"];
 export default function IntakeDashboard() {
+  const deleteHotspot = useDeleteHotspot<HTMLDivElement>();
   const [entries, setEntries] = useState<IntakeLogEntry[]>([]);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [supplements, setSupplements] = useState<Supplement[]>([]);
@@ -756,10 +758,10 @@ export default function IntakeDashboard() {
               {filteredEntries.map((entry) => {
                 const converted = formatConvertedAmount(entry.amount, entry.unit);
                 return (
-                  <div key={entry.id} className="raphi-entry">
+                  <div key={entry.id} className="raphi-entry" {...deleteHotspot}>
                     <div className="raphi-entry-controls">
                       <button
-                        className="raphi-entry-delete"
+                        className="raphi-entry-delete fluid-delete"
                         onClick={() => handleDeleteEntry(entry.id)}
                         aria-label="Delete entry"
                       >
@@ -823,10 +825,10 @@ export default function IntakeDashboard() {
             </div>
             <div className="raphi-stack">
               {categories.map((cat) => (
-                <div key={cat} className="raphi-entry">
+                <div key={cat} className="raphi-entry" {...deleteHotspot}>
                   <div className="raphi-entry-controls">
                     <button
-                      className="raphi-entry-delete"
+                      className="raphi-entry-delete fluid-delete"
                       onClick={() => {
                         deleteCategory(cat);
                         setCategories((prev) => prev.filter((item) => item !== cat));
