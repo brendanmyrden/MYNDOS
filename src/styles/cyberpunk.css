@@ -521,6 +521,50 @@
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--raphi-accent) 30%, transparent);
 }
 
+.table-widget__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.table-widget__timeline-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--raphi-border) 60%, transparent);
+  background: rgba(4, 8, 12, 0.35);
+}
+
+.table-widget__timeline-cell {
+  min-width: 90px;
+  height: 36px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--raphi-border) 70%, transparent);
+  background: rgba(4, 8, 12, 0.6);
+  color: var(--raphi-text);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.table-widget__timeline-cell:hover {
+  border-color: color-mix(in srgb, var(--raphi-accent) 70%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--raphi-accent) 20%, transparent);
+}
+
+.table-widget__timeline-input {
+  min-width: 90px;
+  height: 36px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
 .table-widget__controls {
   display: flex;
   flex-direction: column;

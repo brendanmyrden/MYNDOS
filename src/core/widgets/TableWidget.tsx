@@ -9,6 +9,7 @@ const clampSize = (value: number) => Math.min(12, Math.max(1, value));
 
 type TableWidgetProps = {
   moduleName: string;
+  renderMode?: "grid" | "timeline";
 };
 
 type SizeControlProps = {
@@ -73,7 +74,7 @@ const SizeControl = ({
   </div>
 );
 
-export default function TableWidget({ moduleName }: TableWidgetProps) {
+export default function TableWidget({ moduleName, renderMode = "grid" }: TableWidgetProps) {
   const { state, updateWidget } = useWidgetState(moduleName);
   const hasLocal = state.tableLocal;
   const hasGlobal = state.tableGlobal;
@@ -143,37 +144,81 @@ export default function TableWidget({ moduleName }: TableWidgetProps) {
           </div>
         </div>
         <div className="table-widget__body">
-          <div className="table-widget__grid" style={{ gridTemplateColumns }}>
-            {Array.from({ length: currentTable.state.rows }).map((_, rowIndex) =>
-              Array.from({ length: currentTable.state.cols }).map((__, colIndex) => {
-                const cellIndex = rowIndex * currentTable.state.cols + colIndex;
-                return (
-                  <input
-                    key={`${rowIndex}-${colIndex}`}
-                    className="table-widget__cell"
-                    value={currentTable.state.cells[cellIndex] ?? ""}
-                    readOnly={
-                      !editingCell ||
-                      editingCell.row !== rowIndex ||
-                      editingCell.col !== colIndex
-                    }
-                    onChange={(event) => currentTable.updateCell(rowIndex, colIndex, event.target.value)}
-                    onDoubleClick={(event) => {
-                      setEditingCell({ row: rowIndex, col: colIndex });
-                      event.currentTarget.focus();
-                      event.currentTarget.select();
-                    }}
-                    onBlur={() => setEditingCell(null)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === "Escape") {
-                        event.currentTarget.blur();
+          {renderMode === "grid" ? (
+            <div className="table-widget__grid" style={{ gridTemplateColumns }}>
+              {Array.from({ length: currentTable.state.rows }).map((_, rowIndex) =>
+                Array.from({ length: currentTable.state.cols }).map((__, colIndex) => {
+                  const cellIndex = rowIndex * currentTable.state.cols + colIndex;
+                  return (
+                    <input
+                      key={`${rowIndex}-${colIndex}`}
+                      className="table-widget__cell"
+                      value={currentTable.state.cells[cellIndex] ?? ""}
+                      readOnly={
+                        !editingCell ||
+                        editingCell.row !== rowIndex ||
+                        editingCell.col !== colIndex
                       }
-                    }}
-                  />
-                );
-              })
-            )}
-          </div>
+                      onChange={(event) =>
+                        currentTable.updateCell(rowIndex, colIndex, event.target.value)
+                      }
+                      onDoubleClick={(event) => {
+                        setEditingCell({ row: rowIndex, col: colIndex });
+                        event.currentTarget.focus();
+                        event.currentTarget.select();
+                      }}
+                      onBlur={() => setEditingCell(null)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === "Escape") {
+                          event.currentTarget.blur();
+                        }
+                      }}
+                    />
+                  );
+                })
+              )}
+            </div>
+          ) : (
+            <div className="table-widget__timeline">
+              {Array.from({ length: currentTable.state.rows }).map((_, rowIndex) => (
+                <div key={`row-${rowIndex}`} className="table-widget__timeline-row">
+                  {Array.from({ length: currentTable.state.cols }).map((__, colIndex) => {
+                    const cellIndex = rowIndex * currentTable.state.cols + colIndex;
+                    const isEditing =
+                      editingCell?.row === rowIndex && editingCell?.col === colIndex;
+                    const value = currentTable.state.cells[cellIndex] ?? "";
+                    return isEditing ? (
+                      <input
+                        key={`${rowIndex}-${colIndex}`}
+                        className="table-widget__cell table-widget__timeline-input"
+                        value={value}
+                        autoFocus
+                        onChange={(event) =>
+                          currentTable.updateCell(rowIndex, colIndex, event.target.value)
+                        }
+                        onBlur={() => setEditingCell(null)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === "Escape") {
+                            event.currentTarget.blur();
+                          }
+                        }}
+                      />
+                    ) : (
+                      <button
+                        key={`${rowIndex}-${colIndex}`}
+                        type="button"
+                        className="table-widget__timeline-cell"
+                        onClick={() => setEditingCell({ row: rowIndex, col: colIndex })}
+                        aria-label={`Row ${rowIndex + 1} column ${colIndex + 1}`}
+                      >
+                        {value || "—"}
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          )}
           <div className="table-widget__controls">
             <SizeControl
               label="Rows"
