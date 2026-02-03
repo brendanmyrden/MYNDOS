@@ -4,6 +4,7 @@ import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
 import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
+import MediaModalWidget from "../../core/widgets/MediaModalWidget";
 import TableWidget from "../../core/widgets/TableWidget";
 import "../../styles/cyberpunk.css";
 
@@ -85,6 +86,7 @@ function SettingsContent() {
             </div>
           </div>
           <MatrixTimerWidget moduleName="settings" />
+          <MediaModalWidget moduleName="settings" />
           <TableWidget moduleName="settings" />
           <div className="module-section">
             <h2 className="module-section-title">Configuration</h2>
