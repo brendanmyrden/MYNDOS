@@ -6,6 +6,7 @@ import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import MediaModalWidget from "../../core/widgets/MediaModalWidget";
 import TableWidget from "../../core/widgets/TableWidget";
+import PlusCube from "../../core/widgets/PlusCube";
 import "../../styles/cyberpunk.css";
 
 function MYRRYRHomeContent() {
@@ -77,9 +78,7 @@ function MYRRYRHomeContent() {
                   <p className="module-subtitle">Music Prod. + Versions + Brand</p>
                 </div>
               </div>
-              <div className="module-plus-cube" aria-hidden="true">
-                <span>+</span>
-              </div>
+              <PlusCube moduleName="myrryr" />
             </div>
             <div className="module-hover-panel">
               <ModuleHoverPanel moduleName="myrryr" />

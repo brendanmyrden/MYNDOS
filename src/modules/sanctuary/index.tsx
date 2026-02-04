@@ -6,6 +6,8 @@ import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import MediaModalWidget from "../../core/widgets/MediaModalWidget";
 import TableWidget from "../../core/widgets/TableWidget";
+import PlusCube from "../../core/widgets/PlusCube";
+import ScrollBaseAnimation from "../../components/ui/scroll-text-marque";
 import "../../styles/cyberpunk.css";
 
 function SanctuaryHomeContent() {
@@ -68,18 +70,13 @@ function SanctuaryHomeContent() {
         <div className="module-card">
           <div className="module-header-stack">
             <div className="module-header module-header-group">
-              <div className="module-header-left">
+              <div className="module-header-left sanctuary-header-left">
                 <div className="module-cube">
                   <span>🕊️</span>
                 </div>
-                <div>
-                  <h1 className="module-title">Sanctuary</h1>
-                  <p className="module-subtitle">Spiritual Mode</p>
-                </div>
+                <div />
               </div>
-              <div className="module-plus-cube" aria-hidden="true">
-                <span>+</span>
-              </div>
+              <PlusCube moduleName="sanctuary" />
             </div>
             <div className="module-hover-panel">
               <ModuleHoverPanel moduleName="sanctuary" />

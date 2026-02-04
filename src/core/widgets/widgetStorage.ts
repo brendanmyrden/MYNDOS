@@ -4,6 +4,7 @@ export type WidgetState = {
   mediaModal: boolean;
   tableLocal: boolean;
   tableGlobal: boolean;
+  tradeCore: boolean;
 };
 
 const DEFAULT_WIDGET_STATE: WidgetState = {
@@ -12,6 +13,7 @@ const DEFAULT_WIDGET_STATE: WidgetState = {
   mediaModal: false,
   tableLocal: false,
   tableGlobal: false,
+  tradeCore: false,
 };
 
 const widgetKey = (moduleName: string) => `myndos.widgets.${moduleName}.v1`;
@@ -27,6 +29,7 @@ export const getWidgetState = (moduleName: string): WidgetState => {
       mediaModal: typeof parsed.mediaModal === "boolean" ? parsed.mediaModal : DEFAULT_WIDGET_STATE.mediaModal,
       tableLocal: typeof parsed.tableLocal === "boolean" ? parsed.tableLocal : DEFAULT_WIDGET_STATE.tableLocal,
       tableGlobal: typeof parsed.tableGlobal === "boolean" ? parsed.tableGlobal : DEFAULT_WIDGET_STATE.tableGlobal,
+      tradeCore: typeof parsed.tradeCore === "boolean" ? parsed.tradeCore : DEFAULT_WIDGET_STATE.tradeCore,
     };
   } catch {
     return DEFAULT_WIDGET_STATE;

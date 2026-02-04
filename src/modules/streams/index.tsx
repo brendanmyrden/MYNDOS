@@ -5,6 +5,7 @@ import SettingsModal from "../../core/layout/SettingsModal";
 import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import MediaModalWidget from "../../core/widgets/MediaModalWidget";
+import PlusCube from "../../core/widgets/PlusCube";
 import TableWidget from "../../core/widgets/TableWidget";
 import "../../styles/cyberpunk.css";
 
@@ -77,9 +78,7 @@ function StreamsHomeContent() {
                   <p className="module-subtitle">$treams 0f $trategy</p>
                 </div>
               </div>
-              <div className="module-plus-cube" aria-hidden="true">
-                <span>+</span>
-              </div>
+              <PlusCube moduleName="streams" />
             </div>
             <div className="module-hover-panel">
               <ModuleHoverPanel moduleName="streams" />

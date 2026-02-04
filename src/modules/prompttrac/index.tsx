@@ -6,6 +6,7 @@ import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import MediaModalWidget from "../../core/widgets/MediaModalWidget";
 import TableWidget from "../../core/widgets/TableWidget";
+import PlusCube from "../../core/widgets/PlusCube";
 import "../../styles/cyberpunk.css";
 
 function PROMPTRACHomeContent() {
@@ -77,9 +78,7 @@ function PROMPTRACHomeContent() {
                   <p className="module-subtitle">A way to track prompts</p>
                 </div>
               </div>
-              <div className="module-plus-cube" aria-hidden="true">
-                <span>+</span>
-              </div>
+              <PlusCube moduleName="prompttrac" />
             </div>
             <div className="module-hover-panel">
               <ModuleHoverPanel moduleName="prompttrac" />
