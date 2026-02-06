@@ -19,63 +19,33 @@ export default function ModuleHoverPanel({ moduleName }: ModuleHoverPanelProps) 
     const plusCube = stack.querySelector("[data-plus-cube]") as HTMLElement | null;
     if (!plusCube) return;
 
-    let isOverCube = false;
-    let isOverPanel = false;
-    let closeTimer: number | null = null;
-
-    const setOpen = (open: boolean) => {
-      stack.dataset.panelProximity = open ? "true" : "false";
+    const handleEnter = () => {
+      stack.dataset.panelProximity = "true";
     };
 
-    const clearCloseTimer = () => {
-      if (closeTimer !== null) {
-        window.clearTimeout(closeTimer);
-        closeTimer = null;
+    const handleLeave = () => {
+      stack.dataset.panelProximity = "false";
+    };
+
+    const handleClick = () => {
+      const shouldPin = stack.dataset.panelPinned !== "true";
+      if (shouldPin) {
+        stack.dataset.panelPinned = "true";
+        stack.dataset.panelProximity = "true";
+      } else {
+        delete stack.dataset.panelPinned;
       }
     };
 
-    const scheduleClose = () => {
-      clearCloseTimer();
-      closeTimer = window.setTimeout(() => {
-        if (!isOverCube && !isOverPanel) {
-          setOpen(false);
-        }
-      }, 80);
-    };
-
-    const handleCubeEnter = () => {
-      isOverCube = true;
-      clearCloseTimer();
-      setOpen(true);
-    };
-
-    const handleCubeLeave = () => {
-      isOverCube = false;
-      scheduleClose();
-    };
-
-    const handlePanelEnter = () => {
-      isOverPanel = true;
-      clearCloseTimer();
-      setOpen(true);
-    };
-
-    const handlePanelLeave = () => {
-      isOverPanel = false;
-      scheduleClose();
-    };
-
-    plusCube.addEventListener("pointerenter", handleCubeEnter);
-    plusCube.addEventListener("pointerleave", handleCubeLeave);
-    panel.addEventListener("pointerenter", handlePanelEnter);
-    panel.addEventListener("pointerleave", handlePanelLeave);
+    plusCube.addEventListener("pointerenter", handleEnter);
+    plusCube.addEventListener("pointerleave", handleLeave);
+    plusCube.addEventListener("click", handleClick);
     return () => {
-      plusCube.removeEventListener("pointerenter", handleCubeEnter);
-      plusCube.removeEventListener("pointerleave", handleCubeLeave);
-      panel.removeEventListener("pointerenter", handlePanelEnter);
-      panel.removeEventListener("pointerleave", handlePanelLeave);
-      clearCloseTimer();
+      plusCube.removeEventListener("pointerenter", handleEnter);
+      plusCube.removeEventListener("pointerleave", handleLeave);
+      plusCube.removeEventListener("click", handleClick);
       delete stack.dataset.panelProximity;
+      delete stack.dataset.panelPinned;
     };
   }, []);
 

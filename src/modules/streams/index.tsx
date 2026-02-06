@@ -7,6 +7,7 @@ import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import MediaModalWidget from "../../core/widgets/MediaModalWidget";
 import PlusCube from "../../core/widgets/PlusCube";
 import TableWidget from "../../core/widgets/TableWidget";
+import TradeCoreWidget from "../../core/widgets/TradeCoreWidget";
 import "../../styles/cyberpunk.css";
 
 function StreamsHomeContent() {
@@ -80,13 +81,14 @@ function StreamsHomeContent() {
               </div>
               <PlusCube moduleName="streams" />
             </div>
-            <div className="module-hover-panel">
-              <ModuleHoverPanel moduleName="streams" />
-            </div>
+          <div className="module-hover-panel">
+            <ModuleHoverPanel moduleName="streams" />
           </div>
-          <MatrixTimerWidget moduleName="streams" />
-          <MediaModalWidget moduleName="streams" />
-          <TableWidget moduleName="streams" />
+        </div>
+        <TradeCoreWidget moduleName="streams" />
+        <MatrixTimerWidget moduleName="streams" />
+        <MediaModalWidget moduleName="streams" />
+        <TableWidget moduleName="streams" />
           <div className="module-section">
             <h2 className="module-section-title">Strategy Streams</h2>
             <p className="module-label">

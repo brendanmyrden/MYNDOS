@@ -11,6 +11,8 @@ import SYYRHome from "./modules/syyr";
 import SettingsPage from "./modules/settings/index.tsx";
 import MYNDOS from "./modules/myndos";
 import StreamsHome from "./modules/streams";
+import TradeCorePage from "./modules/streams/TradeCore";
+import TradeInterfaceRoot from "./modules/streams/TradeInterfaceRoot";
 
 export default function App() {
   const [homescreenCubed, setHomescreenCubed] = useState(() => getHomescreenCubed());
@@ -54,6 +56,8 @@ export default function App() {
             <Route path="/syyr" element={<SYYRHome />} />
             <Route path="/streams" element={<StreamsHome />} />
             <Route path="/streams-of-strategy" element={<Navigate to="/streams" replace />} />
+            <Route path="/streams/trade-core" element={<TradeCorePage />} />
+            <Route path="/streams/trade-interface" element={<TradeInterfaceRoot />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         )}
