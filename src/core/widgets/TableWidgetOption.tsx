@@ -11,7 +11,7 @@ export default function TableWidgetOption({ moduleName }: TableWidgetOptionProps
     <div className="module-widget-card">
       <div className="module-widget-card__header">
         <div>
-          <div className="module-widget-card__title">Table Widget</div>
+          <div className="module-widget-card__title">Trac</div>
           <div className="module-widget-card__subtitle">Editable rows, columns, and cells</div>
         </div>
       </div>

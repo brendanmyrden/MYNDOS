@@ -83,6 +83,7 @@ export default function TableWidget({ moduleName, renderMode = "grid" }: TableWi
   const [activeScope, setActiveScope] = useState<TableScope>(() => (hasLocal ? "local" : "global"));
   const [editingCell, setEditingCell] = useState<{ row: number; col: number } | null>(null);
   const [editingSize, setEditingSize] = useState<"Rows" | "Cols" | null>(null);
+  const scopeLabel = activeScope === "global" ? "MYND TRAC" : `${moduleName.toUpperCase()} TRAC`;
 
   useEffect(() => {
     if (activeScope === "local" && !hasLocal && hasGlobal) setActiveScope("global");
@@ -116,15 +117,13 @@ export default function TableWidget({ moduleName, renderMode = "grid" }: TableWi
               onClick={() =>
                 updateWidget(activeScope === "local" ? "tableLocal" : "tableGlobal", false)
               }
-              aria-label={`Remove ${activeScope} table`}
+              aria-label={`Remove ${scopeLabel}`}
             >
               x
             </button>
             <div>
-              <div className="table-widget__title">Table Widget</div>
-              <div className="table-widget__subtitle">
-                {activeScope === "local" ? "Local Table" : "Global Table"}
-              </div>
+              <div className="table-widget__title">Trac</div>
+              <div className="table-widget__subtitle">{scopeLabel}</div>
             </div>
           </div>
           <div className="table-widget__tabs">
