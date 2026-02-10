@@ -17,61 +17,32 @@ type SizeControlProps = {
   label: string;
   value: number;
   onChange: (next: number) => void;
-  isEditing: boolean;
-  onEditStart: () => void;
-  onEditEnd: () => void;
 };
 
-const SizeControl = ({
-  label,
-  value,
-  onChange,
-  isEditing,
-  onEditStart,
-  onEditEnd,
-}: SizeControlProps) => (
+const SizeControl = ({ label, value, onChange }: SizeControlProps) => (
   <div className="table-widget__size-control">
     <div className="table-widget__size-label">{label}</div>
-    <button
-      type="button"
-      className="table-widget__size-btn"
-      onClick={() => onChange(clampSize(value + 1))}
-      aria-label={`Increase ${label}`}
-    >
-      ▲
-    </button>
-    <input
-      type="number"
-      className="table-widget__size-input"
-      value={value}
-      min={1}
-      max={12}
-      readOnly={!isEditing}
-      onDoubleClick={(event) => {
-        onEditStart();
-        event.currentTarget.focus();
-        event.currentTarget.select();
-      }}
-      onChange={(event) => {
-        const nextValue = Number(event.target.value);
-        if (Number.isNaN(nextValue)) return;
-        onChange(clampSize(nextValue));
-      }}
-      onBlur={onEditEnd}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === "Escape") {
-          event.currentTarget.blur();
-        }
-      }}
-    />
-    <button
-      type="button"
-      className="table-widget__size-btn"
-      onClick={() => onChange(clampSize(value - 1))}
-      aria-label={`Decrease ${label}`}
-    >
-      ▼
-    </button>
+    <div className="table-widget__stepper" role="group" aria-label={`${label} controls`}>
+      <button
+        type="button"
+        className="table-widget__size-btn"
+        onClick={() => onChange(clampSize(value - 1))}
+        aria-label={`Decrease ${label}`}
+      >
+        -
+      </button>
+      <span className="table-widget__size-value" aria-live="polite">
+        {value}
+      </span>
+      <button
+        type="button"
+        className="table-widget__size-btn"
+        onClick={() => onChange(clampSize(value + 1))}
+        aria-label={`Increase ${label}`}
+      >
+        +
+      </button>
+    </div>
   </div>
 );
 
@@ -82,7 +53,6 @@ export default function TableWidget({ moduleName, renderMode = "grid" }: TableWi
   const hasGlobal = state.tableGlobal;
   const [activeScope, setActiveScope] = useState<TableScope>(() => (hasLocal ? "local" : "global"));
   const [editingCell, setEditingCell] = useState<{ row: number; col: number } | null>(null);
-  const [editingSize, setEditingSize] = useState<"Rows" | "Cols" | null>(null);
   const scopeLabel = activeScope === "global" ? "MYND TRAC" : `${moduleName.toUpperCase()} TRAC`;
 
   useEffect(() => {
@@ -92,7 +62,6 @@ export default function TableWidget({ moduleName, renderMode = "grid" }: TableWi
 
   useEffect(() => {
     setEditingCell(null);
-    setEditingSize(null);
   }, [activeScope]);
 
   const localTable = useTableState(moduleName, "local");
@@ -228,17 +197,11 @@ export default function TableWidget({ moduleName, renderMode = "grid" }: TableWi
               label="Rows"
               value={currentTable.state.rows}
               onChange={(next) => currentTable.updateSize(next, currentTable.state.cols)}
-              isEditing={editingSize === "Rows"}
-              onEditStart={() => setEditingSize("Rows")}
-              onEditEnd={() => setEditingSize(null)}
             />
             <SizeControl
               label="Cols"
               value={currentTable.state.cols}
               onChange={(next) => currentTable.updateSize(currentTable.state.rows, next)}
-              isEditing={editingSize === "Cols"}
-              onEditStart={() => setEditingSize("Cols")}
-              onEditEnd={() => setEditingSize(null)}
             />
           </div>
         </div>
