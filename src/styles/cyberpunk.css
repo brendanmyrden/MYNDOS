@@ -725,6 +725,89 @@
   text-shadow: 0 0 10px color-mix(in srgb, var(--raphi-accent) 55%, transparent);
 }
 
+.trade-interface-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #0b0f14 0%, #0a0d11 45%, #10141a 100%);
+  border: 1px solid color-mix(in srgb, var(--raphi-accent, #7df9ff) 28%, rgba(10, 12, 16, 0.9));
+  box-shadow:
+    0 12px 22px rgba(0, 0, 0, 0.45),
+    0 0 18px color-mix(in srgb, var(--raphi-accent, #7df9ff) 30%, transparent),
+    inset 0 0 22px rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  transform-origin: top left;
+  transform: translate3d(var(--trade-interface-x), var(--trade-interface-y), 0)
+    scale(var(--trade-interface-scale-x), var(--trade-interface-scale-y));
+  transition:
+    transform var(--trade-interface-transition-duration, 620ms) cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius var(--trade-interface-transition-duration, 620ms) cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow var(--trade-interface-transition-duration, 620ms) ease,
+    filter var(--trade-interface-transition-duration, 620ms) ease;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.trade-interface-transition::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--raphi-accent, #7df9ff) 25%, transparent);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--raphi-accent, #7df9ff) 35%, transparent);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.trade-interface-transition::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.06), transparent 50%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 55%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.trade-interface-transition.is-active {
+  transform: translate3d(0, 0, 0) scale(1);
+  border-radius: 0;
+  box-shadow:
+    0 28px 60px rgba(0, 0, 0, 0.55),
+    0 0 42px color-mix(in srgb, var(--raphi-accent, #7df9ff) 40%, transparent),
+    inset 0 0 36px rgba(0, 0, 0, 0.62);
+  filter: brightness(1.03);
+}
+
+.trade-interface-transition__label {
+  position: relative;
+  z-index: 1;
+  font-size: 11px;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--raphi-accent, #7df9ff) 70%, #ffffff);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--raphi-accent, #7df9ff) 55%, transparent);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.trade-interface-transition.is-active .trade-interface-transition__label {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trade-interface-transition {
+    transition: none;
+  }
+}
+
 @keyframes trade-core-pulse {
   0%,
   100% {

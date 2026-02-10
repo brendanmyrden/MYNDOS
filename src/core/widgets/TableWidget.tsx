@@ -167,7 +167,7 @@ export default function TableWidget({ moduleName, renderMode = "grid" }: TableWi
                       onChange={(event) =>
                         currentTable.updateCell(rowIndex, colIndex, event.target.value)
                       }
-                      onDoubleClick={(event) => {
+                      onClick={(event) => {
                         setEditingCell({ row: rowIndex, col: colIndex });
                         event.currentTarget.focus();
                         event.currentTarget.select();

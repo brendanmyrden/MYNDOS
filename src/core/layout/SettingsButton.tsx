@@ -1,8 +1,24 @@
+import { useEffect } from "react";
+
 interface SettingsButtonProps {
   onClick: () => void;
 }
 
 export default function SettingsButton({ onClick }: SettingsButtonProps) {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        onClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClick]);
+
   return (
     <button
       onClick={onClick}
