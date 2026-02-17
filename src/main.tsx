@@ -4,6 +4,19 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "./core/state/ThemeContext";
+import { installPointerDebug } from "./debug/pointerDebug";
+import { installOverlayDebugWatchdog } from "./debug/overlayDebug";
+
+if (import.meta.env.DEV) {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has("debugPointer")) {
+    installPointerDebug();
+    installOverlayDebugWatchdog();
+  }
+  if (params.has("debugOverlay")) {
+    installOverlayDebugWatchdog();
+  }
+}
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

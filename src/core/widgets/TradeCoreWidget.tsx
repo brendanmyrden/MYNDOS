@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDeleteHotspot } from "./useDeleteHotspot";
@@ -15,6 +16,17 @@ export default function TradeCoreWidget({ moduleName }: TradeCoreWidgetProps) {
 
   if (!state.tradeCore) return null;
 
+  const clearTransitionArtifacts = () => {
+    document.body.classList.remove("trade-interface-transitioning");
+    document.querySelectorAll(".trade-interface-transition").forEach((node) => node.remove());
+  };
+
+  useEffect(() => {
+    return () => {
+      clearTransitionArtifacts();
+    };
+  }, []);
+
   const handleOpenTradeInterface = (event: MouseEvent<HTMLButtonElement>) => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) {
@@ -22,7 +34,9 @@ export default function TradeCoreWidget({ moduleName }: TradeCoreWidgetProps) {
       return;
     }
 
-    if (document.body.classList.contains("trade-interface-transitioning")) return;
+    if (document.body.classList.contains("trade-interface-transitioning")) {
+      clearTransitionArtifacts();
+    }
 
     const target = event.currentTarget;
     const rect = target.getBoundingClientRect();
@@ -39,6 +53,7 @@ export default function TradeCoreWidget({ moduleName }: TradeCoreWidgetProps) {
 
     const overlay = document.createElement("div");
     overlay.className = "trade-interface-transition";
+    overlay.style.pointerEvents = "none";
     overlay.style.setProperty("--trade-interface-x", `${rect.left}px`);
     overlay.style.setProperty("--trade-interface-y", `${rect.top}px`);
     overlay.style.setProperty("--trade-interface-scale-x", `${rect.width / viewportWidth}`);
@@ -54,6 +69,7 @@ export default function TradeCoreWidget({ moduleName }: TradeCoreWidgetProps) {
     label.textContent = "TRADE CORE";
     overlay.appendChild(label);
 
+    clearTransitionArtifacts();
     document.body.classList.add("trade-interface-transitioning");
     document.body.appendChild(overlay);
 
@@ -67,8 +83,7 @@ export default function TradeCoreWidget({ moduleName }: TradeCoreWidgetProps) {
     }, navigationDelayMs);
 
     window.setTimeout(() => {
-      overlay.remove();
-      document.body.classList.remove("trade-interface-transitioning");
+      clearTransitionArtifacts();
     }, transitionDurationMs + 140);
   };
 
