@@ -7,7 +7,6 @@ import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import MediaModalWidget from "../../core/widgets/MediaModalWidget";
 import TableWidget from "../../core/widgets/TableWidget";
 import PlusCube from "../../core/widgets/PlusCube";
-import ScrollBaseAnimation from "../../components/ui/scroll-text-marque";
 import "../../styles/cyberpunk.css";
 
 function SanctuaryHomeContent() {

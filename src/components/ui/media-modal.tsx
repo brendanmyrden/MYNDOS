@@ -1,9 +1,9 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useState, useRef } from "react";
 import { AnimatePresence, motion, MotionConfig } from "motion/react";
 import { XIcon } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-export const transition = {
+const transition = {
   type: "spring",
   stiffness: 300,
   damping: 30,
@@ -18,18 +18,40 @@ interface MediaModalProps {
 
 export function MediaModal({ imgSrc, videoSrc, className }: MediaModalProps) {
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+  const [isAnimationComplete, setIsAnimationComplete] = useState(false);
   const uniqueId = useId();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (isMediaModalOpen) {
-      document.body.classList.add("overflow-hidden");
-    } else {
+    if (!isMediaModalOpen) return;
+    document.body.classList.add("overflow-hidden");
+    return () => {
       document.body.classList.remove("overflow-hidden");
-    }
+    };
+  }, [isMediaModalOpen]);
 
+  useEffect(() => {
+    if (!isMediaModalOpen) return;
+    const timer = window.setTimeout(() => {
+      setIsAnimationComplete(true);
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, [isMediaModalOpen]);
+
+  const openModal = () => {
+    setIsAnimationComplete(false);
+    setIsMediaModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsMediaModalOpen(false);
+    setIsAnimationComplete(false);
+  };
+
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsMediaModalOpen(false);
+        closeModal();
       }
     };
 
@@ -37,7 +59,7 @@ export function MediaModal({ imgSrc, videoSrc, className }: MediaModalProps) {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isMediaModalOpen]);
+  }, []);
 
   return (
     <>
@@ -52,7 +74,7 @@ export function MediaModal({ imgSrc, videoSrc, className }: MediaModalProps) {
             borderRadius: "12px",
           }}
           onClick={() => {
-            setIsMediaModalOpen(true);
+            openModal();
           }}
         >
           {imgSrc && (
@@ -65,7 +87,11 @@ export function MediaModal({ imgSrc, videoSrc, className }: MediaModalProps) {
             </motion.div>
           )}
           {videoSrc && (
-            <motion.div layoutId={`dialog-video-${uniqueId}`} className="w-full h-full">
+            <motion.div
+              layoutId={`dialog-video-${uniqueId}`}
+              className="w-full h-full"
+              style={{ pointerEvents: isMediaModalOpen ? "none" : "auto" }}
+            >
               <video autoPlay muted loop className="h-full w-full object-cover rounded-xs">
                 <source src={videoSrc} type="video/mp4" />
               </video>
@@ -83,7 +109,7 @@ export function MediaModal({ imgSrc, videoSrc, className }: MediaModalProps) {
                 animate="open"
                 exit="closed"
                 onClick={() => {
-                  setIsMediaModalOpen(false);
+                  closeModal();
                 }}
               />
               <motion.div
@@ -112,15 +138,31 @@ export function MediaModal({ imgSrc, videoSrc, className }: MediaModalProps) {
                     </motion.div>
                   )}
                   {videoSrc && (
-                    <motion.div layoutId={`dialog-video-${uniqueId}`} className="w-full h-full">
-                      <video autoPlay muted loop controls className="h-full w-full object-cover rounded-xs">
+                    <motion.div
+                      layoutId={`dialog-video-${uniqueId}`}
+                      className="w-full h-full"
+                      style={{ pointerEvents: "auto" }}
+                    >
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        muted
+                        loop
+                        controls
+                        className="h-full w-full object-cover rounded-xs"
+                        style={{
+                          pointerEvents: isAnimationComplete ? "auto" : "none",
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        onPointerDown={(e) => e.stopPropagation()}
+                      >
                         <source src={videoSrc} type="video/mp4" />
                       </video>
                     </motion.div>
                   )}
                   {videoSrc && (
                     <button
-                      onClick={() => setIsMediaModalOpen(false)}
+                      onClick={closeModal}
                       className="absolute right-6 top-6 p-3 text-zinc-50 cursor-pointer dark:bg-gray-900 bg-gray-400 hover:bg-gray-500 rounded-xl dark:hover:bg-gray-800"
                       type="button"
                       aria-label="Close dialog"

@@ -1,11 +1,10 @@
 'use client';
 import React, { useEffect, useId, useState } from 'react';
 import { AnimatePresence, motion, MotionConfig } from 'motion/react';
-import { useMediaQuery } from '@/hooks/use-media-query';
 import { XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export const transition = {
+const transition = {
   type: 'spring',
   stiffness: 300, // Increased from 80
   damping: 30, // Increased from 10
@@ -45,7 +44,10 @@ export function MediaModal({ imgSrc, videoSrc, className }: IMediaModal) {
       <MotionConfig transition={transition}>
         <>
           <motion.div
-            className='w-full h-full flex relative flex-col overflow-hidden border cursor-zoom-in dark:bg-black bg-gray-300 hover:bg-gray-200 dark:hover:bg-gray-950'
+            className={cn(
+              'w-full h-full flex relative flex-col overflow-hidden border cursor-zoom-in dark:bg-black bg-gray-300 hover:bg-gray-200 dark:hover:bg-gray-950',
+              className
+            )}
             layoutId={`dialog-${uniqueId}`}
             style={{
               borderRadius: '12px',
