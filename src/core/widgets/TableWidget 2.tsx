@@ -53,7 +53,7 @@ const SizeControl = ({ label, value, onChange }: SizeControlProps) => (
         onClick={() => onChange(clampSize(value - 1))}
         aria-label={`Decrease ${label}`}
       >
-        −
+        -
       </button>
       <span className="table-widget__size-value" aria-live="polite">
         {value}
@@ -157,7 +157,7 @@ export default function TableWidget({ moduleName, renderMode = "grid" }: TableWi
             >
               x
             </button>
-            <div className="table-widget__title-block">
+            <div>
               <div className="table-widget__title">Trac</div>
               <div className="table-widget__subtitle">{scopeLabel}</div>
             </div>

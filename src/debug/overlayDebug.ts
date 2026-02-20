@@ -6,10 +6,18 @@ type OverlaySnapshot = {
   opacity?: string;
 };
 
+type DebugWindow = Window & {
+  __myndOverlayDebugInstalled?: boolean;
+  __myndOverlayFirstSeen?: WeakMap<Element, number>;
+  __myndPointerDebugInstalled?: boolean;
+};
+
 const WATCH_SELECTORS = [
   ".trade-interface-transition",
   ".fixed.inset-0.z-50",
 ];
+
+const WATCHED_POINTER_EVENTS = ["pointerdown", "pointerup", "click"] as const;
 
 const createSnapshot = (el: Element): OverlaySnapshot => {
   const node = el as HTMLElement;
@@ -23,12 +31,62 @@ const createSnapshot = (el: Element): OverlaySnapshot => {
   };
 };
 
+function describeElement(node: EventTarget | null): string {
+  if (!(node instanceof Element)) return "unknown";
+
+  const el = node as HTMLElement;
+  const tag = el.tagName.toLowerCase();
+  const id = el.id ? `#${el.id}` : "";
+  const classes =
+    typeof el.className === "string" && el.className.trim().length > 0
+      ? `.${el.className.trim().split(/\s+/).slice(0, 3).join(".")}`
+      : "";
+
+  return `${tag}${id}${classes}`;
+}
+
+function getPointerType(event: MouseEvent): string {
+  if ("pointerType" in event) {
+    return (event as PointerEvent).pointerType;
+  }
+  return "mouse";
+}
+
+export function installPointerDebug() {
+  if (typeof window === "undefined") return;
+
+  const debugWindow = window as DebugWindow;
+  if (debugWindow.__myndPointerDebugInstalled) return;
+  debugWindow.__myndPointerDebugInstalled = true;
+
+  const handler = (event: Event) => {
+    if (!(event instanceof MouseEvent)) return;
+
+    const target = event.target instanceof Element ? event.target : null;
+    const style = target ? window.getComputedStyle(target) : null;
+
+    console.info("[pointer-debug]", {
+      type: event.type,
+      x: Math.round(event.clientX),
+      y: Math.round(event.clientY),
+      target: describeElement(event.target),
+      pointerType: getPointerType(event),
+      pointerEvents: style?.pointerEvents,
+      zIndex: style?.zIndex,
+      defaultPrevented: event.defaultPrevented,
+    });
+  };
+
+  WATCHED_POINTER_EVENTS.forEach((eventName) => {
+    window.addEventListener(eventName, handler, true);
+  });
+
+  console.info("[pointer-debug] installed", { events: WATCHED_POINTER_EVENTS });
+}
+
 export function installOverlayDebugWatchdog() {
   if (typeof window === "undefined") return;
-  const debugWindow = window as unknown as {
-    __myndOverlayDebugInstalled?: boolean;
-    __myndOverlayFirstSeen?: WeakMap<Element, number>;
-  };
+  const debugWindow = window as DebugWindow;
 
   if (debugWindow.__myndOverlayDebugInstalled) return;
   debugWindow.__myndOverlayDebugInstalled = true;
