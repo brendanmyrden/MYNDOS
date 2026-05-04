@@ -8,6 +8,7 @@ import TaskPillHome from "./modules/taskpill";
 import RAPHiDashboard from "./modules/raphi";
 import MYRRYRHome from "./modules/myrryr";
 import SYYRHome from "./modules/syyr";
+import NumbersStarsSignsHome from "./modules/numbers-stars-signs";
 import SettingsPage from "./modules/settings/index.tsx";
 import MYNDOS from "./modules/myndos";
 import StreamsHome from "./modules/streams";
@@ -54,6 +55,7 @@ export default function App() {
             <Route path="/raphi" element={<RAPHiDashboard />} />
             <Route path="/myrryr" element={<MYRRYRHome />} />
             <Route path="/syyr" element={<SYYRHome />} />
+            <Route path="/numbers-stars-signs" element={<NumbersStarsSignsHome />} />
             <Route path="/streams" element={<StreamsHome />} />
             <Route path="/streams-of-strategy" element={<Navigate to="/streams" replace />} />
             <Route path="/streams/trade-core" element={<TradeCorePage />} />

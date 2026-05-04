@@ -6,6 +6,7 @@ import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import MediaModalWidget from "../../core/widgets/MediaModalWidget";
 import PlusCube from "../../core/widgets/PlusCube";
+import ModuleCube from "../../core/widgets/ModuleCube";
 import TableWidget from "../../core/widgets/TableWidget";
 import TradeCoreWidget from "../../core/widgets/TradeCoreWidget";
 import "../../styles/cyberpunk.css";
@@ -71,9 +72,7 @@ function StreamsHomeContent() {
           <div className="module-header-stack">
             <div className="module-header module-header-group">
               <div className="module-header-left">
-                <div className="module-cube">
-                  <span>🛰️</span>
-                </div>
+                <ModuleCube moduleName="streams" defaultEmoji="🛰️" />
                 <div>
                   <h1 className="module-title">$.0.$.</h1>
                   <p className="module-subtitle">$treams 0f $trategy</p>

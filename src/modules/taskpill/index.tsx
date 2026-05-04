@@ -7,6 +7,7 @@ import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import MediaModalWidget from "../../core/widgets/MediaModalWidget";
 import TableWidget from "../../core/widgets/TableWidget";
 import PlusCube from "../../core/widgets/PlusCube";
+import ModuleCube from "../../core/widgets/ModuleCube";
 import "../../styles/cyberpunk.css";
 
 function TaskPillHomeContent() {
@@ -70,9 +71,7 @@ function TaskPillHomeContent() {
           <div className="module-header-stack">
             <div className="module-header module-header-group">
               <div className="module-header-left">
-                <div className="module-cube">
-                  <span>💊</span>
-                </div>
+                <ModuleCube moduleName="taskpill" defaultEmoji="💊" />
                 <div>
                   <h1 className="module-title">TaskPill</h1>
                   <p className="module-subtitle">Habits + Tracking</p>

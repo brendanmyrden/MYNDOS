@@ -7,6 +7,7 @@ import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import MediaModalWidget from "../../core/widgets/MediaModalWidget";
 import TableWidget from "../../core/widgets/TableWidget";
 import PlusCube from "../../core/widgets/PlusCube";
+import ModuleCube from "../../core/widgets/ModuleCube";
 import "../../styles/cyberpunk.css";
 
 function SanctuaryHomeContent() {
@@ -70,9 +71,7 @@ function SanctuaryHomeContent() {
           <div className="module-header-stack">
             <div className="module-header module-header-group">
               <div className="module-header-left sanctuary-header-left">
-                <div className="module-cube">
-                  <span>🕊️</span>
-                </div>
+                <ModuleCube moduleName="sanctuary" defaultEmoji="🕊️" />
                 <div />
               </div>
               <PlusCube moduleName="sanctuary" />

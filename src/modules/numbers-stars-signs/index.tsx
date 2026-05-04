@@ -6,12 +6,11 @@ import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import MediaModalWidget from "../../core/widgets/MediaModalWidget";
 import TableWidget from "../../core/widgets/TableWidget";
-import LyricsWidget from "../../core/widgets/LyricsWidget";
 import PlusCube from "../../core/widgets/PlusCube";
 import ModuleCube from "../../core/widgets/ModuleCube";
 import "../../styles/cyberpunk.css";
 
-function MYRRYRHomeContent() {
+function NumbersStarsSignsContent() {
   const {
     moduleBackgroundGradient,
     modulePlusMatchBackground,
@@ -29,13 +28,13 @@ function MYRRYRHomeContent() {
     moduleInputBorder,
   } = useModuleTheme();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  
+
   const handleSettingsClick = () => {
     setIsSettingsOpen(true);
   };
 
   const plusBackground = modulePlusMatchBackground ? moduleBackgroundGradient : modulePlusColor;
-  
+
   const containerStyle: React.CSSProperties = {
     display: "flex",
     flexDirection: "column",
@@ -63,41 +62,40 @@ function MYRRYRHomeContent() {
     <div style={containerStyle} className="module-shell">
       <div className="module-content">
         <SettingsButton onClick={handleSettingsClick} />
-        <SettingsModal 
-          isOpen={isSettingsOpen} 
-          onClose={() => setIsSettingsOpen(false)} 
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
           useModuleTheme={true}
         />
         <div className="module-card">
           <div className="module-header-stack">
             <div className="module-header module-header-group">
               <div className="module-header-left">
-                <ModuleCube moduleName="myrryr" defaultEmoji="🎛️" />
+                <ModuleCube moduleName="numbers-stars-signs" defaultEmoji="🔢" />
                 <div>
-                  <h1 className="module-title">MYRRYR</h1>
-                  <p className="module-subtitle">Music Prod. + Versions + Brand</p>
+                  <h1 className="module-title">Numbers / Stars / Signs</h1>
+                  <p className="module-subtitle">Numerology + Astrology + Pattern Work</p>
                 </div>
               </div>
-              <PlusCube moduleName="myrryr" />
+              <PlusCube moduleName="numbers-stars-signs" />
             </div>
             <div className="module-hover-panel">
-              <ModuleHoverPanel moduleName="myrryr" />
+              <ModuleHoverPanel moduleName="numbers-stars-signs" />
             </div>
           </div>
-          <MatrixTimerWidget moduleName="myrryr" />
-          <MediaModalWidget moduleName="myrryr" />
-          <LyricsWidget moduleName="myrryr" />
-          <TableWidget moduleName="myrryr" />
+          <MatrixTimerWidget moduleName="numbers-stars-signs" />
+          <MediaModalWidget moduleName="numbers-stars-signs" />
+          <TableWidget moduleName="numbers-stars-signs" />
         </div>
       </div>
     </div>
   );
 }
 
-export default function MYRRYRHome() {
+export default function NumbersStarsSignsHome() {
   return (
-    <ModuleThemeProvider moduleName="myrryr">
-      <MYRRYRHomeContent />
+    <ModuleThemeProvider moduleName="numbers-stars-signs">
+      <NumbersStarsSignsContent />
     </ModuleThemeProvider>
   );
 }

@@ -12,6 +12,12 @@ export const moduleLinks: ModuleLink[] = [
   { name: "R-A-P-H [ i ]", path: "/raphi", moduleName: "raphi", icon: "🧬" },
   { name: "MYRRYR", path: "/myrryr", moduleName: "myrryr", icon: "🪞" },
   { name: "SYYR", path: "/syyr", moduleName: "syyr", icon: "🔮" },
+  {
+    name: "Numbers / Stars / Signs",
+    path: "/numbers-stars-signs",
+    moduleName: "numbers-stars-signs",
+    icon: "🔢",
+  },
   { name: "$.0.$. - $treams 0f $trategy", path: "/streams", moduleName: "streams", icon: "🛰️" },
   { name: "Settings", path: "/settings", moduleName: "settings", icon: "⚙️" },
 ];

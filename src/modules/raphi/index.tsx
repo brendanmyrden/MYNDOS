@@ -8,6 +8,7 @@ import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
 import MediaModalWidget from "../../core/widgets/MediaModalWidget";
 import TableWidget from "../../core/widgets/TableWidget";
 import PlusCube from "../../core/widgets/PlusCube";
+import ModuleCube from "../../core/widgets/ModuleCube";
 import "../../styles/cyberpunk.css";
 
 function RAPHiDashboardContent() {
@@ -71,9 +72,7 @@ function RAPHiDashboardContent() {
           <div className="raphi-header-stack">
             <div className="raphi-header raphi-header-group">
               <div className="raphi-header-left">
-                <div className="raphi-cube">
-                  <span>🧬</span>
-                </div>
+                <ModuleCube moduleName="raphi" defaultEmoji="🧬" className="raphi-cube" />
                 <div>
                   <h1 className="raphi-title">RAPH[i]</h1>
                   <p className="raphi-subtitle">Health Intelligence Dashboard</p>

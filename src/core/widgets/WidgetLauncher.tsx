@@ -54,8 +54,17 @@ export default function WidgetLauncher({ moduleName }: WidgetLauncherProps) {
         className="widget-launcher__btn"
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
+        aria-label={open ? "Close widget toggle bar" : "Open widget toggle bar"}
       >
-        +
+        <span className="widget-launcher__cube-orbit" aria-hidden="true">
+          <span className="widget-launcher__cube">
+            <span className="widget-launcher__face widget-launcher__face--front">
+              <span className="widget-launcher__cube-mark">+</span>
+            </span>
+            <span className="widget-launcher__face widget-launcher__face--right" />
+            <span className="widget-launcher__face widget-launcher__face--top" />
+          </span>
+        </span>
       </button>
       <div className="widget-launcher__menu">
         <div className="widget-launcher__menu-inner">
