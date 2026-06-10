@@ -7,15 +7,50 @@ type PlusCubeProps = {
   moduleName: string;
 };
 
+function canCreateWebGLContext() {
+  try {
+    const canvas = document.createElement("canvas");
+    return Boolean(canvas.getContext("webgl2") || canvas.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
+
 export default function PlusCube({ moduleName }: PlusCubeProps) {
   const { appearance, glowCss } = usePlusCubeAccent(moduleName);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fallbackRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    canvas.hidden = false;
+    if (fallbackRef.current) {
+      fallbackRef.current.hidden = true;
+    }
+
+    if (!canCreateWebGLContext()) {
+      canvas.hidden = true;
+      if (fallbackRef.current) {
+        fallbackRef.current.hidden = false;
+      }
+      return;
+    }
+
     const scene = new THREE.Scene();
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    let renderer: THREE.WebGLRenderer;
+
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    } catch (error) {
+      console.warn("PlusCube WebGL renderer unavailable; rendering static fallback.", error);
+      canvas.hidden = true;
+      if (fallbackRef.current) {
+        fallbackRef.current.hidden = false;
+      }
+      return;
+    }
+
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(64, 64, false);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -189,6 +224,9 @@ export default function PlusCube({ moduleName }: PlusCubeProps) {
       style={{ ["--plus-cube-glow" as string]: glowCss }}
     >
       <canvas className="plus-cube-btn__canvas" ref={canvasRef} aria-hidden="true" />
+      <span className="plus-cube-btn__fallback" ref={fallbackRef} aria-hidden="true" hidden>
+        +
+      </span>
     </div>
   );
 }

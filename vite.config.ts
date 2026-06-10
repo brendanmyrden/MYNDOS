@@ -8,4 +8,14 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 5173,
   },
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react-dom/client",
+      "react/jsx-dev-runtime",
+      "react/jsx-runtime",
+      "react-router-dom",
+    ],
+  },
 })

@@ -1,8 +1,8 @@
 'use client';
-import React, { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { AnimatePresence, motion, MotionConfig } from 'motion/react';
 import { XIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '../../src/lib/utils';
 
 const transition = {
   type: 'spring',

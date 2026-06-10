@@ -1,19 +1,36 @@
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import Sidebar from "./core/navigation/Sidebar";
 import HomeScreenGrid from "./core/navigation/HomeScreenGrid";
 import { getHomescreenCubed } from "./core/navigation/homescreen";
-import SanctuaryHome from "./modules/sanctuary";
-import TaskPillHome from "./modules/taskpill";
-import RAPHiDashboard from "./modules/raphi";
-import MYRRYRHome from "./modules/myrryr";
-import SYYRHome from "./modules/syyr";
-import NumbersStarsSignsHome from "./modules/numbers-stars-signs";
-import SettingsPage from "./modules/settings/index.tsx";
-import MYNDOS from "./modules/myndos";
-import StreamsHome from "./modules/streams";
-import TradeCorePage from "./modules/streams/TradeCore";
-import TradeInterfaceRoot from "./modules/streams/TradeInterfaceRoot";
+
+const SanctuaryHome = lazy(() => import("./modules/sanctuary"));
+const TaskPillHome = lazy(() => import("./modules/taskpill"));
+const RAPHiDashboard = lazy(() => import("./modules/raphi"));
+const MYRRYRHome = lazy(() => import("./modules/myrryr"));
+const SYYRHome = lazy(() => import("./modules/syyr"));
+const NumbersStarsSignsHome = lazy(() => import("./modules/numbers-stars-signs"));
+const SettingsPage = lazy(() => import("./modules/settings/index.tsx"));
+const MYNDOS = lazy(() => import("./modules/myndos"));
+const StreamsHome = lazy(() => import("./modules/streams"));
+const TradeCorePage = lazy(() => import("./modules/streams/TradeCore"));
+const TradeInterfaceRoot = lazy(() => import("./modules/streams/TradeInterfaceRoot"));
+
+const routeFallback = (
+  <div
+    style={{
+      display: "grid",
+      placeItems: "center",
+      minHeight: "100%",
+      color: "#EDEDED",
+      background: "#0B0F1A",
+      letterSpacing: "0.08em",
+      textTransform: "uppercase",
+    }}
+  >
+    Loading module
+  </div>
+);
 
 export default function App() {
   const [homescreenCubed, setHomescreenCubed] = useState(() => getHomescreenCubed());
@@ -47,21 +64,23 @@ export default function App() {
         {homescreenCubed ? (
           <HomeScreenGrid />
         ) : (
-          <Routes>
-            <Route path="/" element={<RAPHiDashboard />} />
-            <Route path="/myndos" element={<MYNDOS />} />
-            <Route path="/sanctuary" element={<SanctuaryHome />} />
-            <Route path="/taskpill" element={<TaskPillHome />} />
-            <Route path="/raphi" element={<RAPHiDashboard />} />
-            <Route path="/myrryr" element={<MYRRYRHome />} />
-            <Route path="/syyr" element={<SYYRHome />} />
-            <Route path="/numbers-stars-signs" element={<NumbersStarsSignsHome />} />
-            <Route path="/streams" element={<StreamsHome />} />
-            <Route path="/streams-of-strategy" element={<Navigate to="/streams" replace />} />
-            <Route path="/streams/trade-core" element={<TradeCorePage />} />
-            <Route path="/streams/trade-interface" element={<TradeInterfaceRoot />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </Routes>
+          <Suspense fallback={routeFallback}>
+            <Routes>
+              <Route path="/" element={<RAPHiDashboard />} />
+              <Route path="/myndos" element={<MYNDOS />} />
+              <Route path="/sanctuary" element={<SanctuaryHome />} />
+              <Route path="/taskpill" element={<TaskPillHome />} />
+              <Route path="/raphi" element={<RAPHiDashboard />} />
+              <Route path="/myrryr" element={<MYRRYRHome />} />
+              <Route path="/syyr" element={<SYYRHome />} />
+              <Route path="/numbers-stars-signs" element={<NumbersStarsSignsHome />} />
+              <Route path="/streams" element={<StreamsHome />} />
+              <Route path="/streams-of-strategy" element={<Navigate to="/streams" replace />} />
+              <Route path="/streams/trade-core" element={<TradeCorePage />} />
+              <Route path="/streams/trade-interface" element={<TradeInterfaceRoot />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Routes>
+          </Suspense>
         )}
       </div>
     </div>
