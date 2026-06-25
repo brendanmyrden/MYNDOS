@@ -1,6 +1,6 @@
 import { useEffect, useId, useState, useRef } from "react";
 import { AnimatePresence, motion, MotionConfig } from "motion/react";
-import { XIcon } from "lucide-react";
+import XIcon from "lucide-react/dist/esm/icons/x.js";
 import { cn } from "../../lib/utils";
 
 const transition = {

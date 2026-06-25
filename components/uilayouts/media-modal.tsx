@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useId, useState } from 'react';
 import { AnimatePresence, motion, MotionConfig } from 'motion/react';
-import { XIcon } from 'lucide-react';
+import XIcon from 'lucide-react/dist/esm/icons/x.js';
 import { cn } from '../../src/lib/utils';
 
 const transition = {
