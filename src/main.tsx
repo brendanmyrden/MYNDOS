@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "./core/state/ThemeContext";
+import RuntimeErrorBoundary from "./core/RuntimeErrorBoundary";
 import {
   installOverlayDebugWatchdog,
   installPointerDebug,
@@ -20,12 +21,30 @@ if (import.meta.env.DEV) {
   }
 }
 
-createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
-    </BrowserRouter>
-  </React.StrictMode>
-);
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  const fallback = document.createElement("main");
+  fallback.textContent = "MYNDOS could not find the React root. Restart the Vite dev server.";
+  fallback.style.minHeight = "100vh";
+  fallback.style.display = "grid";
+  fallback.style.placeItems = "center";
+  fallback.style.background = "#0B0F1A";
+  fallback.style.color = "#EDEDED";
+  fallback.style.fontFamily = "system-ui, sans-serif";
+  fallback.style.padding = "24px";
+  fallback.style.textAlign = "center";
+  document.body.replaceChildren(fallback);
+} else {
+  createRoot(rootElement).render(
+    <React.StrictMode>
+      <RuntimeErrorBoundary>
+        <BrowserRouter>
+          <ThemeProvider>
+            <App />
+          </ThemeProvider>
+        </BrowserRouter>
+      </RuntimeErrorBoundary>
+    </React.StrictMode>
+  );
+}
