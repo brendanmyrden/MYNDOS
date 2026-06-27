@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, DragEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
@@ -177,6 +177,7 @@ export default function Sidebar() {
   const [homescreenCubed, setHomescreenCubedState] = useState<boolean>(() => getHomescreenCubed());
   const [isSkinOpen, setIsSkinOpen] = useState(true);
   const [, setThemeVersion] = useState(0);
+  const suppressNextClickRef = useRef(false);
 
   useEffect(() => {
     localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(links.map((link) => link.path)));
@@ -211,7 +212,9 @@ export default function Sidebar() {
   }, []);
 
   const activeModuleName = useMemo(() => {
-    return links.find((link) => link.path === location.pathname)?.moduleName;
+    return links.find(
+      (link) => location.pathname === link.path || location.pathname.startsWith(`${link.path}/`)
+    )?.moduleName;
   }, [links, location.pathname]);
 
   const sidebarStyle = useMemo(() => {
@@ -260,6 +263,10 @@ export default function Sidebar() {
       setDraggingPath(null);
       return;
     }
+    suppressNextClickRef.current = true;
+    window.setTimeout(() => {
+      suppressNextClickRef.current = false;
+    }, 250);
     setLinks((prev) => moveLink(prev, draggedPath, path));
     setDragOverPath(null);
     setDraggingPath(null);
@@ -271,7 +278,10 @@ export default function Sidebar() {
   };
 
   const handleNavigate = (path: string) => () => {
-    if (draggingPath) return;
+    if (suppressNextClickRef.current) {
+      suppressNextClickRef.current = false;
+      return;
+    }
     navigate(path);
   };
 
@@ -311,15 +321,20 @@ export default function Sidebar() {
                 isDragging ? " is-dragging" : ""
               }${isOver ? " is-over" : ""}`}
               style={linkStyle}
-              draggable
               onClick={handleNavigate(link.path)}
-              onDragStart={handleDragStart(link.path)}
               onDragOver={handleDragOver(link.path)}
               onDrop={handleDrop(link.path)}
               onDragEnd={handleDragEnd}
             >
               <span className="sidebar-link__label">{link.name}</span>
-              <span className="sidebar-link__handle" aria-hidden="true" />
+              <span
+                className="sidebar-link__handle"
+                aria-hidden="true"
+                draggable
+                onClick={(event) => event.stopPropagation()}
+                onDragStart={handleDragStart(link.path)}
+                onDragEnd={handleDragEnd}
+              />
             </button>
           );
         })}

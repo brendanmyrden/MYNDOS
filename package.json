@@ -4,9 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "deps:check": "node scripts/verify-deps.mjs",
+    "deps:refresh": "npm ci",
+    "predev": "node scripts/verify-deps.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/verify-deps.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "prepreview": "node scripts/verify-deps.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

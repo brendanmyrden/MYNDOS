@@ -37,7 +37,6 @@ export function installPointerDebug() {
       const x = (event as PointerEvent).clientX;
       const y = (event as PointerEvent).clientY;
       const top = document.elementFromPoint(x, y);
-      // eslint-disable-next-line no-console
       console.log("[pointer-debug] pointerdown", {
         x,
         y,
@@ -48,4 +47,3 @@ export function installPointerDebug() {
     true
   );
 }
-

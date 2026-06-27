@@ -1,5 +1,8 @@
 import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import "../../styles/cyberpunk.css";
+
+type ListSetter = Dispatch<SetStateAction<string[]>>;
 
 export default function RAPHInputPanel() {
   // Sleep
@@ -12,12 +15,12 @@ export default function RAPHInputPanel() {
   const [supplements, setSupplements] = useState<string[]>([""]);
 
   // Add new input to a category
-  const addField = (setter: any, list: string[]) => {
+  const addField = (setter: ListSetter, list: string[]) => {
     setter([...list, ""]);
   };
 
   // Update an input
-  const updateField = (setter: any, list: string[], index: number, value: string) => {
+  const updateField = (setter: ListSetter, list: string[], index: number, value: string) => {
     const updated = [...list];
     updated[index] = value;
     setter(updated);

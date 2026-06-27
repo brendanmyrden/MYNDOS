@@ -1,4 +1,4 @@
-import { getEnabledModules } from "../../modules/registry";
+import { getEnabledModuleLinks } from "../../modules/registry";
 
 export type ModuleLink = {
   name: string;
@@ -7,9 +7,4 @@ export type ModuleLink = {
   icon: string;
 };
 
-export const moduleLinks: ModuleLink[] = getEnabledModules().map((module) => ({
-  name: module.navigation.label ?? module.name,
-  path: module.navigation.path,
-  moduleName: module.id,
-  icon: module.navigation.icon ?? "",
-}));
+export const moduleLinks: ModuleLink[] = getEnabledModuleLinks();

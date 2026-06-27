@@ -58,8 +58,6 @@ export default function IntakeDashboard() {
     return `${year}-${month}-${day}`;
   };
 
-  /* eslint-disable react-hooks/set-state-in-effect */
-
   useEffect(() => {
     let active = true;
 

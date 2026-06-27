@@ -10,6 +10,13 @@ import { syyrModule } from "./syyr/manifest";
 import { taskpillModule } from "./taskpill/manifest";
 import type { ModuleManifest, ModuleRouteDefinition } from "./types";
 
+export type ModuleRegistryLink = {
+  name: string;
+  path: string;
+  moduleName: string;
+  icon: string;
+};
+
 export const moduleRegistry = [
   myndosModule,
   sanctuaryModule,
@@ -23,8 +30,15 @@ export const moduleRegistry = [
   prompttracModule,
 ] satisfies ModuleManifest[];
 
+const moduleRegistryById = new Map(moduleRegistry.map((module) => [module.id, module]));
+
+export const getAllModules = (): ModuleManifest[] => [...moduleRegistry];
+
 export const getEnabledModules = (): ModuleManifest[] =>
   moduleRegistry.filter((module) => module.enabledByDefault);
+
+export const getModuleById = (id: string): ModuleManifest | undefined =>
+  moduleRegistryById.get(id);
 
 export const getDefaultModule = (): ModuleManifest | null => {
   const enabledModules = getEnabledModules();
@@ -45,3 +59,11 @@ export const getEnabledModuleRoutes = (): ModuleRouteDefinition[] =>
       moduleId: module.id,
     })),
   ]);
+
+export const getEnabledModuleLinks = (): ModuleRegistryLink[] =>
+  getEnabledModules().map((module) => ({
+    name: module.navigation.label ?? module.name,
+    path: module.navigation.path,
+    moduleName: module.id,
+    icon: module.navigation.icon ?? "",
+  }));
