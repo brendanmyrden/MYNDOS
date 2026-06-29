@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "deps:check": "node scripts/verify-deps.mjs",
+    "deps:repair": "node scripts/verify-deps.mjs --repair",
     "deps:refresh": "npm ci",
-    "predev": "node scripts/verify-deps.mjs",
+    "predev": "node scripts/verify-deps.mjs --repair",
     "dev": "vite",
     "prebuild": "node scripts/verify-deps.mjs",
     "build": "tsc -b && vite build",
