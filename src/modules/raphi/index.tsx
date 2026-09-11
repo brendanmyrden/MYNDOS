@@ -1,17 +1,15 @@
-import { lazy, Suspense, useState } from "react";
+import { useState } from "react";
 import IntakeDashboard from "./IntakeDashboard";
 import { ModuleThemeProvider, useModuleTheme } from "../../core/state/ModuleThemeContext";
 import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
 import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
+import MediaBoardWidget from "../../core/widgets/MediaBoardWidget";
 import TableWidget from "../../core/widgets/TableWidget";
 import PlusCube from "../../core/widgets/PlusCube";
 import ModuleCube from "../../core/widgets/ModuleCube";
-import { useWidgetState } from "../../core/widgets/useWidgetState";
 import "../../styles/cyberpunk.css";
-
-const MediaModalWidget = lazy(() => import("../../core/widgets/MediaModalWidget"));
 
 function RAPHiDashboardContent() {
   const {
@@ -30,7 +28,6 @@ function RAPHiDashboardContent() {
     moduleInputBg,
     moduleInputBorder,
   } = useModuleTheme();
-  const { state: widgetState } = useWidgetState("raphi");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleSettingsClick = () => {
@@ -88,11 +85,7 @@ function RAPHiDashboardContent() {
             </div>
           </div>
           <MatrixTimerWidget moduleName="raphi" />
-          {widgetState.mediaModal && (
-            <Suspense fallback={null}>
-              <MediaModalWidget moduleName="raphi" />
-            </Suspense>
-          )}
+          <MediaBoardWidget moduleName="raphi" />
           <TableWidget moduleName="raphi" />
           <IntakeDashboard />
         </div>

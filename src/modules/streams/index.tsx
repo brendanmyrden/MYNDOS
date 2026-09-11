@@ -4,7 +4,7 @@ import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
 import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
-import MediaModalWidget from "../../core/widgets/MediaModalWidget";
+import MediaBoardWidget from "../../core/widgets/MediaBoardWidget";
 import PlusCube from "../../core/widgets/PlusCube";
 import ModuleCube from "../../core/widgets/ModuleCube";
 import TableWidget from "../../core/widgets/TableWidget";
@@ -86,7 +86,7 @@ function StreamsHomeContent() {
         </div>
         <TradeCoreWidget moduleName="streams" />
         <MatrixTimerWidget moduleName="streams" />
-        <MediaModalWidget moduleName="streams" />
+        <MediaBoardWidget moduleName="streams" />
         <TableWidget moduleName="streams" />
           <div className="module-section">
             <h2 className="module-section-title">Strategy Streams</h2>

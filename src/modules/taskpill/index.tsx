@@ -4,7 +4,7 @@ import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
 import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
-import MediaModalWidget from "../../core/widgets/MediaModalWidget";
+import MediaBoardWidget from "../../core/widgets/MediaBoardWidget";
 import TableWidget from "../../core/widgets/TableWidget";
 import PlusCube from "../../core/widgets/PlusCube";
 import ModuleCube from "../../core/widgets/ModuleCube";
@@ -84,7 +84,7 @@ function TaskPillHomeContent() {
             </div>
           </div>
           <MatrixTimerWidget moduleName="taskpill" />
-          <MediaModalWidget moduleName="taskpill" />
+          <MediaBoardWidget moduleName="taskpill" />
           <TableWidget moduleName="taskpill" />
         </div>
       </div>

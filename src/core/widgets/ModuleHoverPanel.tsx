@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import MatrixTimerOption from "./MatrixTimerOption";
-import MediaModalOption from "./MediaModalOption";
+import MediaBoardOption from "./MediaBoardOption";
 import TableWidgetOption from "./TableWidgetOption";
 import TradeCoreOption from "./TradeCoreOption";
 import LyricsOption from "./LyricsOption";
@@ -61,7 +61,7 @@ export default function ModuleHoverPanel({ moduleName }: ModuleHoverPanelProps) 
       </div>
       <div className="module-hover-panel__widgets">
         <MatrixTimerOption moduleName={moduleName} />
-        <MediaModalOption moduleName={moduleName} />
+        <MediaBoardOption moduleName={moduleName} />
         {moduleName === "streams" ? <TradeCoreOption moduleName={moduleName} /> : null}
         {moduleName === "myrryr" ? <LyricsOption moduleName={moduleName} /> : null}
         <TableWidgetOption moduleName={moduleName} />

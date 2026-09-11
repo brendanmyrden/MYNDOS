@@ -4,7 +4,7 @@ import SettingsButton from "../../core/layout/SettingsButton";
 import SettingsModal from "../../core/layout/SettingsModal";
 import ModuleHoverPanel from "../../core/widgets/ModuleHoverPanel";
 import MatrixTimerWidget from "../../core/widgets/MatrixTimerWidget";
-import MediaModalWidget from "../../core/widgets/MediaModalWidget";
+import MediaBoardWidget from "../../core/widgets/MediaBoardWidget";
 import TableWidget from "../../core/widgets/TableWidget";
 import PlusCube from "../../core/widgets/PlusCube";
 import ModuleCube from "../../core/widgets/ModuleCube";
@@ -81,7 +81,7 @@ function SanctuaryHomeContent() {
             </div>
           </div>
           <MatrixTimerWidget moduleName="sanctuary" />
-          <MediaModalWidget moduleName="sanctuary" />
+          <MediaBoardWidget moduleName="sanctuary" />
           <TableWidget moduleName="sanctuary" />
         </div>
       </div>
