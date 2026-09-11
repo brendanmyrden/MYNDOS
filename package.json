@@ -3,14 +3,18 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "electron/main.js",
   "scripts": {
     "deps:check": "node scripts/verify-deps.mjs",
     "deps:repair": "node scripts/verify-deps.mjs --repair",
     "deps:refresh": "npm ci",
     "predev": "node scripts/verify-deps.mjs --repair",
-    "dev": "vite",
+    "dev": "concurrently --kill-others-on-fail \"npm:dev:renderer\" \"npm:dev:electron\"",
+    "dev:renderer": "vite",
+    "dev:electron": "wait-on http-get://127.0.0.1:5173 && cross-env ELECTRON_RENDERER_URL=http://127.0.0.1:5173 electron .",
     "prebuild": "node scripts/verify-deps.mjs",
-    "build": "tsc -b && vite build",
+    "build": "npm run build:renderer && electron-builder --mac --publish never",
+    "build:renderer": "tsc -b && vite build",
     "lint": "eslint .",
     "prepreview": "node scripts/verify-deps.mjs",
     "preview": "vite preview"
@@ -35,6 +39,10 @@
     "@types/three": "^0.184.1",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.23",
+    "concurrently": "^10.0.5",
+    "cross-env": "^10.1.0",
+    "electron": "^44.3.0",
+    "electron-builder": "^26.15.3",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
@@ -43,6 +51,27 @@
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "wait-on": "^9.1.0"
+  },
+  "build": {
+    "appId": "com.myndos.desktop",
+    "productName": "MYNDOS",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    }
   }
 }
