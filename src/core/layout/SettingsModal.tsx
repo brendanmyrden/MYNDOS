@@ -308,10 +308,11 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
     zIndex: 9999,
     display: "flex",
     flexDirection: "column",
+    height: "100%",
+    minHeight: 0,
     backgroundColor: "#1a1a1a",
     boxSizing: "border-box",
-    overflowY: "auto",
-    overflowX: "hidden",
+    overflow: "hidden",
     transition: isDragging ? "none" : "transform 0.2s ease, width 0.2s ease, height 0.2s ease",
     transform: isDragging ? `translate(${dragOffset.x}px, ${dragOffset.y}px)` : "none",
   };
@@ -320,8 +321,8 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
     panelStyle.top = 0;
     panelStyle.right = 0;
     panelStyle.bottom = 0;
-    panelStyle.width = "400px";
-    panelStyle.maxWidth = "90vw";
+    panelStyle.width = "480px";
+    panelStyle.maxWidth = "100vw";
     panelStyle.borderLeft = "1px solid rgba(255, 255, 255, 0.1)";
     panelStyle.boxShadow = "-4px 0 24px rgba(0, 0, 0, 0.3)";
     panelStyle.animation = "slideInRight 0.3s ease-out";
@@ -329,8 +330,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
     panelStyle.left = 0;
     panelStyle.right = 0;
     panelStyle.bottom = 0;
-    panelStyle.height = "45vh";
-    panelStyle.minHeight = "320px";
+    panelStyle.height = "clamp(320px, 45vh, 70vh)";
     panelStyle.maxHeight = "70vh";
     panelStyle.borderTop = "1px solid rgba(255, 255, 255, 0.1)";
     panelStyle.boxShadow = "0 -6px 24px rgba(0, 0, 0, 0.35)";
@@ -381,7 +381,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
       />
       
       {/* Modal */}
-      <div style={panelStyle}>
+      <div className="settings-modal-panel settings-panel" style={panelStyle}>
         {/* Header */}
         <div
           style={{
@@ -390,6 +390,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            flex: "0 0 auto",
             cursor: isDragging ? "grabbing" : "grab",
             userSelect: "none",
           }}
@@ -431,9 +432,13 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
 
         {/* Content */}
         <div
+          className="settings-panel__body"
           style={{
             padding: "24px",
-            flex: 1,
+            flex: "0 1 auto",
+            minHeight: 0,
+            overflowY: "auto",
+            overflowX: "hidden",
             display: "flex",
             flexDirection: "column",
             gap: "24px",
@@ -657,15 +662,22 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
               >
                 Sidebar Button Theme
               </label>
-              <div style={{ display: "grid", gap: "12px" }}>
-                <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ display: "grid", gap: "12px", minWidth: 0 }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                    gap: "10px",
+                    minWidth: 0,
+                  }}
+                >
                   {(["solid", "gradient"] as SidebarButtonStyle[]).map((style) => (
                     <button
                       key={style}
                       type="button"
                       onClick={() => setTempSidebarButtonStyle(style)}
                       style={{
-                        flex: 1,
+                        minWidth: 0,
                         padding: "8px 10px",
                         borderRadius: "6px",
                         border:
@@ -691,8 +703,9 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
+                    gridTemplateColumns: "minmax(0, 1fr)",
                     gap: "12px",
+                    minWidth: 0,
                   }}
                 >
                   <label
@@ -701,10 +714,19 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                       gap: "8px",
                       color: "#EDEDED",
                       fontSize: "12px",
+                      minWidth: 0,
                     }}
                   >
                     Primary
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "60px minmax(0, 1fr)",
+                        gap: "10px",
+                        alignItems: "center",
+                        minWidth: 0,
+                      }}
+                    >
                       <input
                         type="color"
                         value={toHexColor(tempSidebarButtonPrimary)}
@@ -723,7 +745,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                         value={tempSidebarButtonPrimary}
                         onChange={(e) => setTempSidebarButtonPrimary(e.target.value)}
                         style={{
-                          flex: 1,
+                          width: "100%",
                           minWidth: 0,
                           padding: "8px 10px",
                           backgroundColor: "rgba(255, 255, 255, 0.05)",
@@ -743,10 +765,19 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                         gap: "8px",
                         color: "#EDEDED",
                         fontSize: "12px",
+                        minWidth: 0,
                       }}
                     >
                       Secondary
-                      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "60px minmax(0, 1fr)",
+                          gap: "10px",
+                          alignItems: "center",
+                          minWidth: 0,
+                        }}
+                      >
                         <input
                           type="color"
                           value={toHexColor(tempSidebarButtonSecondary)}
@@ -765,7 +796,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                           value={tempSidebarButtonSecondary}
                           onChange={(e) => setTempSidebarButtonSecondary(e.target.value)}
                           style={{
-                            flex: 1,
+                            width: "100%",
                             minWidth: 0,
                             padding: "8px 10px",
                             backgroundColor: "rgba(255, 255, 255, 0.05)",
@@ -799,10 +830,19 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                     gap: "8px",
                     color: "#EDEDED",
                     fontSize: "12px",
+                    minWidth: 0,
                   }}
                 >
                   Outline / Glow
-                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "60px minmax(0, 1fr)",
+                      gap: "10px",
+                      alignItems: "center",
+                      minWidth: 0,
+                    }}
+                  >
                     <input
                       type="color"
                       value={toHexColor(tempSidebarButtonOutline)}
@@ -821,7 +861,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                       value={tempSidebarButtonOutline}
                       onChange={(e) => setTempSidebarButtonOutline(e.target.value)}
                       style={{
-                        flex: 1,
+                        width: "100%",
                         minWidth: 0,
                         padding: "8px 10px",
                         backgroundColor: "rgba(255, 255, 255, 0.05)",
@@ -917,8 +957,20 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
             </div>
           )}
 
-          {/* Buttons */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "auto", paddingTop: "24px" }}>
+        </div>
+
+        {/* Actions */}
+        <div
+          className="settings-panel__footer"
+          style={{
+            display: "flex",
+            flex: "0 0 auto",
+            flexDirection: "column",
+            gap: "10px",
+            padding: "12px 24px 16px",
+            borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+          }}
+        >
             <button
               onClick={handlePreview}
               style={{
@@ -990,12 +1042,22 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
             >
               Reset to Defaults
             </button>
-          </div>
         </div>
       </div>
 
       {/* Animation styles */}
       <style>{`
+        .settings-modal-panel,
+        .settings-modal-panel * {
+          box-sizing: border-box;
+        }
+
+        .settings-modal-panel input,
+        .settings-modal-panel select,
+        .settings-modal-panel button {
+          max-width: 100%;
+        }
+
         @keyframes slideInRight {
           from {
             transform: translateX(100%);
