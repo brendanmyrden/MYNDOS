@@ -8,10 +8,10 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  background: var(--sidebar-bg, #05070a);
-  border-right: 1px solid rgba(125, 249, 255, 0.14);
-  color: #eaf2ff;
-  font-family: "Rajdhani", "Orbitron", system-ui, sans-serif;
+  background: var(--sidebar-bg, var(--bg-sidebar));
+  border-right: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-family);
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -55,7 +55,7 @@
   font-size: 16px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--sidebar-title-color, var(--sidebar-accent));
+  color: var(--sidebar-title-color, var(--sidebar-accent, var(--primary)));
 }
 
 .sidebar-subtitle {
@@ -63,7 +63,7 @@
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(234, 242, 255, 0.7);
+  color: var(--text-muted);
 }
 
 .sidebar-orb {
@@ -133,7 +133,7 @@
 .sidebar-link {
   border: 1px solid var(--sidebar-link-outline, rgba(125, 249, 255, 0.16));
   background: var(--sidebar-link-bg, rgba(6, 10, 20, 0.7));
-  color: #eaf2ff;
+  color: var(--text);
   padding: 12px 14px;
   border-radius: 14px;
   cursor: grab;

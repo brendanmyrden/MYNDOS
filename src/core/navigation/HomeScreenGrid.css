@@ -3,8 +3,9 @@
   width: 100%;
   padding: 28px;
   box-sizing: border-box;
-  color: #eaf2ff;
-  background: linear-gradient(135deg, #0b1020 0%, #151b2f 50%, #1d0f2c 100%);
+  color: var(--text);
+  background: var(--gradient-page);
+  font-family: var(--font-family);
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -15,13 +16,17 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--gradient-header);
 }
 
 .home-grid-title {
   font-size: 16px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: #7df9ff;
+  color: var(--primary);
 }
 
 .home-grid-subtitle {
@@ -29,13 +34,13 @@
   font-size: 12px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(234, 242, 255, 0.7);
+  color: var(--text-muted);
 }
 
 .home-grid-exit {
-  border: 1px solid rgba(125, 249, 255, 0.3);
-  background: rgba(6, 10, 20, 0.6);
-  color: rgba(234, 242, 255, 0.85);
+  border: 1px solid var(--outline);
+  background: color-mix(in srgb, var(--bg-raised) 75%, transparent);
+  color: var(--text);
   padding: 8px 16px;
   border-radius: 999px;
   font-size: 12px;
@@ -46,8 +51,8 @@
 }
 
 .home-grid-exit:hover {
-  border-color: rgba(125, 249, 255, 0.6);
-  box-shadow: 0 0 14px rgba(125, 249, 255, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--primary) 20%, transparent);
 }
 
 .home-grid {
@@ -62,9 +67,9 @@
 .home-grid-tile {
   aspect-ratio: 1 / 1;
   border-radius: 18px;
-  border: 1px solid rgba(125, 249, 255, 0.18);
-  background: rgba(6, 10, 20, 0.75);
-  color: #eaf2ff;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-raised) 75%, transparent);
+  color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -81,10 +86,10 @@
 
 .home-grid-tile:hover {
   transform: translateY(-4px) scale(1.01);
-  border-color: rgba(125, 249, 255, 0.45);
+  border-color: var(--primary);
   box-shadow:
     0 18px 40px rgba(0, 0, 0, 0.55),
-    0 0 18px rgba(125, 249, 255, 0.2);
+    0 0 18px color-mix(in srgb, var(--primary) 20%, transparent);
 }
 
 .home-grid-icon {
@@ -95,7 +100,8 @@
   font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(234, 242, 255, 0.85);
+  color: var(--text);
+  opacity: 0.85;
 }
 
 @media (max-width: 720px) {

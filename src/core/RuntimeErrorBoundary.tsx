@@ -36,25 +36,25 @@ export default class RuntimeErrorBoundary extends Component<
           display: "grid",
           placeItems: "center",
           padding: 24,
-          background: "#0B0F1A",
-          color: "#EDEDED",
-          fontFamily: "Inter, system-ui, sans-serif",
+          background: "var(--bg-raised)",
+          color: "var(--text)",
+          fontFamily: "var(--font-family)",
         }}
       >
         <section
           style={{
             width: "min(560px, 100%)",
-            border: "1px solid rgba(255,255,255,0.18)",
+            border: "1px solid var(--border)",
             borderRadius: 8,
             padding: 24,
-            background: "rgba(10,14,24,0.92)",
+            background: "color-mix(in srgb, var(--bg) 92%, transparent)",
             boxShadow: "0 20px 70px rgba(0,0,0,0.35)",
           }}
         >
           <h1 style={{ margin: 0, fontSize: 22, lineHeight: 1.2 }}>
             MYNDOS failed to render
           </h1>
-          <p style={{ margin: "12px 0 0", color: "#AEB7C8", lineHeight: 1.55 }}>
+          <p style={{ margin: "12px 0 0", color: "var(--text-muted)", lineHeight: 1.55 }}>
             A module threw while React was mounting. Check the browser console for the
             stack trace, then reload after the dev server finishes restarting.
           </p>
@@ -78,11 +78,11 @@ export default class RuntimeErrorBoundary extends Component<
             type="button"
             onClick={() => window.location.reload()}
             style={{
-              border: "1px solid rgba(255,255,255,0.2)",
+              border: "1px solid var(--outline)",
               borderRadius: 6,
               padding: "9px 12px",
-              background: "#EDEDED",
-              color: "#0B0F1A",
+              background: "var(--gradient-sidebar-button)",
+              color: "var(--bg)",
               fontWeight: 700,
               cursor: "pointer",
             }}

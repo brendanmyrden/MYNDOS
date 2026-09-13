@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./core/navigation/Sidebar";
 import HomeScreenGrid from "./core/navigation/HomeScreenGrid";
@@ -6,14 +6,17 @@ import { getHomescreenCubed } from "./core/navigation/homescreen";
 import { getDefaultModule, getEnabledModuleRoutes } from "./modules/registry";
 import type { ModuleRouteDefinition } from "./modules/types";
 
+const ThemesPage = lazy(() => import("./core/layout/ThemesPage"));
+
 const routeFallback = (
   <div
     style={{
       display: "grid",
       placeItems: "center",
       minHeight: "100%",
-      color: "#EDEDED",
-      background: "#0B0F1A",
+      color: "var(--text)",
+      background: "var(--bg-raised)",
+      fontFamily: "var(--font-family)",
       letterSpacing: "0.08em",
       textTransform: "uppercase",
     }}
@@ -55,8 +58,9 @@ export default function App() {
   const containerStyle: React.CSSProperties = {
     display: "flex",
     height: "100%",
-    background: "#0B0F1A",
-    color: "#EDEDED",
+    background: "var(--bg)",
+    color: "var(--text)",
+    fontFamily: "var(--font-family)",
   };
 
   const contentStyle: React.CSSProperties = {
@@ -74,6 +78,7 @@ export default function App() {
           <Suspense fallback={routeFallback}>
             <Routes>
               <Route path="/" element={defaultRouteElement} />
+              <Route path="/themes" element={<ThemesPage />} />
               {moduleRoutes.map((route) => (
                 <Route key={route.id} path={route.path} element={renderModuleElement(route)} />
               ))}

@@ -22,11 +22,17 @@ const ORDER_STORAGE_KEY = "myndos.sidebar.order.v1";
 const SKIN_STORAGE_KEY = "myndos.sidebar.skin.v1";
 const SYNC_STORAGE_KEY = "myndos.sidebar.syncModule.v1";
 
-const defaultLinks: SidebarLink[] = moduleLinks.map(({ name, path, moduleName }) => ({
-  name,
-  path,
-  moduleName,
-}));
+const defaultLinks: SidebarLink[] = [
+  ...moduleLinks.map(({ name, path, moduleName }) => ({
+    name,
+    path,
+    moduleName,
+  })),
+  {
+    name: "Themes",
+    path: "/themes",
+  },
+];
 
 const defaultSkin: SidebarSkin = {
   mode: "gradient",

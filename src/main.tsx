@@ -5,10 +5,13 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "./core/state/ThemeContext";
 import RuntimeErrorBoundary from "./core/RuntimeErrorBoundary";
+import { initializeTheme } from "./core/theme/themeEngine";
 import {
   installOverlayDebugWatchdog,
   installPointerDebug,
 } from "./debug/overlayDebug";
+
+initializeTheme();
 
 if (import.meta.env.DEV) {
   const params = new URLSearchParams(window.location.search);
@@ -29,9 +32,9 @@ if (!rootElement) {
   fallback.style.minHeight = "100vh";
   fallback.style.display = "grid";
   fallback.style.placeItems = "center";
-  fallback.style.background = "#0B0F1A";
-  fallback.style.color = "#EDEDED";
-  fallback.style.fontFamily = "system-ui, sans-serif";
+  fallback.style.background = "var(--bg-raised)";
+  fallback.style.color = "var(--text)";
+  fallback.style.fontFamily = "var(--font-family)";
   fallback.style.padding = "24px";
   fallback.style.textAlign = "center";
   document.body.replaceChildren(fallback);
