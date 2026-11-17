@@ -1,19 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useModuleTheme } from "../state/ModuleThemeContext";
 
 const DEFAULT_COLOR = "#7df9ff";
 const DEFAULT_GRADIENT_END = "#ff4fd8";
 const PLUS_CUBE_APPEARANCE_EVENT = "plus-cube-appearance-change";
 
-export type PlusCubeColorMode = "solid" | "gradient";
+export type PlusCubeColorMode = "module" | "solid" | "gradient";
 
 export type PlusCubeAppearance = {
+  appearanceVersion: number;
   mode: PlusCubeColorMode;
   colorA: string;
   colorB: string;
 };
 
 const DEFAULT_APPEARANCE: PlusCubeAppearance = {
-  mode: "solid",
+  appearanceVersion: 3,
+  mode: "module",
   colorA: DEFAULT_COLOR,
   colorB: DEFAULT_GRADIENT_END,
 };
@@ -31,8 +34,13 @@ const readStoredAppearance = (moduleName: string): PlusCubeAppearance => {
     if (v2) {
       const parsed = JSON.parse(v2) as Partial<PlusCubeAppearance> | null;
       if (parsed) {
+        const hasCustomColors = parsed.mode === "gradient" ||
+          (parsed.mode === "solid" && isHexColor(parsed.colorA) && parsed.colorA.toLowerCase() !== DEFAULT_COLOR);
         return {
-          mode: parsed.mode === "gradient" ? "gradient" : "solid",
+          appearanceVersion: 3,
+          mode: (parsed.appearanceVersion === 3 || hasCustomColors) && (parsed.mode === "solid" || parsed.mode === "gradient")
+            ? parsed.mode
+            : "module",
           colorA: isHexColor(parsed.colorA) ? parsed.colorA : DEFAULT_APPEARANCE.colorA,
           colorB: isHexColor(parsed.colorB) ? parsed.colorB : DEFAULT_APPEARANCE.colorB,
         };
@@ -40,7 +48,7 @@ const readStoredAppearance = (moduleName: string): PlusCubeAppearance => {
     }
     const legacy = localStorage.getItem(legacyStorageKey(moduleName));
     if (isHexColor(legacy)) {
-      return { ...DEFAULT_APPEARANCE, colorA: legacy };
+      return { ...DEFAULT_APPEARANCE, mode: legacy.toLowerCase() === DEFAULT_COLOR ? "module" : "solid", colorA: legacy };
     }
   } catch {
     // ignore
@@ -58,6 +66,7 @@ export const setPlusCubeAppearance = (moduleName: string, appearance: PlusCubeAp
 };
 
 export const usePlusCubeAccent = (moduleName: string) => {
+  const { moduleAccent, moduleAccent2 } = useModuleTheme();
   const [appearance, setAppearance] = useState<PlusCubeAppearance>(() => readStoredAppearance(moduleName));
 
   useEffect(() => {
@@ -87,13 +96,18 @@ export const usePlusCubeAccent = (moduleName: string) => {
     [moduleName]
   );
 
-  const glowCss = useMemo(
-    () =>
-      appearance.mode === "gradient"
-        ? `linear-gradient(135deg, ${appearance.colorA} 0%, ${appearance.colorB} 100%)`
-        : appearance.colorA,
-    [appearance]
+  const resolvedAppearance = useMemo(
+    () => appearance.mode === "module"
+      ? { ...appearance, mode: "gradient" as const, colorA: moduleAccent, colorB: moduleAccent2 }
+      : appearance,
+    [appearance, moduleAccent, moduleAccent2]
   );
+  const glowCss = useMemo(() => {
+    const color = resolvedAppearance.mode === "gradient"
+      ? `color-mix(in srgb, ${resolvedAppearance.colorA} 50%, ${resolvedAppearance.colorB})`
+      : resolvedAppearance.colorA;
+    return `color-mix(in srgb, ${color} 65%, transparent)`;
+  }, [resolvedAppearance]);
 
-  return { appearance, updateAppearance, glowCss };
+  return { appearance, resolvedAppearance, updateAppearance, glowCss };
 };

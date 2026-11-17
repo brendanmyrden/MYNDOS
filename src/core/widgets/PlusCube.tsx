@@ -19,7 +19,7 @@ function canCreateWebGLContext() {
 }
 
 export default function PlusCube({ moduleName }: PlusCubeProps) {
-  const { appearance, glowCss } = usePlusCubeAccent(moduleName);
+  const { resolvedAppearance, glowCss } = usePlusCubeAccent(moduleName);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fallbackRef = useRef<HTMLSpanElement>(null);
 
@@ -124,12 +124,14 @@ export default function PlusCube({ moduleName }: PlusCubeProps) {
         return texture;
       };
 
-      const primary = parseColor(appearance.colorA);
-      const secondary = parseColor(appearance.colorB);
+      const primary = parseColor(resolvedAppearance.colorA);
+      const secondary = resolvedAppearance.mode === "gradient"
+        ? parseColor(resolvedAppearance.colorB)
+        : primary.clone();
       const blend = primary.clone().lerp(secondary, 0.5);
-      const sideA = primary.clone().lerp(new THREE.Color("#ffffff"), 0.55);
-      const sideB = appearance.mode === "gradient"
-        ? secondary.clone().lerp(new THREE.Color("#ffffff"), 0.55)
+      const sideA = primary.clone().lerp(new THREE.Color("#ffffff"), 0.28);
+      const sideB = resolvedAppearance.mode === "gradient"
+        ? secondary.clone().lerp(new THREE.Color("#ffffff"), 0.28)
         : sideA;
       const plusTextureA = createPlusTexture(sideA.getStyle());
       const plusTextureB = createPlusTexture(sideB.getStyle());
@@ -151,38 +153,38 @@ export default function PlusCube({ moduleName }: PlusCubeProps) {
 
       const rightMaterial = new THREE.MeshPhysicalMaterial({
         ...sharedGlassProps,
-        color: sideA.clone().lerp(new THREE.Color("#ffffff"), 0.15),
+        color: sideA.clone().lerp(new THREE.Color("#ffffff"), 0.08),
         emissive: primary.clone().multiplyScalar(0.15),
         emissiveIntensity: 0.52,
       });
       const leftMaterial = new THREE.MeshPhysicalMaterial({
         ...sharedGlassProps,
-        color: sideB.clone().lerp(new THREE.Color("#ffffff"), 0.15),
+        color: sideB.clone().lerp(new THREE.Color("#ffffff"), 0.08),
         emissive: secondary.clone().multiplyScalar(0.15),
         emissiveIntensity: 0.52,
       });
       const topMaterial = new THREE.MeshPhysicalMaterial({
         ...sharedGlassProps,
-        color: blend.clone().lerp(new THREE.Color("#ffffff"), 0.15),
+        color: blend.clone().lerp(new THREE.Color("#ffffff"), 0.08),
         emissive: blend.clone().multiplyScalar(0.18),
         emissiveIntensity: 0.48,
       });
       const bottomMaterial = new THREE.MeshPhysicalMaterial({
         ...sharedGlassProps,
-        color: blend.clone().lerp(new THREE.Color("#ffffff"), 0.15),
+        color: blend.clone().lerp(new THREE.Color("#ffffff"), 0.08),
         emissive: blend.clone().multiplyScalar(0.12),
         emissiveIntensity: 0.45,
       });
       const plusFrontMaterial = new THREE.MeshPhysicalMaterial({
         ...sharedGlassProps,
-        color: sideA.clone().lerp(new THREE.Color("#ffffff"), 0.15),
+        color: sideA.clone().lerp(new THREE.Color("#ffffff"), 0.08),
         map: plusTextureA ?? undefined,
         emissive: new THREE.Color("#ffffff"),
         emissiveIntensity: 1.18,
       });
       const plusBackMaterial = new THREE.MeshPhysicalMaterial({
         ...sharedGlassProps,
-        color: sideB.clone().lerp(new THREE.Color("#ffffff"), 0.15),
+        color: sideB.clone().lerp(new THREE.Color("#ffffff"), 0.08),
         map: plusTextureB ?? undefined,
         emissive: new THREE.Color("#ffffff"),
         emissiveIntensity: 1.18,
@@ -208,7 +210,7 @@ export default function PlusCube({ moduleName }: PlusCubeProps) {
       const rimLight = new THREE.PointLight(secondary.getHex(), 0.46, 8);
       rimLight.position.set(0, 0.4, 2.4);
       scene.add(rimLight);
-      scene.add(new THREE.AmbientLight(0xbfdfff, 0.55));
+      scene.add(new THREE.AmbientLight(blend.getHex(), 0.55));
 
       let frame = 0;
       let rafId = 0;
@@ -244,7 +246,7 @@ export default function PlusCube({ moduleName }: PlusCubeProps) {
       cancelled = true;
       cleanup?.();
     };
-  }, [appearance]);
+  }, [resolvedAppearance]);
 
   return (
     <div

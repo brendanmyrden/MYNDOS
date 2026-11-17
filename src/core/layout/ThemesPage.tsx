@@ -1,62 +1,64 @@
-import { useState } from "react";
-import type { MouseEvent } from "react";
-import {
-  deleteTheme,
-  getActiveTheme,
-  getThemes,
-  saveTheme,
-  setTheme,
-} from "../theme/themeEngine";
+import { useEffect, useState } from "react";
+import type { CSSProperties, MouseEvent } from "react";
+import { Link } from "react-router-dom";
+import { moduleLinks } from "../navigation/moduleLinks";
+import { loadModuleThemeValues } from "../theme/modulePalettes";
+import { ModuleThemeProvider, useModuleTheme } from "../state/ModuleThemeContext";
+import SettingsModal from "./SettingsModal";
+import { deleteTheme, getActiveTheme, getThemes, setTheme } from "../theme/themeEngine";
 import type { AppTheme } from "../theme/themeEngine";
 import "./ThemesPage.css";
 
-const createThemeId = (name: string): string => {
-  const slug = name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "") || "theme";
-  const uniquePart =
-    typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+const paletteLinks = [
+  ...moduleLinks,
+  { name: "Themes", path: "/themes", moduleName: "themes", icon: "🎨" },
+];
 
-  return `${slug}-${uniquePart}`;
-};
+function ThemesPageContent() {
+  const {
+    moduleThemeColor,
+    moduleBackgroundGradient,
+    moduleFont,
+    moduleText,
+    moduleMuted,
+    moduleAccent,
+    moduleAccent2,
+    moduleBorder,
+    moduleGlass,
+    moduleButtonBg,
+  } = useModuleTheme();
+  const [themes, setThemes] = useState<AppTheme[]>(getThemes);
+  const [activeTheme, setActiveTheme] = useState<AppTheme>(getActiveTheme);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [, setModulePaletteVersion] = useState(0);
+  const pageStyle = {
+    ["--bg" as string]: moduleThemeColor,
+    ["--bg-raised" as string]: moduleGlass,
+    ["--primary" as string]: moduleAccent,
+    ["--secondary" as string]: moduleAccent2,
+    ["--text" as string]: moduleText,
+    ["--text-muted" as string]: moduleMuted,
+    ["--border" as string]: moduleBorder,
+    ["--outline" as string]: moduleBorder,
+    ["--gradient-page" as string]: moduleBackgroundGradient,
+    ["--gradient-header" as string]: `linear-gradient(125deg, color-mix(in srgb, ${moduleAccent} 22%, ${moduleThemeColor}), color-mix(in srgb, ${moduleAccent2} 18%, ${moduleThemeColor}))`,
+    ["--gradient-sidebar-button" as string]: moduleButtonBg,
+    ["--font-family" as string]: moduleFont,
+  } as CSSProperties;
 
-export default function ThemesPage() {
-  const [themes, setThemes] = useState<AppTheme[]>(() => getThemes());
-  const [activeTheme, setActiveTheme] = useState<AppTheme>(() => getActiveTheme());
-
-  const refreshThemes = () => {
-    setThemes(getThemes());
-    setActiveTheme(getActiveTheme());
-  };
+  useEffect(() => {
+    const refreshModulePalettes = () => setModulePaletteVersion((version) => version + 1);
+    window.addEventListener("module-theme-change", refreshModulePalettes);
+    window.addEventListener("storage", refreshModulePalettes);
+    return () => {
+      window.removeEventListener("module-theme-change", refreshModulePalettes);
+      window.removeEventListener("storage", refreshModulePalettes);
+    };
+  }, []);
 
   const handleSelectTheme = (theme: AppTheme) => {
     setTheme(theme);
     setActiveTheme(getActiveTheme());
-  };
-
-  const handleSaveAsNew = () => {
-    const requestedName = window.prompt("Name this theme");
-    const name = requestedName?.trim();
-    if (!name) return;
-
-    const nextTheme: AppTheme = {
-      ...getActiveTheme(),
-      id: createThemeId(name),
-      name,
-    };
-
-    saveTheme(nextTheme);
-    setTheme(nextTheme);
-    refreshThemes();
-  };
-
-  const handleUpdateCurrent = () => {
-    saveTheme(getActiveTheme());
-    refreshThemes();
   };
 
   const handleDelete = (event: MouseEvent<HTMLButtonElement>, id: string) => {
@@ -64,30 +66,96 @@ export default function ThemesPage() {
     if (themes.length <= 1) return;
 
     deleteTheme(id);
-    refreshThemes();
+    setThemes(getThemes());
+    if (id === activeTheme.id) setActiveTheme(getActiveTheme());
   };
 
   return (
-    <main className="themes-page">
+    <main className="themes-page" style={pageStyle}>
       <header className="themes-page__header">
         <div>
           <p className="themes-page__eyebrow">MYND OS</p>
           <h1 className="themes-page__title">Themes</h1>
-          <p className="themes-page__subtitle">Switch between your saved app themes.</p>
+          <p className="themes-page__subtitle">Explore page palettes and switch between saved app themes.</p>
         </div>
-        <div className="themes-page__actions">
-          <button type="button" className="themes-page__button" onClick={handleUpdateCurrent}>
-            Update current
-          </button>
-          <button
-            type="button"
-            className="themes-page__button themes-page__button--primary"
-            onClick={handleSaveAsNew}
-          >
-            Save current as new theme
-          </button>
-        </div>
+        <button type="button" className="themes-page__button themes-page__button--primary" onClick={() => setIsSettingsOpen(true)}>
+          Edit page and button colours
+        </button>
       </header>
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        useModuleTheme
+        title="Themes page colours"
+        showPlusCube={false}
+        showPreviewAction={false}
+      />
+
+      <section className="themes-page__module-section" aria-labelledby="module-palettes-title">
+        <div className="themes-page__module-heading">
+          <div>
+            <p className="themes-page__eyebrow">Page palettes</p>
+            <h2 id="module-palettes-title" className="themes-page__editor-title">Module colours</h2>
+          </div>
+          <p className="themes-page__editor-note">Your saved colours appear here and on each page's sidebar button.</p>
+        </div>
+        <div className="themes-page__module-grid">
+          {paletteLinks.map((module) => {
+            const palette = loadModuleThemeValues(module.moduleName);
+            const style = {
+              "--module-preview-bg": palette.moduleBackgroundGradient,
+              "--module-preview-base": palette.moduleThemeColor,
+              "--module-preview-primary": palette.sidebarButtonPrimary,
+              "--module-preview-secondary": palette.sidebarButtonSecondary,
+              "--module-preview-outline": module.moduleName === "syyr"
+                ? palette.sidebarButtonSecondary
+                : palette.sidebarButtonPrimary,
+              "--module-preview-leading": module.moduleName === "syyr"
+                ? palette.sidebarButtonSecondary
+                : palette.sidebarButtonPrimary,
+              "--module-preview-supporting": module.moduleName === "syyr"
+                ? palette.sidebarButtonPrimary
+                : palette.sidebarButtonSecondary,
+              "--module-preview-text": palette.moduleText,
+            } as CSSProperties;
+
+            return (
+              <Link
+                key={module.path}
+                to={module.path}
+                className="themes-page__module-card"
+                style={style}
+                aria-label={`Open ${module.name} page`}
+              >
+                <div className="themes-page__module-card-top">
+                  <span className="themes-page__module-icon" aria-hidden="true">{module.icon}</span>
+                  <span className="themes-page__module-open" aria-hidden="true">Open page ↗</span>
+                </div>
+                <h3 className="themes-page__module-name">{module.name}</h3>
+                <span
+                  className="themes-page__module-button-preview"
+                  data-style={palette.sidebarButtonStyle}
+                  aria-hidden="true"
+                >
+                  {module.name}
+                </span>
+                <div className="themes-page__module-colours">
+                  {[
+                    { label: "Base", value: palette.moduleThemeColor },
+                    { label: "Primary", value: palette.moduleAccent },
+                    { label: "Secondary", value: palette.moduleAccent2 },
+                  ].map((colour) => (
+                    <span key={colour.label} className="themes-page__module-colour">
+                      <span className="themes-page__module-swatch" style={{ background: colour.value }} aria-hidden="true" />
+                      <span>{colour.label}<strong>{colour.value}</strong></span>
+                    </span>
+                  ))}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
 
       <section className="themes-page__grid" aria-label="Saved themes">
         {themes.map((theme) => {
@@ -109,21 +177,9 @@ export default function ThemesPage() {
                   </span>
                 </div>
                 <div className="themes-page__swatches" aria-label={`${theme.name} colors`}>
-                  <span
-                    className="themes-page__swatch"
-                    style={{ background: theme.bg }}
-                    title={`Background: ${theme.bg}`}
-                  />
-                  <span
-                    className="themes-page__swatch"
-                    style={{ background: theme.primary }}
-                    title={`Primary: ${theme.primary}`}
-                  />
-                  <span
-                    className="themes-page__swatch"
-                    style={{ background: theme.secondary }}
-                    title={`Secondary: ${theme.secondary}`}
-                  />
+                  <span className="themes-page__swatch" style={{ background: theme.bg }} title={`Background: ${theme.bg}`} />
+                  <span className="themes-page__swatch" style={{ background: theme.primary }} title={`Primary: ${theme.primary}`} />
+                  <span className="themes-page__swatch" style={{ background: theme.secondary }} title={`Secondary: ${theme.secondary}`} />
                 </div>
               </div>
 
@@ -141,5 +197,13 @@ export default function ThemesPage() {
         })}
       </section>
     </main>
+  );
+}
+
+export default function ThemesPage() {
+  return (
+    <ModuleThemeProvider moduleName="themes">
+      <ThemesPageContent />
+    </ModuleThemeProvider>
   );
 }

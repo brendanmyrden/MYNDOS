@@ -1,26 +1,13 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
+import {
+  getModuleThemeDefaults,
+  loadModuleThemeValues,
+  MODULE_PALETTE_VERSION,
+} from "../theme/modulePalettes";
+import type { ModuleThemeValues } from "../theme/modulePalettes";
 
-interface ModuleThemeState {
-  moduleThemeColor: string;
-  moduleFont: string;
-  moduleBackgroundGradient: string;
-  modulePlusMatchBackground: boolean;
-  modulePlusColor: string;
-  moduleText: string;
-  moduleMuted: string;
-  moduleAccent: string;
-  moduleAccent2: string;
-  moduleBorder: string;
-  moduleGlass: string;
-  moduleButtonBg: string;
-  moduleButtonText: string;
-  moduleInputBg: string;
-  moduleInputBorder: string;
-  sidebarButtonStyle: "solid" | "gradient";
-  sidebarButtonPrimary: string;
-  sidebarButtonSecondary: string;
-  sidebarButtonOutline: string;
+interface ModuleThemeState extends ModuleThemeValues {
   previewMode: boolean;
 }
 
@@ -44,6 +31,7 @@ type SidebarButtonTheme = Pick<
 >;
 
 interface ModuleThemeContextType extends ModuleThemeState {
+  moduleName: string;
   setModuleThemeColor: (color: string) => void;
   setModuleFont: (font: string) => void;
   setModuleBackgroundGradient: (gradient: string) => void;
@@ -58,25 +46,10 @@ interface ModuleThemeContextType extends ModuleThemeState {
 
 export const ModuleThemeContext = createContext<ModuleThemeContextType | undefined>(undefined);
 
-const DEFAULT_MODULE_THEME_COLOR = "#05070A";
-const DEFAULT_MODULE_FONT = "system-ui, -apple-system, sans-serif";
-const DEFAULT_MODULE_BACKGROUND_GRADIENT = `linear-gradient(135deg, ${DEFAULT_MODULE_THEME_COLOR} 0%, #05070A 100%)`;
-const DEFAULT_MODULE_PLUS_MATCH_BACKGROUND = true;
-const DEFAULT_MODULE_PLUS_COLOR = "#7df9ff";
-const DEFAULT_MODULE_TEXT = "#eaf2ff";
-const DEFAULT_MODULE_MUTED = "rgba(234, 242, 255, 0.7)";
-const DEFAULT_MODULE_ACCENT = "#7df9ff";
-const DEFAULT_MODULE_ACCENT_2 = "#ff4fd8";
-const DEFAULT_MODULE_BORDER = "rgba(125, 249, 255, 0.2)";
-const DEFAULT_MODULE_GLASS = "rgba(14, 18, 32, 0.68)";
-const DEFAULT_MODULE_BUTTON_BG = "linear-gradient(135deg, #7df9ff 0%, #7a5cff 60%, #ff4fd8 100%)";
-const DEFAULT_MODULE_BUTTON_TEXT = "#070b15";
-const DEFAULT_MODULE_INPUT_BG = "rgba(6, 10, 20, 0.75)";
-const DEFAULT_MODULE_INPUT_BORDER = "rgba(125, 249, 255, 0.25)";
-const DEFAULT_SIDEBAR_BUTTON_STYLE: ModuleThemeState["sidebarButtonStyle"] = "gradient";
-const DEFAULT_SIDEBAR_BUTTON_PRIMARY = "#7df9ff";
-const DEFAULT_SIDEBAR_BUTTON_SECONDARY = "#ff4fd8";
-const DEFAULT_SIDEBAR_BUTTON_OUTLINE = "#7df9ff";
+const loadModuleTheme = (moduleName: string): ModuleThemeState => ({
+  ...loadModuleThemeValues(moduleName),
+  previewMode: false,
+});
 
 interface ModuleThemeProviderProps {
   children: ReactNode;
@@ -85,71 +58,8 @@ interface ModuleThemeProviderProps {
 
 export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProviderProps) {
   const MODULE_THEME_KEY = `moduleTheme_${moduleName}`;
-
-  // Load saved module theme from localStorage
-  const loadModuleTheme = (): ModuleThemeState => {
-    try {
-      const stored = localStorage.getItem(MODULE_THEME_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return {
-          moduleThemeColor: parsed.moduleThemeColor || DEFAULT_MODULE_THEME_COLOR,
-          moduleFont: parsed.moduleFont || DEFAULT_MODULE_FONT,
-          moduleBackgroundGradient: parsed.moduleBackgroundGradient || DEFAULT_MODULE_BACKGROUND_GRADIENT,
-          modulePlusMatchBackground:
-            typeof parsed.modulePlusMatchBackground === "boolean"
-              ? parsed.modulePlusMatchBackground
-              : DEFAULT_MODULE_PLUS_MATCH_BACKGROUND,
-          modulePlusColor: parsed.modulePlusColor || DEFAULT_MODULE_PLUS_COLOR,
-          moduleText: parsed.moduleText || DEFAULT_MODULE_TEXT,
-          moduleMuted: parsed.moduleMuted || DEFAULT_MODULE_MUTED,
-          moduleAccent: parsed.moduleAccent || DEFAULT_MODULE_ACCENT,
-          moduleAccent2: parsed.moduleAccent2 || DEFAULT_MODULE_ACCENT_2,
-          moduleBorder: parsed.moduleBorder || DEFAULT_MODULE_BORDER,
-          moduleGlass: parsed.moduleGlass || DEFAULT_MODULE_GLASS,
-          moduleButtonBg: parsed.moduleButtonBg || DEFAULT_MODULE_BUTTON_BG,
-          moduleButtonText: parsed.moduleButtonText || DEFAULT_MODULE_BUTTON_TEXT,
-          moduleInputBg: parsed.moduleInputBg || DEFAULT_MODULE_INPUT_BG,
-          moduleInputBorder: parsed.moduleInputBorder || DEFAULT_MODULE_INPUT_BORDER,
-          sidebarButtonStyle:
-            parsed.sidebarButtonStyle === "solid" || parsed.sidebarButtonStyle === "gradient"
-              ? parsed.sidebarButtonStyle
-              : DEFAULT_SIDEBAR_BUTTON_STYLE,
-          sidebarButtonPrimary: parsed.sidebarButtonPrimary || DEFAULT_SIDEBAR_BUTTON_PRIMARY,
-          sidebarButtonSecondary: parsed.sidebarButtonSecondary || DEFAULT_SIDEBAR_BUTTON_SECONDARY,
-          sidebarButtonOutline: parsed.sidebarButtonOutline || DEFAULT_SIDEBAR_BUTTON_OUTLINE,
-          previewMode: false,
-        };
-      }
-    } catch {
-      // Ignore errors
-    }
-    return {
-      moduleThemeColor: DEFAULT_MODULE_THEME_COLOR,
-      moduleFont: DEFAULT_MODULE_FONT,
-      moduleBackgroundGradient: DEFAULT_MODULE_BACKGROUND_GRADIENT,
-      modulePlusMatchBackground: DEFAULT_MODULE_PLUS_MATCH_BACKGROUND,
-      modulePlusColor: DEFAULT_MODULE_PLUS_COLOR,
-      moduleText: DEFAULT_MODULE_TEXT,
-      moduleMuted: DEFAULT_MODULE_MUTED,
-      moduleAccent: DEFAULT_MODULE_ACCENT,
-      moduleAccent2: DEFAULT_MODULE_ACCENT_2,
-      moduleBorder: DEFAULT_MODULE_BORDER,
-      moduleGlass: DEFAULT_MODULE_GLASS,
-      moduleButtonBg: DEFAULT_MODULE_BUTTON_BG,
-      moduleButtonText: DEFAULT_MODULE_BUTTON_TEXT,
-      moduleInputBg: DEFAULT_MODULE_INPUT_BG,
-      moduleInputBorder: DEFAULT_MODULE_INPUT_BORDER,
-      sidebarButtonStyle: DEFAULT_SIDEBAR_BUTTON_STYLE,
-      sidebarButtonPrimary: DEFAULT_SIDEBAR_BUTTON_PRIMARY,
-      sidebarButtonSecondary: DEFAULT_SIDEBAR_BUTTON_SECONDARY,
-      sidebarButtonOutline: DEFAULT_SIDEBAR_BUTTON_OUTLINE,
-      previewMode: false,
-    };
-  };
-
-  const [state, setState] = useState<ModuleThemeState>(loadModuleTheme);
-  const [savedState, setSavedState] = useState<ModuleThemeState>(loadModuleTheme);
+  const [state, setState] = useState<ModuleThemeState>(() => loadModuleTheme(moduleName));
+  const [savedState, setSavedState] = useState<ModuleThemeState>(() => loadModuleTheme(moduleName));
 
   // Save to localStorage whenever theme changes (preview writes too, savedState only updates when not previewing)
   useEffect(() => {
@@ -157,6 +67,7 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
       localStorage.setItem(
         MODULE_THEME_KEY,
         JSON.stringify({
+          modulePaletteVersion: MODULE_PALETTE_VERSION,
           moduleThemeColor: state.moduleThemeColor,
           moduleFont: state.moduleFont,
           moduleBackgroundGradient: state.moduleBackgroundGradient,
@@ -191,7 +102,7 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
     setState((prev) => ({
       ...prev,
       moduleThemeColor: color,
-      moduleBackgroundGradient: `linear-gradient(135deg, ${color} 0%, #05070A 100%)`,
+      moduleBackgroundGradient: `linear-gradient(135deg, ${color} 0%, ${getModuleThemeDefaults(moduleName).moduleThemeColor} 100%)`,
     }));
   };
 
@@ -225,28 +136,7 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
   };
 
   const resetToDefaults = () => {
-    const defaults = {
-      moduleThemeColor: DEFAULT_MODULE_THEME_COLOR,
-      moduleFont: DEFAULT_MODULE_FONT,
-      moduleBackgroundGradient: DEFAULT_MODULE_BACKGROUND_GRADIENT,
-      modulePlusMatchBackground: DEFAULT_MODULE_PLUS_MATCH_BACKGROUND,
-      modulePlusColor: DEFAULT_MODULE_PLUS_COLOR,
-      moduleText: DEFAULT_MODULE_TEXT,
-      moduleMuted: DEFAULT_MODULE_MUTED,
-      moduleAccent: DEFAULT_MODULE_ACCENT,
-      moduleAccent2: DEFAULT_MODULE_ACCENT_2,
-      moduleBorder: DEFAULT_MODULE_BORDER,
-      moduleGlass: DEFAULT_MODULE_GLASS,
-      moduleButtonBg: DEFAULT_MODULE_BUTTON_BG,
-      moduleButtonText: DEFAULT_MODULE_BUTTON_TEXT,
-      moduleInputBg: DEFAULT_MODULE_INPUT_BG,
-      moduleInputBorder: DEFAULT_MODULE_INPUT_BORDER,
-      sidebarButtonStyle: DEFAULT_SIDEBAR_BUTTON_STYLE,
-      sidebarButtonPrimary: DEFAULT_SIDEBAR_BUTTON_PRIMARY,
-      sidebarButtonSecondary: DEFAULT_SIDEBAR_BUTTON_SECONDARY,
-      sidebarButtonOutline: DEFAULT_SIDEBAR_BUTTON_OUTLINE,
-      previewMode: false,
-    };
+    const defaults = { ...getModuleThemeDefaults(moduleName), previewMode: false };
     setState(defaults);
     setSavedState(defaults);
   };
@@ -264,6 +154,7 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
     <ModuleThemeContext.Provider
       value={{
         ...state,
+        moduleName,
         setModuleThemeColor,
         setModuleFont,
         setModuleBackgroundGradient,

@@ -72,7 +72,10 @@ function SanctuaryHomeContent() {
             <div className="module-header module-header-group">
               <div className="module-header-left sanctuary-header-left">
                 <ModuleCube moduleName="sanctuary" defaultEmoji="🕊️" />
-                <div />
+                <div>
+                  <h1 className="module-title">Sanctuary</h1>
+                  <p className="module-subtitle">Environment, Mood &amp; Regulation</p>
+                </div>
               </div>
               <PlusCube moduleName="sanctuary" />
             </div>

@@ -36,6 +36,7 @@ const renderModuleElement = (route: ModuleRouteDefinition) => {
 
 export default function App() {
   const [homescreenCubed, setHomescreenCubed] = useState(() => getHomescreenCubed());
+  const [matchedBackground, setMatchedBackground] = useState<string | null>(null);
   const moduleRoutes = useMemo(() => getEnabledModuleRoutes(), []);
   const defaultModule = useMemo(() => getDefaultModule(), []);
   const defaultPath = defaultModule?.navigation.path ?? "/";
@@ -58,7 +59,7 @@ export default function App() {
   const containerStyle: React.CSSProperties = {
     display: "flex",
     height: "100%",
-    background: "var(--bg)",
+    background: !homescreenCubed && matchedBackground ? matchedBackground : "var(--bg)",
     color: "var(--text)",
     fontFamily: "var(--font-family)",
   };
@@ -70,7 +71,7 @@ export default function App() {
 
   return (
     <div style={containerStyle}>
-      {!homescreenCubed && <Sidebar />}
+      {!homescreenCubed && <Sidebar onMatchedBackgroundChange={setMatchedBackground} />}
       <div style={contentStyle}>
         {homescreenCubed ? (
           <HomeScreenGrid />

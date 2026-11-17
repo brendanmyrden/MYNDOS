@@ -73,8 +73,8 @@ function TaskPillHomeContent() {
               <div className="module-header-left">
                 <ModuleCube moduleName="taskpill" defaultEmoji="💊" />
                 <div>
-                  <h1 className="module-title">TaskPill</h1>
-                  <p className="module-subtitle">Habits + Tracking</p>
+                  <h1 className="module-title">TRAC</h1>
+                  <p className="module-subtitle">Tables + Tracking</p>
                 </div>
               </div>
               <PlusCube moduleName="taskpill" />

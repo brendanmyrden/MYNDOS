@@ -2,11 +2,15 @@ import { useState, useEffect, useContext } from "react";
 import type { PointerEvent } from "react";
 import { useTheme } from "../state/ThemeContext";
 import { ModuleThemeContext } from "../state/ModuleThemeContext";
+import { getModuleThemeDefaults } from "../theme/modulePalettes";
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   useModuleTheme?: boolean; // If true, use module theme instead of global
+  title?: string;
+  showPlusCube?: boolean;
+  showPreviewAction?: boolean;
 }
 
 const DEFAULT_THEME_COLOR = "#05070A";
@@ -46,7 +50,14 @@ function toHexColor(input: string) {
   return `#${[r, g, b].map((val) => val.toString(16).padStart(2, "0")).join("")}`;
 }
 
-export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModule = false }: SettingsModalProps) {
+export default function SettingsModal({
+  isOpen,
+  onClose,
+  useModuleTheme: useModule = false,
+  title = "Settings",
+  showPlusCube = true,
+  showPreviewAction = true,
+}: SettingsModalProps) {
   const globalTheme = useTheme();
   
   // Safely get module theme context (returns undefined if not in provider)
@@ -233,26 +244,27 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
 
   const handleReset = () => {
     if (isModuleMode && moduleTheme) {
+      const defaults = getModuleThemeDefaults(moduleTheme.moduleName);
       moduleTheme.resetToDefaults();
-      setTempThemeColor(DEFAULT_THEME_COLOR);
-      setTempFont(DEFAULT_FONT);
-      setTempGradient(DEFAULT_GRADIENT);
-      setTempText(DEFAULT_TEXT);
-      setTempMuted(DEFAULT_MUTED);
-      setTempAccent(DEFAULT_ACCENT);
-      setTempAccent2(DEFAULT_ACCENT_2);
-      setTempBorder(DEFAULT_BORDER);
-      setTempGlass(DEFAULT_GLASS);
-      setTempButtonBg(DEFAULT_BUTTON_BG);
-      setTempButtonText(DEFAULT_BUTTON_TEXT);
-      setTempInputBg(DEFAULT_INPUT_BG);
-      setTempInputBorder(DEFAULT_INPUT_BORDER);
-      setTempModulePlusMatchBackground(DEFAULT_MODULE_PLUS_MATCH_BACKGROUND);
-      setTempModulePlusColor(DEFAULT_MODULE_PLUS_COLOR);
-      setTempSidebarButtonStyle(DEFAULT_SIDEBAR_BUTTON_STYLE);
-      setTempSidebarButtonPrimary(DEFAULT_SIDEBAR_BUTTON_PRIMARY);
-      setTempSidebarButtonSecondary(DEFAULT_SIDEBAR_BUTTON_SECONDARY);
-      setTempSidebarButtonOutline(DEFAULT_SIDEBAR_BUTTON_OUTLINE);
+      setTempThemeColor(defaults.moduleThemeColor);
+      setTempFont(defaults.moduleFont);
+      setTempGradient(defaults.moduleBackgroundGradient);
+      setTempText(defaults.moduleText);
+      setTempMuted(defaults.moduleMuted);
+      setTempAccent(defaults.moduleAccent);
+      setTempAccent2(defaults.moduleAccent2);
+      setTempBorder(defaults.moduleBorder);
+      setTempGlass(defaults.moduleGlass);
+      setTempButtonBg(defaults.moduleButtonBg);
+      setTempButtonText(defaults.moduleButtonText);
+      setTempInputBg(defaults.moduleInputBg);
+      setTempInputBorder(defaults.moduleInputBorder);
+      setTempModulePlusMatchBackground(defaults.modulePlusMatchBackground);
+      setTempModulePlusColor(defaults.modulePlusColor);
+      setTempSidebarButtonStyle(defaults.sidebarButtonStyle);
+      setTempSidebarButtonPrimary(defaults.sidebarButtonPrimary);
+      setTempSidebarButtonSecondary(defaults.sidebarButtonSecondary);
+      setTempSidebarButtonOutline(defaults.sidebarButtonOutline);
     } else {
       setTempThemeColor(DEFAULT_THEME_COLOR);
       setTempFont(DEFAULT_FONT);
@@ -279,8 +291,8 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
 
   const handleThemeColorChange = (color: string) => {
     setTempThemeColor(color);
-    if (isModuleMode) {
-      setTempGradient(`linear-gradient(135deg, ${color} 0%, #05070A 100%)`);
+    if (isModuleMode && moduleTheme) {
+      setTempGradient(`linear-gradient(135deg, ${color} 0%, ${getModuleThemeDefaults(moduleTheme.moduleName).moduleThemeColor} 100%)`);
     }
   };
 
@@ -399,7 +411,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
           onPointerUp={handleDragEnd}
           onPointerCancel={handleDragEnd}
         >
-          <h2 style={{ color: "#EDEDED", margin: 0, fontSize: "20px" }}>Settings</h2>
+          <h2 style={{ color: "#EDEDED", margin: 0, fontSize: "20px" }}>{title}</h2>
           <button
             onClick={handleCancel}
             style={{
@@ -565,7 +577,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
           )}
 
           {/* Header Plus Cube (Module Theme Only) */}
-          {isModuleMode && (
+          {isModuleMode && showPlusCube && (
             <div>
               <label
                 style={{
@@ -824,55 +836,6 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
                   )}
                 </div>
 
-                <label
-                  style={{
-                    display: "grid",
-                    gap: "8px",
-                    color: "#EDEDED",
-                    fontSize: "12px",
-                    minWidth: 0,
-                  }}
-                >
-                  Outline / Glow
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "60px minmax(0, 1fr)",
-                      gap: "10px",
-                      alignItems: "center",
-                      minWidth: 0,
-                    }}
-                  >
-                    <input
-                      type="color"
-                      value={toHexColor(tempSidebarButtonOutline)}
-                      onChange={(e) => setTempSidebarButtonOutline(e.target.value)}
-                      style={{
-                        width: "60px",
-                        height: "36px",
-                        border: "1px solid rgba(255, 255, 255, 0.2)",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                        backgroundColor: toHexColor(tempSidebarButtonOutline),
-                      }}
-                    />
-                    <input
-                      type="text"
-                      value={tempSidebarButtonOutline}
-                      onChange={(e) => setTempSidebarButtonOutline(e.target.value)}
-                      style={{
-                        width: "100%",
-                        minWidth: 0,
-                        padding: "8px 10px",
-                        backgroundColor: "rgba(255, 255, 255, 0.05)",
-                        border: "1px solid rgba(255, 255, 255, 0.2)",
-                        borderRadius: "6px",
-                        color: "#EDEDED",
-                        fontSize: "13px",
-                      }}
-                    />
-                  </div>
-                </label>
               </div>
             </div>
           )}
@@ -971,7 +934,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
             borderTop: "1px solid rgba(255, 255, 255, 0.1)",
           }}
         >
-            <button
+            {showPreviewAction && <button
               onClick={handlePreview}
               style={{
                 width: "100%",
@@ -993,7 +956,7 @@ export default function SettingsModal({ isOpen, onClose, useModuleTheme: useModu
               }}
             >
               Preview
-            </button>
+            </button>}
             
             <button
               onClick={handleSave}

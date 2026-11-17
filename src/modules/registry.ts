@@ -1,6 +1,8 @@
 import { myndosModule } from "./myndos/manifest";
+import { luminoiseModule } from "./luminoise/manifest";
 import { myrryrModule } from "./myrryr/manifest";
 import { numbersStarsSignsModule } from "./numbers-stars-signs/manifest";
+import { otakumaxxerModule } from "./otakumaxxer/manifest";
 import { prompttracModule } from "./prompttrac/manifest";
 import { raphiModule } from "./raphi/manifest";
 import { sanctuaryModule } from "./sanctuary/manifest";
@@ -8,7 +10,10 @@ import { settingsModule } from "./settings/manifest";
 import { streamsModule } from "./streams/manifest";
 import { syyrModule } from "./syyr/manifest";
 import { taskpillModule } from "./taskpill/manifest";
+import { torbinModule } from "./torbin/manifest";
+import { varkonModule } from "./varkon/manifest";
 import type { ModuleManifest, ModuleRouteDefinition } from "./types";
+import { defaultSidebarOrder } from "../core/theme/defaultAppearance";
 
 export type ModuleRegistryLink = {
   name: string;
@@ -17,7 +22,7 @@ export type ModuleRegistryLink = {
   icon: string;
 };
 
-export const moduleRegistry = [
+const modules = [
   myndosModule,
   sanctuaryModule,
   taskpillModule,
@@ -26,9 +31,22 @@ export const moduleRegistry = [
   syyrModule,
   numbersStarsSignsModule,
   streamsModule,
+  otakumaxxerModule,
+  luminoiseModule,
+  varkonModule,
+  torbinModule,
   settingsModule,
   prompttracModule,
 ] satisfies ModuleManifest[];
+
+const defaultOrderIndex = (path: string): number => {
+  const index = defaultSidebarOrder.indexOf(path as (typeof defaultSidebarOrder)[number]);
+  return index < 0 ? defaultSidebarOrder.length : index;
+};
+
+export const moduleRegistry: ModuleManifest[] = [...modules].sort(
+  (first, second) => defaultOrderIndex(first.navigation.path) - defaultOrderIndex(second.navigation.path)
+);
 
 const moduleRegistryById = new Map(moduleRegistry.map((module) => [module.id, module]));
 

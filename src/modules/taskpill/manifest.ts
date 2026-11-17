@@ -5,8 +5,8 @@ const TaskPillHome = lazy(() => import("./index"));
 
 export const taskpillModule: ModuleManifest = {
   id: "taskpill",
-  name: "Task Pill",
-  description: "Task-pill tracking and linked action grouping.",
+  name: "TRAC",
+  description: "Editable tables and tracking workspace.",
   component: TaskPillHome,
   navigation: {
     path: "/taskpill",

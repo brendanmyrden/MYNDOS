@@ -1,3 +1,6 @@
+export type ThemeGlowDirection = "top" | "right" | "bottom" | "left";
+export type ThemeGradientMotion = "none" | "horizontal" | "vertical" | "diagonal" | "pulse";
+
 export type AppTheme = {
   id: string;
   name: string;
@@ -13,7 +16,14 @@ export type AppTheme = {
   gradientPage: string;
   gradientHeader: string;
   gradientSidebarButton: string;
+  gradientPageMotion: ThemeGradientMotion;
+  gradientHeaderMotion: ThemeGradientMotion;
+  gradientSidebarButtonMotion: ThemeGradientMotion;
   fontFamily: string;
+  glowColor: string;
+  glowDirection: ThemeGlowDirection;
+  glowSoftness: string;
+  glowOpacity: string;
 };
 
 export const defaultTheme: AppTheme = {
@@ -32,7 +42,14 @@ export const defaultTheme: AppTheme = {
   gradientHeader:
     "linear-gradient(90deg, rgba(125, 249, 255, 0.1), rgba(255, 79, 216, 0.08))",
   gradientSidebarButton: "linear-gradient(120deg, #7df9ff 0%, #ff4fd8 100%)",
+  gradientPageMotion: "diagonal",
+  gradientHeaderMotion: "horizontal",
+  gradientSidebarButtonMotion: "horizontal",
   fontFamily: '"Rajdhani", "Orbitron", system-ui, sans-serif',
+  glowColor: "#7df9ff",
+  glowDirection: "right",
+  glowSoftness: "18",
+  glowOpacity: "45",
 };
 
 const THEMES_STORAGE_KEY = "myndos.themes";
@@ -47,11 +64,27 @@ const KNOWN_MODULE_IDS = [
   "taskpill",
   "numbers-stars-signs",
   "streams",
+  "otakumaxxer",
+  "luminoise",
+  "varkon",
+  "torbin",
   "settings",
+  "themes",
   "prompttrac",
 ] as const;
 
-const THEME_STRING_KEYS: ReadonlyArray<keyof AppTheme> = [
+type StoredThemeStringKey = Exclude<
+  keyof AppTheme,
+  | "glowColor"
+  | "glowDirection"
+  | "glowSoftness"
+  | "glowOpacity"
+  | "gradientPageMotion"
+  | "gradientHeaderMotion"
+  | "gradientSidebarButtonMotion"
+>;
+
+const THEME_STRING_KEYS: ReadonlyArray<StoredThemeStringKey> = [
   "id",
   "name",
   "bg",
@@ -71,13 +104,55 @@ const THEME_STRING_KEYS: ReadonlyArray<keyof AppTheme> = [
 
 const cloneTheme = (theme: AppTheme): AppTheme => ({ ...theme });
 
-const isAppTheme = (value: unknown): value is AppTheme => {
-  if (!value || typeof value !== "object") return false;
+const isGlowDirection = (value: unknown): value is ThemeGlowDirection =>
+  value === "top" || value === "right" || value === "bottom" || value === "left";
+
+const isGradientMotion = (value: unknown): value is ThemeGradientMotion =>
+  value === "none" ||
+  value === "horizontal" ||
+  value === "vertical" ||
+  value === "diagonal" ||
+  value === "pulse";
+
+const normalizeNumberString = (
+  value: unknown,
+  fallback: string,
+  minimum: number,
+  maximum: number
+): string => {
+  const parsedValue = typeof value === "string" || typeof value === "number" ? Number(value) : NaN;
+  if (!Number.isFinite(parsedValue)) return fallback;
+  return String(Math.min(maximum, Math.max(minimum, parsedValue)));
+};
+
+const normalizeAppTheme = (value: unknown): AppTheme | null => {
+  if (!value || typeof value !== "object") return null;
 
   const candidate = value as Record<string, unknown>;
-  return THEME_STRING_KEYS.every(
+  const hasRequiredValues = THEME_STRING_KEYS.every(
     (key) => typeof candidate[key] === "string" && candidate[key].trim().length > 0
   );
+  if (!hasRequiredValues) return null;
+
+  return {
+    ...(candidate as AppTheme),
+    glowColor:
+      typeof candidate.glowColor === "string" && candidate.glowColor.trim().length > 0
+        ? candidate.glowColor
+        : (candidate.primary as string),
+    glowDirection: isGlowDirection(candidate.glowDirection) ? candidate.glowDirection : "right",
+    glowSoftness: normalizeNumberString(candidate.glowSoftness, "18", 0, 40),
+    glowOpacity: normalizeNumberString(candidate.glowOpacity, "45", 0, 100),
+    gradientPageMotion: isGradientMotion(candidate.gradientPageMotion)
+      ? candidate.gradientPageMotion
+      : "diagonal",
+    gradientHeaderMotion: isGradientMotion(candidate.gradientHeaderMotion)
+      ? candidate.gradientHeaderMotion
+      : "horizontal",
+    gradientSidebarButtonMotion: isGradientMotion(candidate.gradientSidebarButtonMotion)
+      ? candidate.gradientSidebarButtonMotion
+      : "horizontal",
+  };
 };
 
 const readStoredThemes = (): AppTheme[] => {
@@ -88,7 +163,10 @@ const readStoredThemes = (): AppTheme[] => {
     const parsedThemes: unknown = JSON.parse(rawThemes);
     if (!Array.isArray(parsedThemes)) return [];
 
-    return parsedThemes.filter(isAppTheme).map(cloneTheme);
+    return parsedThemes
+      .map(normalizeAppTheme)
+      .filter((theme): theme is AppTheme => theme !== null)
+      .map(cloneTheme);
   } catch {
     return [];
   }
@@ -170,7 +248,7 @@ const readStoredModuleTheme = (key: string): Record<string, unknown> => {
   }
 };
 
-const syncModuleThemes = (theme: AppTheme): void => {
+export const syncModuleThemes = (theme: AppTheme): void => {
   const moduleThemeValues = {
     moduleThemeColor: theme.bg,
     moduleFont: theme.fontFamily,
@@ -214,7 +292,7 @@ const syncModuleThemes = (theme: AppTheme): void => {
   }
 };
 
-export function applyTheme(theme: AppTheme): void {
+export function applyThemeCss(theme: AppTheme): void {
   if (typeof document !== "undefined") {
     const root = document.documentElement;
     root.style.setProperty("--bg", theme.bg);
@@ -231,8 +309,10 @@ export function applyTheme(theme: AppTheme): void {
     root.style.setProperty("--gradient-sidebar-button", theme.gradientSidebarButton);
     root.style.setProperty("--font-family", theme.fontFamily);
   }
+}
 
-  syncModuleThemes(theme);
+export function applyTheme(theme: AppTheme): void {
+  applyThemeCss(theme);
 }
 
 export function getThemes(): AppTheme[] {

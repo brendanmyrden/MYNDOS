@@ -8,7 +8,9 @@ import MediaBoardWidget from "../../core/widgets/MediaBoardWidget";
 import TableWidget from "../../core/widgets/TableWidget";
 import PlusCube from "../../core/widgets/PlusCube";
 import ModuleCube from "../../core/widgets/ModuleCube";
+import { setSidebarButtonLayout, useSidebarButtonLayout } from "../../core/navigation/sidebarLayout";
 import "../../styles/cyberpunk.css";
+import "./SettingsPage.css";
 
 function SettingsContent() {
   const {
@@ -28,6 +30,7 @@ function SettingsContent() {
     moduleInputBorder,
   } = useModuleTheme();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const buttonLayout = useSidebarButtonLayout();
 
   const handleSettingsClick = () => {
     setIsSettingsOpen(true);
@@ -83,13 +86,33 @@ function SettingsContent() {
               <ModuleHoverPanel moduleName="settings" />
             </div>
           </div>
+          <div className="module-section">
+            <h2 className="module-section-title">Sidebar buttons</h2>
+            <p className="module-muted">Choose how the module buttons appear in the sidebar.</p>
+            <div className="settings-sidebar-layout" role="group" aria-label="Sidebar button layout">
+              <button
+                type="button"
+                className={`settings-sidebar-layout__option${buttonLayout === "compact" ? " is-selected" : ""}`}
+                aria-pressed={buttonLayout === "compact"}
+                onClick={() => setSidebarButtonLayout("compact")}
+              >
+                <span className="settings-sidebar-layout__icon" aria-hidden="true">▦</span>
+                <span>Compact grid<small>Two columns</small></span>
+              </button>
+              <button
+                type="button"
+                className={`settings-sidebar-layout__option${buttonLayout === "list" ? " is-selected" : ""}`}
+                aria-pressed={buttonLayout === "list"}
+                onClick={() => setSidebarButtonLayout("list")}
+              >
+                <span className="settings-sidebar-layout__icon" aria-hidden="true">☰</span>
+                <span>Wide list<small>One button per row</small></span>
+              </button>
+            </div>
+          </div>
           <MatrixTimerWidget moduleName="settings" />
           <MediaBoardWidget moduleName="settings" />
           <TableWidget moduleName="settings" />
-          <div className="module-section">
-            <h2 className="module-section-title">Configuration</h2>
-            <p className="module-muted">Settings UI will live here. Theme controls are available from any module via the floating button.</p>
-          </div>
         </div>
       </div>
     </div>

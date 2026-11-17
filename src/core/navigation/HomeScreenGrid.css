@@ -67,8 +67,8 @@
 .home-grid-tile {
   aspect-ratio: 1 / 1;
   border-radius: 18px;
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg-raised) 75%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tile-accent) 82%, transparent);
+  background: var(--tile-bg);
   color: var(--text);
   display: flex;
   flex-direction: column;
@@ -80,20 +80,24 @@
   cursor: pointer;
   box-shadow:
     0 12px 30px rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    0 0 6px color-mix(in srgb, var(--tile-accent) 60%, transparent),
+    0 0 18px color-mix(in srgb, var(--tile-accent) 24%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--tile-accent-2) 20%, transparent);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .home-grid-tile:hover {
   transform: translateY(-4px) scale(1.01);
-  border-color: var(--primary);
+  border-color: var(--tile-accent);
   box-shadow:
     0 18px 40px rgba(0, 0, 0, 0.55),
-    0 0 18px color-mix(in srgb, var(--primary) 20%, transparent);
+    0 0 7px color-mix(in srgb, var(--tile-accent-2) 62%, transparent),
+    0 0 18px color-mix(in srgb, var(--tile-accent-2) 25%, transparent);
 }
 
 .home-grid-icon {
   font-size: 28px;
+  filter: drop-shadow(0 0 6px var(--tile-accent));
 }
 
 .home-grid-label {

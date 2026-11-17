@@ -21,7 +21,7 @@ function lighten(color: string, percent: number) {
 const MODULE_NAMES = [
   { key: "raphi", name: "R-A-P-H [ i ]" },
   { key: "sanctuary", name: "Sanctuary" },
-  { key: "taskpill", name: "Task Pill" },
+  { key: "taskpill", name: "TRAC" },
   { key: "myrryr", name: "MYRRYR" },
   { key: "syyr", name: "SYYR" },
   { key: "myndos", name: "MYND OS" },
