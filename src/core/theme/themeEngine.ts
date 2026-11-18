@@ -1,3 +1,5 @@
+import { applyDesignSystem, getActiveDesignSystem } from "./designSystems";
+
 export type ThemeGlowDirection = "top" | "right" | "bottom" | "left";
 export type ThemeGradientMotion = "none" | "horizontal" | "vertical" | "diagonal" | "pulse";
 
@@ -375,6 +377,7 @@ export function deleteTheme(id: string): void {
 }
 
 export function initializeTheme(): AppTheme {
+  applyDesignSystem(getActiveDesignSystem());
   const activeTheme = getActiveTheme();
   applyTheme(activeTheme);
   return activeTheme;

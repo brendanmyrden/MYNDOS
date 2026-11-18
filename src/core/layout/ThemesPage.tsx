@@ -6,6 +6,7 @@ import { loadModuleThemeValues } from "../theme/modulePalettes";
 import { ModuleThemeProvider, useModuleTheme } from "../state/ModuleThemeContext";
 import SettingsModal from "./SettingsModal";
 import { deleteTheme, getActiveTheme, getThemes, setTheme } from "../theme/themeEngine";
+import { designSystems, getActiveDesignSystem, setDesignSystem } from "../theme/designSystems";
 import type { AppTheme } from "../theme/themeEngine";
 import "./ThemesPage.css";
 
@@ -29,6 +30,7 @@ function ThemesPageContent() {
   } = useModuleTheme();
   const [themes, setThemes] = useState<AppTheme[]>(getThemes);
   const [activeTheme, setActiveTheme] = useState<AppTheme>(getActiveTheme);
+  const [activeSystemId, setActiveSystemId] = useState(() => getActiveDesignSystem().id);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [, setModulePaletteVersion] = useState(0);
   const pageStyle = {
@@ -76,7 +78,7 @@ function ThemesPageContent() {
         <div>
           <p className="themes-page__eyebrow">MYND OS</p>
           <h1 className="themes-page__title">Themes</h1>
-          <p className="themes-page__subtitle">Explore page palettes and switch between saved app themes.</p>
+          <p className="themes-page__subtitle">Choose your design system and manage the colours saved on this device.</p>
         </div>
         <button type="button" className="themes-page__button themes-page__button--primary" onClick={() => setIsSettingsOpen(true)}>
           Edit page and button colours
@@ -90,6 +92,34 @@ function ThemesPageContent() {
         showPlusCube={false}
         showPreviewAction={false}
       />
+
+      <section className="themes-page__systems" aria-labelledby="design-systems-title">
+        <div className="themes-page__module-heading">
+          <div>
+            <p className="themes-page__eyebrow">Appearance library</p>
+            <h2 id="design-systems-title" className="themes-page__editor-title">Design systems</h2>
+          </div>
+          <p className="themes-page__editor-note">A system covers typography, spacing, surfaces, layout, motion, and colours. Your choice is saved on this device.</p>
+        </div>
+        <div className="themes-page__systems-grid">
+          {designSystems.map((system) => (
+            <button
+              key={system.id}
+              type="button"
+              className={`themes-page__system${activeSystemId === system.id ? " is-active" : ""}`}
+              onClick={() => setActiveSystemId(setDesignSystem(system.id).id)}
+              aria-pressed={activeSystemId === system.id}
+            >
+              <span className="themes-page__system-heading">
+                <strong>{system.name}</strong>
+                <span>{activeSystemId === system.id ? "Default on this device" : "Use this system"}</span>
+              </span>
+              <span className="themes-page__system-description">{system.description}</span>
+              <span className="themes-page__system-parts">Typography · Spacing · Surfaces · Layout · Motion · Colours</span>
+            </button>
+          ))}
+        </div>
+      </section>
 
       <section className="themes-page__module-section" aria-labelledby="module-palettes-title">
         <div className="themes-page__module-heading">
@@ -157,7 +187,15 @@ function ThemesPageContent() {
         </div>
       </section>
 
-      <section className="themes-page__grid" aria-label="Saved themes">
+      <section className="themes-page__app-themes" aria-labelledby="app-themes-title">
+        <div className="themes-page__module-heading">
+          <div>
+            <p className="themes-page__eyebrow">Within the current system</p>
+            <h2 id="app-themes-title" className="themes-page__editor-title">Saved app colour themes</h2>
+          </div>
+          <p className="themes-page__editor-note">These change the app palette. Your module palettes, sidebar, and cubes keep their own saved choices.</p>
+        </div>
+      <div className="themes-page__grid" aria-label="Saved app colour themes">
         {themes.map((theme) => {
           const isActive = theme.id === activeTheme.id;
 
@@ -195,6 +233,7 @@ function ThemesPageContent() {
             </article>
           );
         })}
+      </div>
       </section>
     </main>
   );

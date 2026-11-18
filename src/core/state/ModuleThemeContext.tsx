@@ -61,10 +61,10 @@ export function ModuleThemeProvider({ children, moduleName }: ModuleThemeProvide
   const [state, setState] = useState<ModuleThemeState>(() => loadModuleTheme(moduleName));
   const [savedState, setSavedState] = useState<ModuleThemeState>(() => loadModuleTheme(moduleName));
 
-  // Save to localStorage whenever theme changes (preview writes too, savedState only updates when not previewing)
+  // Previews remain in memory until Save; reopening restores the last saved palette.
   useEffect(() => {
     try {
-      localStorage.setItem(
+      if (!state.previewMode) localStorage.setItem(
         MODULE_THEME_KEY,
         JSON.stringify({
           modulePaletteVersion: MODULE_PALETTE_VERSION,
